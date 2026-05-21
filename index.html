@@ -1,0 +1,2174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ZARIAH Studio — Premium ladies' handbags crafted for women who value sophistication, femininity, and quiet luxury. Free COD delivery across Bangladesh.">
+<meta name="keywords" content="zariah, ladies handbag, premium handbag bangladesh, luxury handbag, korean handbag">
+<title>ZARIAH STUDIO — Quiet Luxury Handbags</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   ZARIAH STUDIO — DESIGN SYSTEM
+   ============================================================ */
+:root {
+  --forest:    #0A1A12;
+  --forest-mid:#0F2318;
+  --forest-lit:#162D1E;
+  --gold:      #B8965A;
+  --gold-lt:   #D4AF72;
+  --gold-dim:  #7A6035;
+  --cream:     #F5EDD8;
+  --cream-dim: #D4C8B0;
+  --white:     #FAFAF8;
+  --text-dim:  #8A9E8E;
+  --border:    rgba(184,150,90,0.18);
+  --border-lt: rgba(184,150,90,0.35);
+
+  --serif:  'Playfair Display', 'Georgia', serif;
+  --serif2: 'Cormorant Garamond', serif;
+  --sans:   'Jost', sans-serif;
+
+  --ease-lux: cubic-bezier(0.25, 0.1, 0.1, 1);
+  --ease-silk: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--forest);
+  color: var(--white);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--forest); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+/* ── UTILITY ── */
+.gold { color: var(--gold); }
+.serif { font-family: var(--serif); }
+.u-section { padding: 100px 0; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+@media(max-width:768px){ .u-section { padding: 72px 0; } .container { padding: 0 18px; } }
+
+.rule { display: block; width: 48px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto; }
+.rule--left { margin: 0; }
+
+.eyebrow {
+  font-family: var(--sans);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 18px; display: block;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 400; line-height: 1.15;
+  letter-spacing: 0.02em; color: var(--cream);
+}
+
+.reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.85s var(--ease-lux), transform 0.85s var(--ease-lux);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay-1 { transition-delay: 0.12s; }
+.reveal-delay-2 { transition-delay: 0.24s; }
+.reveal-delay-3 { transition-delay: 0.36s; }
+.reveal-delay-4 { transition-delay: 0.48s; }
+
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+}
+
+/* ============================================================
+   HEADER / NAV
+   ============================================================ */
+#site-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 22px 0;
+  transition: background 0.5s var(--ease-lux), padding 0.4s var(--ease-lux), backdrop-filter 0.5s;
+}
+#site-header.scrolled {
+  background: rgba(10,26,18,0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.nav-logo img { height: 38px; width: auto; filter: brightness(1.1); }
+.nav-logo-text { display: flex; flex-direction: column; line-height: 1; }
+.nav-logo-text .wordmark {
+  font-family: var(--serif); font-size: 1.45rem;
+  font-weight: 500; letter-spacing: 0.22em; color: var(--cream);
+}
+.nav-logo-text .tagline {
+  font-family: var(--sans); font-size: 0.58rem;
+  font-weight: 400; letter-spacing: 0.45em; color: var(--gold); margin-top: 2px;
+}
+.nav-links { display: flex; gap: 40px; list-style: none; }
+.social-media-header {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.social-media-header a {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  text-decoration: none;
+  transition: color 0.3s;
+  padding: 6px 0;
+}
+.social-media-header a:hover {
+  color: var(--gold);
+}
+@media(max-width:900px){
+  .social-media-header {
+    display: none;
+  }
+}
+.nav-links a {
+  font-family: var(--sans); font-size: 0.72rem;
+  font-weight: 400; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--cream-dim);
+  text-decoration: none; position: relative; transition: color 0.3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform 0.4s var(--ease-lux);
+}
+.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 6px; background: none; border: none;
+}
+.hamburger span {
+  display: block; width: 24px; height: 1px; background: var(--cream);
+  transition: transform 0.4s var(--ease-lux), opacity 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.mobile-menu {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(10,26,18,0.97); backdrop-filter: blur(24px);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 36px; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s var(--ease-lux);
+}
+.mobile-menu.open { opacity: 1; pointer-events: all; }
+.mobile-menu a {
+  font-family: var(--serif); font-size: 2rem;
+  font-weight: 400; letter-spacing: 0.08em; color: var(--cream);
+  text-decoration: none; transition: color 0.3s;
+}
+.mobile-menu a:hover { color: var(--gold); }
+
+.mobile-menu-social {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  margin-top: 8px; padding-top: 28px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+}
+.mobile-menu-social-label {
+  font-family: var(--sans); font-size: 9px;
+  letter-spacing: 0.38em; text-transform: uppercase;
+  color: var(--gold-dim);
+}
+.mobile-menu-social-link {
+  font-family: var(--serif); font-size: 1.15rem;
+  font-weight: 400; letter-spacing: 0.08em; color: var(--cream-dim);
+  text-decoration: none; transition: color 0.3s;
+}
+.mobile-menu-social-link:hover { color: var(--gold); }
+
+@media(max-width:900px){
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .mobile-menu { display: flex; }
+}
+
+/* ============================================================
+   HERO — CINEMATIC MINIMAL
+   ============================================================ */
+#hero {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Hero background using <img> for reliable display across all browsers */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-bg img.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+@media(max-width:768px){
+  .hero-bg img.hero-img { object-position: 62% center; }
+}
+@media(max-width:480px){
+  .hero-bg img.hero-img { object-position: 58% center; }
+}
+
+/* Dark overlay gradient on top of image */
+.hero-bg::after {
+  content: ''; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(10,26,18,0.80) 0%,
+    rgba(10,26,18,0.30) 40%,
+    rgba(10,26,18,0.10) 75%,
+    transparent 100%
+  );
+}
+
+/* Fallback bg when image absent */
+.hero-bg-fallback {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at 60% 30%, #1A3D2A 0%, #0A1A12 65%);
+}
+
+/* Minimal hero content — bottom-left, extremely restrained */
+.hero-content {
+  position: relative; z-index: 2;
+  width: 100%;
+  padding: 0 48px 64px;
+  max-width: 1280px; margin: 0 auto;
+}
+
+.hero-eyebrow {
+  font-family: var(--sans); font-size: 9px; font-weight: 400;
+  letter-spacing: 0.5em; text-transform: uppercase;
+  color: var(--gold-lt);
+  margin-bottom: 14px;
+  opacity: 0; animation: fadeUp 1s var(--ease-lux) 0.5s forwards;
+}
+
+.hero-wordmark {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 400; letter-spacing: 0.18em;
+  color: var(--cream);
+  line-height: 1;
+  margin-bottom: 32px;
+  opacity: 0; animation: fadeUp 1s var(--ease-lux) 0.7s forwards;
+}
+
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 14px 32px;
+  border: 1px solid rgba(184,150,90,0.6);
+  background: rgba(10,26,18,0.3);
+  backdrop-filter: blur(6px);
+  font-family: var(--sans); font-size: 0.68rem;
+  font-weight: 400; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cream); text-decoration: none; cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: color 0.4s var(--ease-lux), border-color 0.4s;
+  opacity: 0; animation: fadeUp 1s var(--ease-lux) 0.9s forwards;
+}
+.hero-cta::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.45s var(--ease-lux); z-index: -1;
+}
+.hero-cta:hover { color: var(--forest); border-color: var(--gold); }
+.hero-cta:hover::before { transform: scaleX(1); }
+.hero-cta svg { transition: transform 0.4s; }
+.hero-cta:hover svg { transform: translateX(4px); }
+
+/* scroll line */
+.hero-scroll {
+  position: absolute; bottom: 32px; right: 40px; z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  opacity: 0; animation: fadeIn 1s var(--ease-lux) 1.4s forwards;
+}
+.hero-scroll span {
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(184,150,90,0.6); writing-mode: vertical-rl;
+}
+.scroll-line {
+  width: 1px; height: 52px;
+  background: linear-gradient(to bottom, rgba(184,150,90,0.7), transparent);
+  animation: scrollPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%,100%{ opacity:0.4; transform:scaleY(1); }
+  50%{ opacity:1; transform:scaleY(1.15); }
+}
+@keyframes fadeUp {
+  from{ opacity:0; transform:translateY(22px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+@media(max-width:768px){
+  .hero-content { padding: 0 24px 56px; }
+  .hero-scroll { display: none; }
+  .hero-wordmark { font-size: clamp(1.6rem, 7vw, 2.8rem); letter-spacing: 0.12em; }
+}
+
+/* ============================================================
+   TRUST RIBBON — Premium WhatsApp Assurance
+   ============================================================ */
+#trust-ribbon {
+  background: var(--forest-mid);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 0;
+  overflow: hidden;
+}
+
+.trust-header-row {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.trust-label {
+  font-family: var(--serif2);
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--cream);
+  display: block;
+}
+.trust-label em {
+  font-style: italic;
+  color: var(--gold-lt);
+}
+
+/* Ticker track — smooth horizontal loop */
+.trust-ticker-wrap {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Fade edges for cinematic softness */
+.trust-ticker-wrap::before,
+.trust-ticker-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.trust-ticker-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--forest-mid), transparent);
+}
+.trust-ticker-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--forest-mid), transparent);
+}
+
+.trust-ticker {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  animation: trustScroll 32s linear infinite;
+  will-change: transform;
+}
+
+/* Pause on hover — elegant interactivity */
+.trust-ticker:hover { animation-play-state: paused; }
+
+@keyframes trustScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.trust-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 36px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.trust-icon {
+  width: 22px; height: 22px; flex-shrink: 0;
+  color: var(--gold);
+}
+.trust-text { display: flex; flex-direction: column; gap: 1px; }
+.trust-text strong {
+  font-family: var(--sans); font-size: 0.72rem;
+  font-weight: 500; letter-spacing: 0.08em; color: var(--cream);
+  white-space: nowrap;
+}
+.trust-text span {
+  font-family: var(--serif2); font-size: 0.76rem;
+  font-style: italic; color: var(--text-dim); line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Mobile: even more compact */
+@media(max-width:768px){
+  #trust-ribbon { padding: 18px 0; }
+  .trust-header-row { margin-bottom: 14px; }
+  .trust-item { padding: 8px 24px; gap: 10px; }
+  .trust-icon { width: 18px; height: 18px; }
+  .trust-text strong { font-size: 0.68rem; }
+  .trust-text span { font-size: 0.7rem; }
+  .trust-ticker { animation-duration: 22s; }
+}
+
+/* ============================================================
+   PRODUCTS SECTION
+   ============================================================ */
+#products { background: var(--forest-mid); position: relative; }
+
+.products-header { text-align: center; margin-bottom: 52px; }
+.products-header .section-title { margin: 14px 0 10px; }
+.products-header p {
+  font-family: var(--serif2); font-size: 1.05rem;
+  font-style: italic; color: var(--text-dim);
+  max-width: 420px; margin: 0 auto;
+}
+
+/* tabs */
+.tabs {
+  display: flex; justify-content: center; gap: 0;
+  margin-bottom: 52px;
+  border: 1px solid var(--border);
+  max-width: 560px; margin-left: auto; margin-right: auto; margin-bottom: 52px;
+  overflow: hidden;
+}
+.tab-btn {
+  flex: 1; padding: 14px 10px;
+  background: transparent; border: none;
+  border-right: 1px solid var(--border);
+  font-family: var(--sans); font-size: 0.7rem;
+  font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-dim); cursor: pointer;
+  transition: background 0.35s, color 0.35s;
+}
+.tab-btn:last-child { border-right: none; }
+.tab-btn.active { background: rgba(184,150,90,0.1); color: var(--gold); }
+.tab-btn:hover:not(.active) { color: var(--cream-dim); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* product grid — 3 col desktop, 2 col mobile */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media(max-width:900px){ .product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+@media(max-width:420px){ .product-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+
+/* ============================================================
+   PRODUCT CARD
+   ============================================================ */
+.product-card {
+  background: var(--forest);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: border-color 0.4s, transform 0.4s var(--ease-lux), box-shadow 0.4s;
+  cursor: pointer;
+}
+.product-card:hover {
+  border-color: var(--border-lt);
+  transform: translateY(-5px);
+  box-shadow: 0 18px 46px rgba(0,0,0,0.38);
+}
+
+.card-image {
+  aspect-ratio: 3/4; overflow: hidden;
+  background: var(--forest-lit); position: relative;
+}
+.card-image img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.8s var(--ease-lux); display: block;
+  loading: lazy;
+}@media(max-width:768px){
+  .card-image img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3/4;
+  }
+}
+.product-card:hover .card-image img { transform: scale(1.06); }
+
+.card-img-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #162D1E 0%, #0F2218 60%, #0A1A12 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.card-img-placeholder svg { opacity: 0.18; }
+.card-img-placeholder span {
+  font-family: var(--serif); font-size: 0.7rem;
+  letter-spacing: 0.2em; color: var(--gold-dim); opacity: 0.5;
+}
+
+.badge-limited {
+  position: absolute; top: 12px; left: 12px;
+  font-family: var(--sans); font-size: 8px;
+  font-weight: 500; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--forest);
+  background: var(--gold); padding: 3px 9px; z-index: 2;
+}
+
+.availability {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(10,26,18,0.8); backdrop-filter: blur(6px);
+  padding: 3px 9px; z-index: 2;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #4CAF82; flex-shrink: 0; }
+.dot.limited { background: #D4A742; }
+.dot.soldout { background: #888; }
+.availability span { font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--cream-dim); }
+
+/* card body */
+.card-body { padding: 16px 16px 20px; }
+
+.card-code {
+  font-family: var(--sans); font-size: 8px;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--gold-dim); margin-bottom: 7px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-material { font-family: var(--sans); font-size: 8px; letter-spacing: 0.15em; color: var(--text-dim); }
+
+.card-title {
+  font-family: var(--serif); font-size: 1rem;
+  font-weight: 400; color: var(--cream); line-height: 1.25; margin-bottom: 6px;
+}
+
+.card-desc {
+  font-family: var(--serif2); font-size: 0.8rem;
+  font-style: italic; color: var(--text-dim); line-height: 1.55; margin-bottom: 14px;
+}
+
+/* PRICING — 30% discount display */
+.card-pricing { margin-bottom: 16px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+
+.card-price-original {
+  font-family: var(--sans); font-size: 0.75rem;
+  color: var(--text-dim); text-decoration: line-through;
+  letter-spacing: 0.04em; font-weight: 300;
+}
+
+.card-price-current {
+  font-family: var(--serif); font-size: 1.2rem;
+  font-weight: 500; color: var(--gold);
+}
+.card-price-current span {
+  font-family: var(--sans); font-size: 0.65rem;
+  color: var(--text-dim); letter-spacing: 0.1em; margin-left: 3px;
+}
+
+.card-discount-badge {
+  font-family: var(--sans); font-size: 8px;
+  font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold-dim);
+  border: 1px solid rgba(184,150,90,0.25);
+  padding: 2px 7px;
+}
+
+/* card actions — two buttons */
+.card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.btn-order {
+  padding: 10px 6px;
+  background: var(--gold); border: 1px solid var(--gold);
+  font-family: var(--sans); font-size: 0.65rem;
+  font-weight: 500; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--forest);
+  cursor: pointer; transition: background 0.3s, color 0.3s;
+}
+.btn-order:hover { background: var(--gold-lt); }
+
+/* WhatsApp order button — replaces Form Order */
+.btn-wa {
+  padding: 10px 6px;
+  background: transparent; border: 1px solid rgba(37,211,102,0.25);
+  font-family: var(--sans); font-size: 0.65rem;
+  font-weight: 400; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(37,211,102,0.75);
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: border-color 0.35s var(--ease-lux), color 0.35s var(--ease-lux), background 0.35s var(--ease-lux);
+  position: relative; overflow: hidden;
+}
+.btn-wa::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(37,211,102,0.06);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s var(--ease-lux);
+}
+.btn-wa:hover { border-color: rgba(37,211,102,0.55); color: #25D366; }
+.btn-wa:hover::before { transform: scaleX(1); }
+.btn-wa svg { flex-shrink: 0; }
+
+/* WhatsApp image overlay — elegant corner icon */
+.card-wa-overlay {
+  position: absolute; bottom: 12px; right: 12px; z-index: 3;
+  width: 34px; height: 34px;
+  background: rgba(10,26,18,0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(37,211,102,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; text-decoration: none;
+  opacity: 0;
+  transform: scale(0.88);
+  transition: opacity 0.4s var(--ease-lux), transform 0.4s var(--ease-lux), border-color 0.35s, background 0.35s;
+}
+.card-wa-overlay svg { color: rgba(37,211,102,0.8); transition: color 0.3s; }
+.card-wa-overlay:hover { background: rgba(10,26,18,0.9); border-color: rgba(37,211,102,0.5); }
+.card-wa-overlay:hover svg { color: #25D366; }
+.product-card:hover .card-wa-overlay { opacity: 1; transform: scale(1); }
+
+/* Mobile: always visible */
+@media(max-width:768px) {
+  .card-wa-overlay { opacity: 1; transform: scale(1); }
+}
+
+@media(max-width:420px){
+  .card-body { padding: 12px 12px 16px; }
+  .card-title { font-size: 0.88rem; }
+  .card-price-current { font-size: 1rem; }
+  .card-actions { gap: 6px; }
+  .btn-order, .btn-wa { font-size: 0.6rem; padding: 9px 4px; }
+  .card-wa-overlay { width: 30px; height: 30px; bottom: 10px; right: 10px; }
+}
+
+/* ============================================================
+   CHECKOUT MODAL
+   ============================================================ */
+#modal-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(5,14,9,0.88); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none;
+  transition: opacity 0.4s var(--ease-lux);
+}
+#modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--forest-mid); border: 1px solid var(--border);
+  width: 100%; max-width: 540px;
+  max-height: 90svh; overflow-y: auto;
+  transform: translateY(28px) scale(0.97);
+  transition: transform 0.4s var(--ease-lux); position: relative;
+}
+#modal-overlay.open .modal-box { transform: none; }
+.modal-header { padding: 28px 32px 0; display: flex; align-items: flex-start; justify-content: space-between; }
+.modal-header h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; color: var(--cream); }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--text-dim); font-size: 1.4rem; line-height: 1; padding: 4px; transition: color 0.3s; }
+.modal-close:hover { color: var(--gold); }
+.modal-note { margin: 14px 32px 0; font-family: var(--serif2); font-size: 0.85rem; font-style: italic; color: var(--text-dim); padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+.modal-body { padding: 28px 32px 32px; }
+.form-field { margin-bottom: 22px; }
+.form-label { display: block; font-family: var(--sans); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.form-input, .form-textarea, .form-select {
+  width: 100%; padding: 13px 16px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+  font-family: var(--sans); font-size: 0.88rem; color: var(--cream); outline: none;
+  transition: border-color 0.3s; -webkit-appearance: none;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--gold-dim); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--text-dim); font-style: italic; }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select { cursor: pointer; }
+.form-select option { background: var(--forest-mid); }
+.modal-submit { width: 100%; padding: 16px; background: var(--gold); border: none; font-family: var(--sans); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--forest); cursor: pointer; transition: background 0.3s; }
+.modal-submit:hover { background: var(--gold-lt); }
+.modal-redirect-note { margin-top: 16px; text-align: center; font-family: var(--serif2); font-size: 0.8rem; font-style: italic; color: var(--text-dim); }
+
+/* ============================================================
+   PHILOSOPHY
+   ============================================================ */
+#philosophy { background: var(--forest); position: relative; overflow: hidden; }
+#philosophy::before {
+  content: 'ZARIAH'; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  font-family: var(--serif); font-size: clamp(60px, 14vw, 160px);
+  font-weight: 700; letter-spacing: 0.1em;
+  color: rgba(184,150,90,0.025); pointer-events: none; white-space: nowrap; user-select: none;
+}
+
+/* Desktop: image LEFT, text RIGHT */
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+}
+
+.philosophy-image {
+  position: relative;
+  overflow: hidden;
+  height: 580px;
+  flex-shrink: 0;
+}
+
+.philosophy-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.philosophy-image-fallback {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #162D1E 0%, #0A1A12 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.philosophy-image::after {
+  content: ''; position: absolute; inset: 0; z-index: 2;
+  border: 1px solid var(--border); pointer-events: none;
+}
+.philosophy-img-label {
+  position: absolute; bottom: 24px; left: 24px; z-index: 3;
+  font-family: var(--sans); font-size: 9px;
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: var(--gold); background: rgba(10,26,18,0.75);
+  padding: 6px 14px; backdrop-filter: blur(8px);
+}
+.philosophy-body { max-width: 500px; }
+.philosophy-body .section-title { margin: 16px 0 26px; }
+.philosophy-body p {
+  font-family: var(--serif2); font-size: 1.08rem;
+  font-weight: 300; color: var(--cream-dim); line-height: 1.85; margin-bottom: 22px;
+}
+.philosophy-pillars {
+  display: flex; flex-direction: column; gap: 14px;
+  margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);
+}
+.pillar { display: flex; align-items: flex-start; gap: 16px; }
+.pillar-num { font-family: var(--serif); font-size: 0.8rem; color: var(--gold); min-width: 28px; padding-top: 2px; }
+.pillar-text { font-size: 0.82rem; color: var(--cream-dim); letter-spacing: 0.03em; }
+.pillar-text strong { color: var(--cream); font-weight: 500; display: block; margin-bottom: 2px; }
+
+/* Mobile: image first, text below — compact premium spacing */
+@media(max-width:900px){
+  .philosophy-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  /* Image comes first naturally (it's first in DOM) */
+  .philosophy-image {
+    height: auto;
+    aspect-ratio: 4/3;
+  }
+  .philosophy-body { max-width: 100%; }
+}
+
+/* ============================================================
+   LOOKBOOK
+   ============================================================ */
+#lookbook { background: var(--forest-mid); }
+.lookbook-header { text-align: center; margin-bottom: 44px; }
+.lookbook-header .section-title { margin: 14px 0; }
+
+.lookbook-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto auto;
+  gap: 3px;
+}
+.lookbook-item { overflow: hidden; position: relative; background: var(--forest-lit); cursor: pointer; }
+.lookbook-item.tall { grid-row: span 2; }
+.lookbook-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.9s var(--ease-lux); min-height: 200px;
+}
+.lookbook-item:hover img { transform: scale(1.06); }
+.lookbook-item::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(10,26,18,0); transition: background 0.4s;
+}
+.lookbook-item:hover::after { background: rgba(10,26,18,0.18); }
+
+.lb-placeholder {
+  aspect-ratio: 1/1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  background: linear-gradient(135deg, #162D1E, #0A1A12); min-height: 200px;
+}
+.lb-placeholder.tall { min-height: 400px; aspect-ratio: auto; }
+.lb-placeholder svg { opacity: 0.15; }
+.lb-placeholder span { font-family: var(--serif); font-size: 0.7rem; letter-spacing: 0.3em; color: var(--gold-dim); opacity: 0.5; }
+
+@media(max-width:768px){
+  .lookbook-grid { grid-template-columns: repeat(2, 1fr); }
+  .lookbook-item.tall { grid-row: span 1; }
+}
+
+/* ============================================================
+   REVIEWS
+   ============================================================ */
+#reviews { background: var(--forest); }
+.reviews-header { text-align: center; margin-bottom: 52px; }
+.reviews-header .section-title { margin: 14px 0 10px; }
+.stars-display { display: flex; gap: 3px; justify-content: center; margin-top: 6px; }
+.star { color: var(--gold); font-size: 0.85rem; }
+
+.reviews-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;
+}
+@media(max-width:900px){ .reviews-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:560px){ .reviews-grid { grid-template-columns: 1fr; } }
+
+.review-card {
+  padding: 30px 26px; border: 1px solid var(--border);
+  background: var(--forest-mid); position: relative; overflow: hidden;
+  transition: border-color 0.4s;
+}
+.review-card:hover { border-color: var(--border-lt); }
+.review-card::before {
+  content: '"'; position: absolute; top: -8px; left: 20px;
+  font-family: var(--serif); font-size: 8rem;
+  color: rgba(184,150,90,0.06); line-height: 1; pointer-events: none;
+}
+.review-stars { display: flex; gap: 3px; margin-bottom: 14px; }
+.review-text { font-family: var(--serif2); font-size: 0.98rem; font-style: italic; color: var(--cream-dim); line-height: 1.75; margin-bottom: 22px; }
+.review-author { display: flex; align-items: center; gap: 12px; padding-top: 18px; border-top: 1px solid var(--border); }
+.review-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--forest-lit), var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 0.85rem; color: var(--gold); flex-shrink: 0;
+}
+.review-name { font-family: var(--sans); font-size: 0.77rem; letter-spacing: 0.12em; color: var(--cream); }
+.review-location { font-size: 0.7rem; color: var(--text-dim); letter-spacing: 0.08em; }
+
+/* ============================================================
+   WHATSAPP FLOAT
+   ============================================================ */
+#wa-float { position: fixed; bottom: 28px; right: 24px; z-index: 1500; }
+.wa-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 56px; background: #25D366; border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(37,211,102,0.32);
+  transition: transform 0.3s var(--ease-lux), box-shadow 0.3s;
+  animation: waPulse 3s ease-in-out infinite;
+}
+.wa-btn:hover { transform: scale(1.1); box-shadow: 0 10px 30px rgba(37,211,102,0.48); animation: none; }
+.wa-btn svg { width: 26px; height: 26px; fill: white; }
+@keyframes waPulse {
+  0%,100%{ box-shadow: 0 6px 20px rgba(37,211,102,0.32), 0 0 0 0 rgba(37,211,102,0.38); }
+  50%{ box-shadow: 0 6px 20px rgba(37,211,102,0.32), 0 0 0 10px rgba(37,211,102,0); }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+#footer { background: #060F09; border-top: 1px solid var(--border); padding: 72px 0 40px; }
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 52px; }
+.footer-brand .wordmark { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 0.2em; color: var(--cream); display: block; margin-bottom: 6px; }
+.footer-brand .tagline { font-size: 0.65rem; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 18px; }
+.footer-brand p { font-family: var(--serif2); font-size: 0.9rem; font-style: italic; color: var(--text-dim); line-height: 1.75; max-width: 280px; }
+.footer-col h4 { font-family: var(--sans); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.footer-col ul { list-style: none; }
+.footer-col ul li { margin-bottom: 10px; }
+.footer-col ul li a, .footer-col ul li span { font-family: var(--sans); font-size: 0.8rem; color: var(--text-dim); text-decoration: none; letter-spacing: 0.04em; transition: color 0.3s; }
+.footer-col ul li a:hover { color: var(--gold-lt); }
+.footer-bottom { padding-top: 26px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.footer-bottom p { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.06em; }
+.footer-social { display: flex; gap: 14px; }
+.footer-social a { width: 34px; height: 34px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-dim); text-decoration: none; font-size: 0.72rem; letter-spacing: 0.1em; transition: border-color 0.3s, color 0.3s; }
+.footer-social a:hover { border-color: var(--gold); color: var(--gold); }
+@media(max-width:900px){ .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+@media(max-width:560px){ .footer-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header id="site-header">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="images/logo.png" alt="ZARIAH Studio" onerror="this.style.display='none'">
+      <div class="nav-logo-text">
+        <span class="wordmark">ZARIAH</span>
+        <span class="tagline">Studio</span>
+      </div>
+    </a>
+    <nav aria-label="Main navigation" style="display:flex; align-items:center; gap:40px;">
+      <ul class="nav-links">
+        <li><a href="#products">Shop</a></li>
+        <li><a href="#lookbook">Lookbook</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#footer">Contact</a></li>
+      </ul>
+      <div class="social-media-header">
+        <span style="color:var(--gold-dim); font-size:0.65rem; letter-spacing:0.15em;">FOLLOW</span>
+        <a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+        <a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+      </div>
+    </nav>
+    <button class="hamburger" id="hamburger-btn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+  <a href="#products" class="mobile-nav-link">Shop</a>
+  <a href="#lookbook" class="mobile-nav-link">Lookbook</a>
+  <a href="#reviews" class="mobile-nav-link">Reviews</a>
+  <a href="#footer" class="mobile-nav-link">Contact</a>
+  <div class="mobile-menu-social">
+    <span class="mobile-menu-social-label">Follow Us</span>
+    <a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener" class="mobile-menu-social-link">Facebook</a>
+    <a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener" class="mobile-menu-social-link">Instagram</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO — CINEMATIC MINIMAL
+     ============================================================ -->
+<section id="hero" aria-label="Hero">
+  <div class="hero-bg" role="img" aria-label="Zariah Studio campaign image">
+    <div class="hero-bg-fallback"></div>
+    <img class="hero-img" src="images/hero.jpg" alt="ZARIAH Studio — Quiet Luxury Campaign" loading="lazy" onerror="document.querySelector('.hero-bg-fallback').style.display='flex'; this.style.display='none'">
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <p class="hero-eyebrow">New Collection — 2025</p>
+      <h1 class="hero-wordmark">ZARIAH</h1>
+      <a href="#products" class="hero-cta">
+        Explore Collection
+        <svg width="16" height="8" viewBox="0 0 16 8" fill="none"><path d="M1 4H15M12 1L15 4L12 7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     TRUST RIBBON — Premium Boutique Assurance
+     ============================================================ -->
+<div id="trust-ribbon" aria-label="Service assurance">
+  <div class="trust-header-row reveal">
+    <span class="trust-label">The <em>Zariah</em> Promise</span>
+  </div>
+  <!-- Ticker: items duplicated for seamless infinite loop -->
+  <div class="trust-ticker-wrap">
+    <div class="trust-ticker">
+
+      <!-- SET 1 -->
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2.5C8.2 2.5 3.5 7.2 3.5 13c0 1.7.45 3.27 1.24 4.63L3.5 24.5l7.05-1.22A10.42 10.42 0 0 0 14 23.5c5.8 0 10.5-4.7 10.5-10.5S19.8 2.5 14 2.5z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9.5 14.2c.6.9 1.5 1.7 2.6 2.3 1.1.6 2.1.8 2.9.7.8-.1 1.4-.6 1.7-1.2.1-.2.1-.5-.1-.6l-1.9-.9c-.2-.1-.5 0-.6.2l-.4.6c-.1.2-.3.2-.5.1a7.2 7.2 0 0 1-2.2-2.2c-.1-.2-.1-.4.1-.5l.6-.4c.2-.1.2-.4.1-.6l-.9-1.9c-.1-.2-.4-.3-.6-.1-.6.3-1.1.9-1.2 1.7-.1.7.1 1.7.4 2.8z" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Verified via WhatsApp</strong>
+          <span>Every order confirmed personally by our boutique team</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="8" width="22" height="16" rx="1" stroke="currentColor" stroke-width="1.1"/>
+          <path d="M9 8V6a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          <circle cx="14" cy="16" r="2" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Nationwide Free COD</strong>
+          <span>Cash on delivery — all 64 districts of Bangladesh</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 3C8.5 3 4 7.5 4 13s4.5 10 10 10 10-4.5 10-10S19.5 3 14 3z" stroke="currentColor" stroke-width="1.1"/>
+          <path d="M9.5 13.5l3.5 3.5 6-7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Premium Materials</strong>
+          <span>Curated high-grade fabrics, refined construction</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 3l2.2 6.7H23l-5.6 4.1 2.2 6.7L14 16.4l-5.6 4.1 2.2-6.7L5 9.7h6.8L14 3z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>473+ Satisfied Clients</strong>
+          <span>Trusted by women across Bangladesh since 2024</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 14h14M14 7v14" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          <rect x="3" y="3" width="22" height="22" rx="2" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Secure Packaging</strong>
+          <span>Every piece wrapped in signature Zariah gift packaging</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14h5l3-8 4 16 3-8h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>3–5 Business Days Delivery</strong>
+          <span>Swift nationwide dispatch across all 64 districts</span>
+        </div>
+      </div>
+
+      <!-- SET 2 — duplicate for seamless loop -->
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2.5C8.2 2.5 3.5 7.2 3.5 13c0 1.7.45 3.27 1.24 4.63L3.5 24.5l7.05-1.22A10.42 10.42 0 0 0 14 23.5c5.8 0 10.5-4.7 10.5-10.5S19.8 2.5 14 2.5z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9.5 14.2c.6.9 1.5 1.7 2.6 2.3 1.1.6 2.1.8 2.9.7.8-.1 1.4-.6 1.7-1.2.1-.2.1-.5-.1-.6l-1.9-.9c-.2-.1-.5 0-.6.2l-.4.6c-.1.2-.3.2-.5.1a7.2 7.2 0 0 1-2.2-2.2c-.1-.2-.1-.4.1-.5l.6-.4c.2-.1.2-.4.1-.6l-.9-1.9c-.1-.2-.4-.3-.6-.1-.6.3-1.1.9-1.2 1.7-.1.7.1 1.7.4 2.8z" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Verified via WhatsApp</strong>
+          <span>Every order confirmed personally by our boutique team</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="8" width="22" height="16" rx="1" stroke="currentColor" stroke-width="1.1"/>
+          <path d="M9 8V6a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          <circle cx="14" cy="16" r="2" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Nationwide Free COD</strong>
+          <span>Cash on delivery — all 64 districts of Bangladesh</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 3C8.5 3 4 7.5 4 13s4.5 10 10 10 10-4.5 10-10S19.5 3 14 3z" stroke="currentColor" stroke-width="1.1"/>
+          <path d="M9.5 13.5l3.5 3.5 6-7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Premium Materials</strong>
+          <span>Curated high-grade fabrics, refined construction</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 3l2.2 6.7H23l-5.6 4.1 2.2 6.7L14 16.4l-5.6 4.1 2.2-6.7L5 9.7h6.8L14 3z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>473+ Satisfied Clients</strong>
+          <span>Trusted by women across Bangladesh since 2024</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 14h14M14 7v14" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          <rect x="3" y="3" width="22" height="22" rx="2" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        <div class="trust-text">
+          <strong>Secure Packaging</strong>
+          <span>Every piece wrapped in signature Zariah gift packaging</span>
+        </div>
+      </div>
+
+      <div class="trust-item">
+        <svg class="trust-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 14h5l3-8 4 16 3-8h5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="trust-text">
+          <strong>3–5 Business Days Delivery</strong>
+          <span>Swift nationwide dispatch across all 64 districts</span>
+        </div>
+      </div>
+
+    </div><!-- .trust-ticker -->
+  </div><!-- .trust-ticker-wrap -->
+</div>
+
+<!-- ============================================================
+     PRODUCT SHOWCASE
+     ============================================================ -->
+<section id="products" class="u-section">
+  <div class="container">
+
+    <div class="products-header reveal">
+      <span class="eyebrow">The Collection</span>
+      <h2 class="section-title">Shop Zariah</h2>
+      <p>Three tiers. One standard of elegance.</p>
+    </div>
+
+    <div class="tabs reveal" role="tablist">
+      <button class="tab-btn active" data-tab="noir" role="tab" aria-selected="true">Zariah Noir</button>
+      <button class="tab-btn" data-tab="signature" role="tab" aria-selected="false">Zariah Signature</button>
+      <button class="tab-btn" data-tab="essence" role="tab" aria-selected="false">Zariah Essence</button>
+    </div>
+
+    <!-- ── TAB 1: ZARIAH NOIR ── -->
+    <div class="tab-panel active" id="tab-noir" role="tabpanel">
+      <div class="product-grid">
+
+        <!-- NOIR 01 -->
+        <div class="product-card reveal" data-product="The Maison Tote" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR01.jpg" alt="The Maison Tote" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'"
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir01</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">The Maison Tote</h3>
+            <p class="card-desc">Structured silhouette with timeless gold hardware and hand-stitched detailing.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 5,430</span>
+              <span class="card-price-current">৳ 3,800 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOIR 02 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Le Noir Crescent" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR02.jpg" alt="Le Noir Crescent" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'"
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot limited"></span><span>Limited</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir02</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">Le Noir Crescent</h3>
+            <p class="card-desc">Half-moon silhouette. Minimalist form with a deeply luxurious hand feel.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 6,000</span>
+              <span class="card-price-current">৳ 4,200 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOIR 03 -->
+        <div class="product-card reveal reveal-delay-2" data-product="Atelier Clutch" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR03.jpg" alt="Atelier Clutch" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'"
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir03</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">Atelier Clutch</h3>
+            <p class="card-desc">Evening clutch with magnetic closure and silk interior lining.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 4,215</span>
+              <span class="card-price-current">৳ 2,950 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOIR 04 -->
+        <div class="product-card reveal" data-product="Studio Satchel" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR04.jpg" alt="Studio Satchel" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'"
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir04</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">Studio Satchel</h3>
+            <p class="card-desc">Classic satchel proportions reimagined for contemporary sophisticated women.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 6,570</span>
+              <span class="card-price-current">৳ 4,600 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOIR 05 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Velours Chain Bag" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR05.jpg" alt="Velours Chain Bag" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'"
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot limited"></span><span>Limited</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir05</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">Velours Chain Bag</h3>
+            <p class="card-desc">Sleek chain-strap silhouette with velvet-touch genuine leather exterior.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 5,000</span>
+              <span class="card-price-current">৳ 3,500 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOIR 06 -->
+        <div class="product-card reveal reveal-delay-2" data-product="La Belle Crossbody" data-category="Zariah Noir">
+          <div class="card-image">
+            <img src="images/NOIR06.jpg" alt="La Belle Crossbody" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH NOIR</span></div>'">
+            <span class="badge-limited">Limited Edition</span>
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Noir06</span><span class="card-material">Genuine Leather</span></div>
+            <h3 class="card-title">La Belle Crossbody</h3>
+            <p class="card-desc">Refined crossbody with adjustable leather strap and antique gold clasp.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 4,570</span>
+              <span class="card-price-current">৳ 3,200 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end #tab-noir -->
+
+    <!-- ── TAB 2: ZARIAH SIGNATURE ── -->
+    <div class="tab-panel" id="tab-signature" role="tabpanel">
+      <div class="product-grid">
+
+        <!-- SIG 01 -->
+        <div class="product-card reveal" data-product="Signature Arc Bag" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature01.jpg" alt="Signature Arc Bag" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature01</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Signature Arc Bag</h3>
+            <p class="card-desc">Curved arc silhouette in rich vegan leather with adjustable strap.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,785</span>
+              <span class="card-price-current">৳ 1,950 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIG 02 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Petal Shoulder Bag" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature02.jpg" alt="Petal Shoulder Bag" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature02</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Petal Shoulder Bag</h3>
+            <p class="card-desc">Soft structured shoulder bag with feminine curved flap and subtle sheen.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,500</span>
+              <span class="card-price-current">৳ 1,750 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIG 03 -->
+        <div class="product-card reveal reveal-delay-2" data-product="Dusk Mini Tote" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature03.jpg" alt="Dusk Mini Tote" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot limited"></span><span>Limited</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature03</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Dusk Mini Tote</h3>
+            <p class="card-desc">Mini tote with top handles — the everyday companion redefined.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,285</span>
+              <span class="card-price-current">৳ 1,600 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIG 04 -->
+        <div class="product-card reveal" data-product="Ivory Chain Flap" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature04.jpg" alt="Ivory Chain Flap" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature04</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Ivory Chain Flap</h3>
+            <p class="card-desc">Quilted flap design with gold chain — understated evening elegance.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,645</span>
+              <span class="card-price-current">৳ 1,850 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIG 05 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Sable Bucket Bag" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature05.jpg" alt="Sable Bucket Bag" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature05</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Sable Bucket Bag</h3>
+            <p class="card-desc">Drawstring bucket bag with tassel detail and polished ring hardware.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,360</span>
+              <span class="card-price-current">৳ 1,650 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIG 06 -->
+        <div class="product-card reveal reveal-delay-2" data-product="Velvet Trim Clutch" data-category="Zariah Signature">
+          <div class="card-image">
+            <img src="images/Signature06.jpg" alt="Velvet Trim Clutch" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH SIGNATURE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Signature06</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Velvet Trim Clutch</h3>
+            <p class="card-desc">Structured clutch with velvet accent trim — perfect for formal occasions.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 2,000</span>
+              <span class="card-price-current">৳ 1,400 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end #tab-signature -->
+
+    <!-- ── TAB 3: ZARIAH ESSENCE ── -->
+    <div class="tab-panel" id="tab-essence" role="tabpanel">
+      <div class="product-grid">
+
+        <!-- ESS 01 -->
+        <div class="product-card reveal" data-product="Everyday Arc" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence01.jpg" alt="Everyday Arc" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence01</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Everyday Arc</h3>
+            <p class="card-desc">Soft arc bag for daily elegance — lightweight and effortlessly chic.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,570</span>
+              <span class="card-price-current">৳ 1,100 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESS 02 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Morning Crossbody" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence02.jpg" alt="Morning Crossbody" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence02</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Morning Crossbody</h3>
+            <p class="card-desc">Compact crossbody for quick outings — minimal, clean, modern.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,360</span>
+              <span class="card-price-current">৳ 950 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESS 03 -->
+        <div class="product-card reveal reveal-delay-2" data-product="Soft Shell Tote" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence03.jpg" alt="Soft Shell Tote" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence03</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Soft Shell Tote</h3>
+            <p class="card-desc">Relaxed unstructured tote that holds everything, still looks refined.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,500</span>
+              <span class="card-price-current">৳ 1,050 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESS 04 -->
+        <div class="product-card reveal" data-product="Studio Zip Pouch" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence04.jpg" alt="Studio Zip Pouch" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence04</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Studio Zip Pouch</h3>
+            <p class="card-desc">Multi-pocket zip pouch with wristlet strap — organised elegance.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,070</span>
+              <span class="card-price-current">৳ 750 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESS 05 -->
+        <div class="product-card reveal reveal-delay-1" data-product="Beige Flap Shoulder" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence05.jpg" alt="Beige Flap Shoulder" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot"></span><span>In Stock</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence05</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Beige Flap Shoulder</h3>
+            <p class="card-desc">Neutral beige shoulder with magnetic flap — effortless daily luxury.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,715</span>
+              <span class="card-price-current">৳ 1,200 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESS 06 -->
+        <div class="product-card reveal reveal-delay-2" data-product="Linen Weave Tote" data-category="Zariah Essence">
+          <div class="card-image">
+            <img src="images/Essence06.jpg" alt="Linen Weave Tote" loading="lazy" onerror="this.parentNode.innerHTML='<div class=card-img-placeholder><svg width=48 height=48 viewBox=\'0 0 48 48\' fill=none><rect x=8 y=14 width=32 height=26 rx=1 stroke=#B8965A stroke-width=1/><path d=\'M17 14v-3a7 7 0 0 1 14 0v3\' stroke=#B8965A stroke-width=1 stroke-linecap=round/></svg><span>ZARIAH ESSENCE</span></div>'">
+            <div class="availability"><span class="dot limited"></span><span>Limited</span></div>
+          
+            <a class="card-wa-overlay" onclick="orderViaWhatsApp(this.closest('.product-card'))" href="#" aria-label="Order via WhatsApp"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg></a></div>
+          <div class="card-body">
+            <div class="card-code"><span>Essence06</span><span class="card-material">Vegan Leather</span></div>
+            <h3 class="card-title">Linen Weave Tote</h3>
+            <p class="card-desc">Textured weave exterior with clean leather trim — natural elegance.</p>
+            <div class="card-pricing">
+              <span class="card-price-original">৳ 1,930</span>
+              <span class="card-price-current">৳ 1,350 <span>BDT</span></span>
+              <span class="card-discount-badge">30% OFF</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn-order" onclick="openGoogleForm(this.closest('.product-card'))">Order Now</button>
+              <button class="btn-wa" onclick="orderViaWhatsApp(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg> WhatsApp</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end #tab-essence -->
+
+  </div>
+</section>
+
+<!-- ============================================================
+     CHECKOUT MODAL
+     ============================================================ -->
+<div id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow" style="margin-bottom:6px">Place Your Order</span>
+        <h3 id="modal-title">Order Details</h3>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close modal">&times;</button>
+    </div>
+    <p class="modal-note">After submitting, you will be redirected to WhatsApp to finalise your delivery with our boutique team.</p>
+    <div class="modal-body">
+      <div class="form-field">
+        <label class="form-label" for="order-name">Full Name</label>
+        <input class="form-input" type="text" id="order-name" placeholder="Your full name" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="order-phone">Phone Number</label>
+        <input class="form-input" type="tel" id="order-phone" placeholder="e.g. 01XXXXXXXXX" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="order-address">Delivery Address</label>
+        <textarea class="form-textarea" id="order-address" placeholder="Full address including district and thana" required></textarea>
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="order-product">Selected Product</label>
+        <input class="form-input" type="text" id="order-product" readonly style="opacity:0.7;cursor:default">
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="order-notes">Additional Notes <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--text-dim)">(optional)</span></label>
+        <textarea class="form-textarea" id="order-notes" placeholder="Colour preference, gift packaging, etc." style="min-height:60px"></textarea>
+      </div>
+      <button class="modal-submit" onclick="submitOrder()">CONFIRM ORDER &amp; PROCEED TO WHATSAPP</button>
+      <p class="modal-redirect-note">Our team typically responds within 30 minutes.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PHILOSOPHY
+     ============================================================ -->
+<section id="philosophy" class="u-section">
+  <div class="container">
+    <div class="philosophy-grid">
+
+      <div class="philosophy-image reveal">
+        <img src="images/hero2.jpg" alt="Zariah Studio — Brand Philosophy" loading="lazy" onerror="document.querySelector('.philosophy-image-fallback').style.display='flex'; this.style.display='none'">
+        <div class="philosophy-image-fallback" style="display:none;">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" style="opacity:0.12"><rect x="10" y="10" width="60" height="60" stroke="#B8965A" stroke-width="1"/><path d="M25 55L35 38L45 48L55 32" stroke="#B8965A" stroke-width="1" stroke-linecap="round"/></svg>
+        </div>
+        <span class="philosophy-img-label">Zariah Studio — Est. 2024</span>
+      </div>
+
+      <div class="philosophy-body">
+        <span class="eyebrow reveal">Our Philosophy</span>
+        <h2 class="section-title reveal reveal-delay-1">The Zariah<br><em style="font-style:italic;color:var(--gold-lt)">Philosophy</em></h2>
+        <p class="reveal reveal-delay-2">A handbag is not merely an accessory. It is a statement of who you are — carried quietly, expressed elegantly. At Zariah Studio, every piece is designed with one woman in mind: she who values refinement over trend.</p>
+        <p class="reveal reveal-delay-3">We curate small, intentional collections rather than flooding the market with volume. Each silhouette passes through layers of quality review before it earns the Zariah name.</p>
+
+        <div class="philosophy-pillars reveal reveal-delay-4">
+          <div class="pillar">
+            <span class="pillar-num">01</span>
+            <div class="pillar-text"><strong>Timeless Over Trending</strong>Crafted to outlive seasons — not to chase them.</div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-num">02</span>
+            <div class="pillar-text"><strong>Curated, Not Mass-Produced</strong>Limited quantities. Intentional selection. Quiet exclusivity.</div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-num">03</span>
+            <div class="pillar-text"><strong>Sophistication for Every Woman</strong>Luxury that belongs in real life — not only on runways.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     LOOKBOOK
+     ============================================================ -->
+<section id="lookbook" class="u-section">
+  <div class="container">
+    <div class="lookbook-header reveal">
+      <span class="eyebrow">Editorial</span>
+      <h2 class="section-title">Lookbook</h2>
+    </div>
+
+    <div class="lookbook-grid reveal">
+      <div class="lookbook-item tall">
+        <img src="images/look01.jpg" alt="Zariah Lookbook 01" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder tall><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>LIFESTYLE</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look02.jpg" alt="Zariah Lookbook 02" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>CAMPAIGN</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look03.jpg" alt="Zariah Lookbook 03" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>DETAIL</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look04.jpg" alt="Zariah Lookbook 04" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>EDITORIAL</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look05.jpg" alt="Zariah Lookbook 05" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>STYLING</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look06.jpg" alt="Zariah Lookbook 06" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>TEXTURE</span></div>'">
+      </div>
+      <div class="lookbook-item">
+        <img src="images/look07.jpg" alt="Zariah Lookbook 07" loading="lazy" onerror="this.parentNode.innerHTML='<div class=lb-placeholder><svg width=40 height=40 viewBox=\'0 0 40 40\' fill=none><rect x=4 y=4 width=32 height=32 stroke=#B8965A stroke-width=1/></svg><span>MOOD</span></div>'">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     REVIEWS
+     ============================================================ -->
+<section id="reviews" class="u-section">
+  <div class="container">
+    <div class="reviews-header reveal">
+      <span class="eyebrow">Customer Experiences</span>
+      <h2 class="section-title">What Our Clients Say</h2>
+      <div class="stars-display">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      <div class="review-card reveal">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"The quality genuinely exceeded my expectations. The stitching, the material — everything felt premium from the moment I opened the packaging. I've already recommended Zariah to three of my friends."</p>
+        <div class="review-author">
+          <div class="review-avatar">F</div>
+          <div><div class="review-name">Fahmida</div><div class="review-location">Dhaka</div></div>
+        </div>
+      </div>
+
+      <div class="review-card reveal reveal-delay-1">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"I ordered the Signature collection and received it within two days. The packaging was beautiful — felt like opening a gift. The bag itself is even more elegant in person."</p>
+        <div class="review-author">
+          <div class="review-avatar">N</div>
+          <div><div class="review-name">Nusrat</div><div class="review-location">Chittagong</div></div>
+        </div>
+      </div>
+
+      <div class="review-card reveal reveal-delay-2">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"Finally a Bangladeshi brand that understands what women actually want. The Noir collection is stunning — it doesn't look local at all. International quality, delivered to my door."</p>
+        <div class="review-author">
+          <div class="review-avatar">S</div>
+          <div><div class="review-name">Sabrina</div><div class="review-location">Sylhet</div></div>
+        </div>
+      </div>
+
+      <div class="review-card reveal">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"The WhatsApp order process was so smooth. Got a confirmation instantly, delivery was on time. The bag is exactly as described — structured, elegant, and the leather feels real."</p>
+        <div class="review-author">
+          <div class="review-avatar">R</div>
+          <div><div class="review-name">Rabeya</div><div class="review-location">Rajshahi</div></div>
+        </div>
+      </div>
+
+      <div class="review-card reveal reveal-delay-1">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"I was sceptical about ordering online but Zariah's team was responsive and transparent throughout. The Maison Tote is now my everyday bag. Absolutely worth every taka."</p>
+        <div class="review-author">
+          <div class="review-avatar">T</div>
+          <div><div class="review-name">Taslima</div><div class="review-location">Comilla</div></div>
+        </div>
+      </div>
+
+      <div class="review-card reveal reveal-delay-2">
+        <div class="review-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
+        <p class="review-text">"I gifted the Atelier Clutch to my mother and she was overwhelmed. The box, the tissue, the ribbon — every detail communicated luxury. Zariah understands gifting beautifully."</p>
+        <div class="review-author">
+          <div class="review-avatar">M</div>
+          <div><div class="review-name">Mehnaz</div><div class="review-location">Khulna</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WhatsApp Float -->
+<div id="wa-float">
+  <a class="wa-btn" href="https://wa.me/8801642779056?text=Hi%20Zariah%20Studio%2C%20I%27d%20like%20to%20know%20more%20about%20your%20collection." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.948-1.426A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.946 7.946 0 0 1-4.053-1.111l-.29-.173-3.007.866.841-3.076-.19-.307A7.96 7.96 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer id="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <span class="wordmark">ZARIAH</span>
+        <span class="tagline">Studio</span>
+        <p>Quiet luxury handbags crafted for women who carry elegance in everything they do.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Collections</h4>
+        <ul>
+          <li><a href="#products">Zariah Noir</a></li>
+          <li><a href="#products">Zariah Signature</a></li>
+          <li><a href="#products">Zariah Essence</a></li>
+          <li><a href="#lookbook">Lookbook</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Shipping Info</h4>
+        <ul>
+          <li><span>Free COD — Nationwide</span></li>
+          <li><span>Delivery: 3–5 business days</span></li>
+          <li><span>Secure packaging</span></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="https://wa.me/8801642779056" target="_blank">WhatsApp Orders</a></li>
+          <li><a href="https://www.facebook.com/zariah.studioo" target="_blank">Facebook Page</a></li>
+          <li><span>+880 1642 779056</span></li>
+          <li><span>Chittagong, Bangladesh</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Zariah Studio. All rights reserved.</p>
+      <div class="footer-social">
+        <a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener" aria-label="Facebook">fb</a>
+        <a href="https://wa.me/8801642779056" target="_blank" rel="noopener" aria-label="WhatsApp">wa</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ── HEADER SCROLL ──────────────────────────────────────────
+const header = document.getElementById('site-header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// ── HAMBURGER / MOBILE MENU ────────────────────────────────
+const hamburger = document.getElementById('hamburger-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.contains('open');
+  mobileMenu.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+});
+
+document.querySelectorAll('.mobile-nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+// ── TABS ───────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    setTimeout(() => observeReveal(), 50);
+  });
+});
+
+// ── MODAL (preserved for structural integrity) ────────────
+const overlay = document.getElementById('modal-overlay');
+function openModal(productName, categoryName, productCode) {
+  // Redirect directly to WhatsApp — no form required
+  const card = document.querySelector(`[data-product="${productName}"]`);
+  if (card) { orderViaWhatsApp(card); return; }
+  // Fallback if card not found
+  const msg = encodeURIComponent(
+    `Hello ZARIAH Studio,\n\nI would like to order:\n\nProduct: ${productCode} — ${productName}\nCollection: ${categoryName}\n\nPlease confirm availability.`
+  );
+  window.open('https://wa.me/8801642779056?text=' + msg, '_blank');
+}
+function closeModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+// ── GOOGLE FORM INTEGRATION (Modal-Based) ─────────────────
+/**
+ * Opens modal popup with customer detail fields + Google Form integration
+ * 
+ * WORKFLOW:
+ * 1. Customer clicks "Order Now" on product card
+ * 2. Modal opens with pre-filled product information
+ * 3. Customer fills in name, phone, address, and optional notes
+ * 4. On modal submission: collects all data and redirects to WhatsApp
+ * 5. Optional: Can be configured to submit to Google Form first, then WhatsApp
+ * 
+ * GOOGLE FORM SETUP INSTRUCTIONS:
+ * 1. Create a Google Form at: https://forms.google.com
+ * 2. Add these fields to your form:
+ *    - "Product Name" (Short Answer)
+ *    - "Product SKU/Code" (Short Answer)
+ *    - "Collection/Category" (Short Answer)
+ *    - "Price" (Short Answer)
+ *    - "Customer Name" (Short Answer)
+ *    - "Phone Number" (Short Answer)
+ *    - "Delivery Address" (Paragraph)
+ *    - "Additional Notes" (Paragraph, optional)
+ * 
+ * 3. To find Field Entry IDs:
+ *    a) Open form in edit mode → Click "Get pre-filled link" to see entry IDs
+ *    b) OR: Right-click form field → Inspect → Find data-name="entry.XXXXX"
+ *    Example format: entry.1234567890
+ * 
+ * 4. Paste your Form ID and Entry IDs in GOOGLE_FORM_CONFIG below
+ *    - Form ID: Found in URL (forms/d/e/[THIS_ID]/viewform)
+ *    - Replace all entry.XXXXX with your actual field entry IDs
+ */
+function openGoogleForm(card) {
+  // Extract product data from card attributes and elements
+  const productName = card.dataset.product || card.querySelector('.card-title')?.textContent?.trim() || '';
+  const collection = card.dataset.category || '';
+  const codeEl = card.querySelector('.card-code span:first-child');
+  const sku = codeEl ? codeEl.textContent.trim() : '';
+  const priceEl = card.querySelector('.card-price-current');
+  const priceText = priceEl
+    ? priceEl.childNodes[0]?.textContent?.trim() || priceEl.textContent.trim()
+    : '';
+
+  // ─────────────────────────────────────────────────────────
+  // GOOGLE FORM CONFIGURATION
+  // Replace with your actual Form ID and Entry IDs
+  // ─────────────────────────────────────────────────────────
+  const GOOGLE_FORM_CONFIG = {
+    // Set to true if you want to submit to Google Form first, then WhatsApp
+    // Set to false to skip Google Form and go directly to WhatsApp
+    enabled: false,
+    
+    formId: '1FAIpQLSe_YOUR_FORM_ID_HERE', // From: forms/d/e/[THIS_ID]/viewform
+    fields: {
+      productName: 'entry.1234567890',      // Product Name field
+      productSku: 'entry.0987654321',       // Product SKU/Code field
+      category: 'entry.1111111111',         // Collection/Category field
+      price: 'entry.2222222222',            // Price field
+      customerName: 'entry.3333333333',     // Customer Name field
+      phoneNumber: 'entry.4444444444',      // Phone Number field
+      address: 'entry.5555555555',          // Delivery Address field
+      notes: 'entry.6666666666'             // Additional Notes field
+    }
+  };
+
+  // Store product data globally for use in form submission
+  window.currentProductOrder = {
+    productName,
+    sku,
+    collection,
+    priceText,
+    googleFormConfig: GOOGLE_FORM_CONFIG
+  };
+
+  // Pre-populate modal with product information
+  document.getElementById('order-product').value = `${sku} — ${productName} (${collection}) • ${priceText}`;
+  
+  // Clear customer form fields (don't preserve previous entries)
+  document.getElementById('order-name').value = '';
+  document.getElementById('order-phone').value = '';
+  document.getElementById('order-address').value = '';
+  document.getElementById('order-notes').value = '';
+
+  // Open modal
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  
+  // Focus on first input field for better UX
+  document.getElementById('order-name').focus();
+
+  console.log('Product order modal opened. Product:', productName, 'SKU:', sku);
+}
+
+/**
+ * Handles modal form submission
+ * Collects customer details and sends to WhatsApp
+ * Optional: Can submit to Google Form first if configured
+ */
+function submitOrder() {
+  // Get form field values
+  const customerName = document.getElementById('order-name').value?.trim();
+  const phoneNumber = document.getElementById('order-phone').value?.trim();
+  const deliveryAddress = document.getElementById('order-address').value?.trim();
+  const additionalNotes = document.getElementById('order-notes').value?.trim();
+
+  // Validate required fields
+  if (!customerName || !phoneNumber || !deliveryAddress) {
+    alert('Please fill in all required fields:\n• Full Name\n• Phone Number\n• Delivery Address');
+    return;
+  }
+
+  // Validate phone number format (basic validation)
+  if (!/^[0-9+\-\s()]*$/.test(phoneNumber) || phoneNumber.replace(/\D/g, '').length < 10) {
+    alert('Please enter a valid phone number');
+    return;
+  }
+
+  const productData = window.currentProductOrder || {};
+  const { productName, sku, collection, priceText, googleFormConfig } = productData;
+
+  // ─────────────────────────────────────────────────────────
+  // OPTIONAL: Submit to Google Form first (if configured)
+  // ─────────────────────────────────────────────────────────
+  if (googleFormConfig && googleFormConfig.enabled) {
+    const formUrl = `https://docs.google.com/forms/d/e/${googleFormConfig.formId}/formResponse`;
+    
+    const formData = new FormData();
+    formData.append(googleFormConfig.fields.productName, productName);
+    formData.append(googleFormConfig.fields.productSku, sku);
+    formData.append(googleFormConfig.fields.category, collection);
+    formData.append(googleFormConfig.fields.price, priceText);
+    formData.append(googleFormConfig.fields.customerName, customerName);
+    formData.append(googleFormConfig.fields.phoneNumber, phoneNumber);
+    formData.append(googleFormConfig.fields.address, deliveryAddress);
+    formData.append(googleFormConfig.fields.notes, additionalNotes);
+
+    // Submit to Google Form in background (non-blocking)
+    fetch(formUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    }).catch(err => {
+      console.log('Google Form submission handled (CORS limitation expected):', err.message);
+    });
+
+    // Small delay to ensure Google Form receives data
+    setTimeout(() => {
+      proceedToWhatsApp(customerName, phoneNumber, deliveryAddress, additionalNotes, productName, sku, collection, priceText);
+    }, 500);
+  } else {
+    // Direct to WhatsApp without Google Form submission
+    proceedToWhatsApp(customerName, phoneNumber, deliveryAddress, additionalNotes, productName, sku, collection, priceText);
+  }
+}
+
+/**
+ * Helper function: Constructs WhatsApp message and redirects after order submission
+ */
+function proceedToWhatsApp(customerName, phoneNumber, deliveryAddress, additionalNotes, productName, sku, collection, priceText) {
+  // Close modal first
+  closeModal();
+
+  // Construct comprehensive WhatsApp message with all order details
+  const waMessage = `*ORDER REQUEST FROM ZARIAH STUDIO WEBSITE*
+
+*Customer Details:*
+Name: ${customerName}
+Phone: ${phoneNumber}
+Address: ${deliveryAddress}
+${additionalNotes ? `\nNotes: ${additionalNotes}` : ''}
+
+*Product Details:*
+Code: ${sku}
+Product: ${productName}
+Collection: ${collection}
+Price: ${priceText}
+
+Please confirm availability and provide payment details.
+
+Thank you!`;
+
+  const encodedMsg = encodeURIComponent(waMessage);
+  
+  // Redirect to WhatsApp with complete order information
+  window.open(`https://wa.me/+8801642779056?text=${encodedMsg}`, '_blank');
+  
+  console.log('Order submitted. WhatsApp redirect initiated with full order details.');
+}
+
+/**
+ * OPTIONAL FUNCTION: Skip modal and go directly to WhatsApp
+ * Keeps product details consistent for customers who want faster checkout
+ */
+function openWhatsAppDirect(card) {
+  const productName = card.dataset.product || card.querySelector('.card-title')?.textContent?.trim() || '';
+  const collection = card.dataset.category || '';
+  const codeEl = card.querySelector('.card-code span:first-child');
+  const sku = codeEl ? codeEl.textContent.trim() : '';
+  const priceEl = card.querySelector('.card-price-current');
+  const priceText = priceEl
+    ? priceEl.childNodes[0]?.textContent?.trim() || priceEl.textContent.trim()
+    : '';
+
+  const msg = encodeURIComponent(
+    `Hello ZARIAH Studio,\n\nI would like to order this product:\n\nProduct: ${sku} — ${productName}\nCollection: ${collection}\nPrice: ${priceText}\n\nPlease confirm availability and provide payment details.`
+  );
+
+  window.open('https://wa.me/+8801642779056?text=' + msg, '_blank');
+}
+
+// ── WHATSAPP DIRECT ORDERING ───────────────────────────────
+function orderViaWhatsApp(triggerEl) {
+  // Find the parent product card
+  const card = triggerEl.closest
+    ? triggerEl.closest('.product-card') || triggerEl
+    : triggerEl;
+
+  const productName = card.dataset.product || card.querySelector('.card-title')?.textContent?.trim() || '';
+  const collection  = card.dataset.category || '';
+  const codeEl      = card.querySelector('.card-code span:first-child');
+  const sku         = codeEl ? codeEl.textContent.trim() : '';
+  const priceEl     = card.querySelector('.card-price-current');
+  // Get price text, strip the inner <span> (BDT) text
+  const priceText   = priceEl
+    ? priceEl.childNodes[0]?.textContent?.trim() || priceEl.textContent.trim()
+    : '';
+
+  const msg = encodeURIComponent(
+    `Hello ZARIAH Studio,\n\nI would like to order this product:\n\nProduct: ${sku} — ${productName}\nCollection: ${collection}\nPrice: ${priceText}\n\nPlease confirm availability.`
+  );
+
+  window.open('https://wa.me/8801642779056?text=' + msg, '_blank');
+}
+
+// Handle WhatsApp button clicks on product cards
+document.querySelectorAll('.btn-wa').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    orderViaWhatsApp(this.closest('.product-card'));
+  });
+});
+
+// ── SCROLL REVEAL ─────────────────────────────────────────
+function observeReveal() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => io.observe(el));
+}
+
+observeReveal();
+</script>
+
+</body>
+</html>
