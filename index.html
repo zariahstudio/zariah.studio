@@ -843,9 +843,14 @@ button, a, [role="button"] {
 }
 /* Hamburger: always above hero but below open nav */
 .hamburger { z-index: 201; position: relative; }
-/* When mobile nav is open, header must not intercept touches */
+/* When mobile nav is open, header must not intercept touches
+   EXCEPT the hamburger itself — users expect to tap it to close */
 body.mnav-open .hdr { pointer-events: none; }
-body.mnav-open .hamburger { pointer-events: none; }
+body.mnav-open .hamburger {
+  pointer-events: all; /* hamburger must remain tappable to close menu */
+  position: relative;
+  z-index: 220; /* above .mnav z-index:210 so tap reaches it */
+}
 /* Mobile nav close: always clickable, high z-index within nav */
 .mnav-close { z-index: 10; -webkit-tap-highlight-color: transparent; }
 
@@ -1806,7 +1811,9 @@ body.mnav-open .hamburger { pointer-events: none; }
   background: rgba(6,14,9,.88);
   z-index: 2000;
   display: flex;
-  align-items: center;
+  /* flex-start + auto margin = centered when modal fits,
+     scrollable from top when modal is taller than viewport */
+  align-items: flex-start;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
@@ -2713,6 +2720,7 @@ input, textarea {
 ═══════════════════════════════════════ */
 .body-locked {
   position: fixed;
+  width: 100%;
   left: 0;
   right: 0;
   overflow-y: scroll; /* keep scrollbar gutter to prevent width shift */
@@ -2781,20 +2789,60 @@ input, textarea {
   }
   .btn-order { margin-top: auto; }
 }
+/* IOS SCROLL LOCK — handled by .body-locked above */
+
 /* ═══════════════════════════════════════
-   IOS SCROLL LOCK
-   overflow:hidden alone does NOT prevent
-   body scroll on iOS Safari. We use
-   position:fixed as the reliable solution.
-   JS toggles .body-locked class.
+   SCROLL-MARGIN-TOP — fixed header offset
+   The fixed header is ~90px tall on mobile
+   (announcement bar + header). Without this,
+   anchor targets are hidden under the header.
+   Desktop header is ~90px scrolled — same value
+   works for both breakpoints.
 ═══════════════════════════════════════ */
-body.body-locked {
-  position: fixed;
-  width: 100%;
-  left: 0;
-  right: 0;
-  /* preserve scroll position via top (set by JS) */
-  overflow-y: scroll;
+#products,
+#story,
+#process,
+#testimonials,
+#faq,
+#collections,
+#why {
+  scroll-margin-top: 90px;
+}
+@media (max-width: 768px) {
+  /* Mobile: announcement bar (34px) + header (56px) + 8px breathing = 98px */
+  #products,
+  #story,
+  #process,
+  #testimonials,
+  #faq,
+  #collections,
+  #why {
+    scroll-margin-top: 100px;
+  }
+}
+
+/* ═══════════════════════════════════════
+   ORDER MODAL — mobile keyboard fix
+   On small phones with virtual keyboard open,
+   align-items:center re-centers to the shrunken
+   viewport and clips the top of the form.
+   Switch to align-items:flex-start on mobile
+   so the modal always starts at the top.
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .omodal-overlay {
+    align-items: flex-start;
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+  .omodal {
+    /* Remove max-height constraint — let the modal scroll naturally
+       within the overlay which is itself the scroll container */
+    max-height: none;
+    /* Full width on small phones */
+    max-width: 100%;
+    /* Bottom safe area so submit button clears home bar */
+    margin-bottom: max(16px, env(safe-area-inset-bottom));
+  }
 }
 
 /* ═══════════════════════════════════════
@@ -2995,11 +3043,11 @@ body.body-locked {
 <nav class="mnav" id="mnav" aria-label="Mobile navigation" aria-hidden="true">
   <button class="mnav-close" id="mnavClose" aria-label="Close navigation menu">✕</button>
   <ul class="mnav-links">
-    <li><a href="#products" onclick="closeMnav()">Collection</a></li>
-    <li><a href="#story" onclick="closeMnav()">Our Story</a></li>
-    <li><a href="#process" onclick="closeMnav()">How to Order</a></li>
-    <li><a href="#testimonials" onclick="closeMnav()">Reviews</a></li>
-    <li><a href="#faq" onclick="closeMnav()">FAQ</a></li>
+    <li><a href="#products" data-mnav-target="products">Collection</a></li>
+    <li><a href="#story" data-mnav-target="story">Our Story</a></li>
+    <li><a href="#process" data-mnav-target="process">How to Order</a></li>
+    <li><a href="#testimonials" data-mnav-target="testimonials">Reviews</a></li>
+    <li><a href="#faq" data-mnav-target="faq">FAQ</a></li>
   </ul>
   <div class="mnav-footer">
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
@@ -4770,8 +4818,53 @@ function closeMnav() {
   OverlayManager.pop('mnav');
 }
 
-hamburger.addEventListener('click', openMnav);
+hamburger.addEventListener('click', () => {
+  if (mnav.classList.contains('open')) {
+    closeMnav();
+  } else {
+    openMnav();
+  }
+});
 document.getElementById('mnavClose').addEventListener('click', closeMnav);
+
+/* ═══════════════════════════════════════
+   MOBILE NAV ANCHOR LINKS
+   ─────────────────────────────────────
+   Root cause of broken anchor nav:
+   The old onclick="closeMnav()" + native
+   href="#section" created a race condition.
+   unlockScroll() restores window.scrollTo()
+   at the SAME tick as the browser fires the
+   native anchor jump — they fight and the
+   anchor loses.
+
+   Fix: intercept clicks on [data-mnav-target]
+   links, prevent the native href jump,
+   close the menu (which calls unlockScroll),
+   then after one rAF (body-locked removed,
+   scroll position restored), smoothly scroll
+   to the target section — accounting for the
+   fixed header height.
+═══════════════════════════════════════ */
+document.querySelectorAll('.mnav-links a[data-mnav-target]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const targetId = this.getAttribute('data-mnav-target');
+    // Close menu + unlock scroll first
+    closeMnav();
+    // Wait two animation frames: one for unlockScroll to restore
+    // window.scrollY, one for the browser to repaint
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const target = document.getElementById(targetId);
+        if (!target) return;
+        // scroll-margin-top handles the offset via CSS,
+        // but we use scrollIntoView for maximum browser compat
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  });
+});
 
 document.querySelectorAll('.coll-panel[role="button"]').forEach(panel => {
   panel.addEventListener('keydown', e => {
