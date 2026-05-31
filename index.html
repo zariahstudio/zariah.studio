@@ -1030,6 +1030,8 @@ body.mnav-open .hamburger { pointer-events: none; }
 /* Hover: real image swap (desktop only — side hidden on mobile via media query) */
 .pcard-img.has-images:hover .pcard-img-front { opacity: 0; transform: scale(1.04); }
 .pcard-img.has-images:hover .pcard-img-side { opacity: 1; }
+/* Only fade front out when side image is also confirmed loaded */
+.pcard-img.has-images:not(.side-loaded):hover .pcard-img-front { opacity: 1; transform: none; }
 /* SVG hover fallback (only when no real images) */
 .pcard-img:not(.has-images) .pcard:hover .pcard-front { opacity: 0; transform: scale(1.04); }
 .pcard-img:not(.has-images) .pcard:hover .pcard-side { opacity: 1; }
@@ -1831,8 +1833,17 @@ body.mnav-open .hamburger { pointer-events: none; }
   flex-shrink: 0;
   margin: auto;
   border-radius: 16px;
-  overflow: hidden;
+  /* CRITICAL: overflow must NOT be hidden — it clips content on mobile
+     and breaks the sticky Place Order footer. Use clip for border-radius. */
+  overflow: clip;
+  overflow-clip-margin: 0px;
   box-shadow: 0 32px 80px rgba(0,0,0,.38), 0 8px 24px rgba(0,0,0,.2);
+}
+/* Fallback for browsers that don't support overflow:clip */
+@supports not (overflow: clip) {
+  .pmodal { overflow: visible; border-radius: 16px; }
+  .pmodal-gallery { border-radius: 16px 16px 0 0; overflow: hidden; }
+  .pmodal-footer { border-radius: 0 0 16px 16px; }
 }
 .pmodal-overlay.open .pmodal { transform: none; }
 
@@ -1966,7 +1977,7 @@ body.mnav-open .hamburger { pointer-events: none; }
 
 /* ── PRODUCT INFORMATION AREA ── */
 .pmodal-info {
-  padding: 28px 32px 0;
+  padding: 28px 32px 100px; /* bottom pad ensures content clears sticky footer */
   display: flex;
   flex-direction: column;
   background: var(--white);
@@ -2079,9 +2090,14 @@ body.mnav-open .hamburger { pointer-events: none; }
   padding-bottom: max(28px, calc(16px + env(safe-area-inset-bottom)));
   background: var(--white);
   border-top: 1px solid rgba(27,27,27,.07);
+  /* sticky is relative to nearest scroll ancestor:
+     on desktop that's .pmodal-overlay (works fine);
+     on mobile the .pmodal itself scrolls, so sticky bottom:0 still works */
   position: sticky;
   bottom: 0;
   z-index: 10;
+  /* Ensure footer never disappears behind iOS home bar */
+  padding-bottom: max(28px, env(safe-area-inset-bottom));
 }
 .btn-modal-order {
   width: 100%;
@@ -2569,11 +2585,35 @@ input, textarea {
   .testi-nav { align-self: flex-end; }
 
   /* Product modal: edge-to-edge, natural scroll */
-  .pmodal-overlay { padding: 0; padding-bottom: max(32px, env(safe-area-inset-bottom)); align-items: flex-start; }
-  .pmodal { max-width: 100%; margin: 0; }
+  .pmodal-overlay {
+    padding: 0;
+    padding-bottom: 0; /* safe area handled via pmodal-footer padding */
+    align-items: flex-start;
+    /* Ensure overlay fills viewport exactly — no gap for scroll */
+    height: 100%;
+    height: 100dvh;
+  }
+  .pmodal {
+    max-width: 100%;
+    margin: 0;
+    /* On mobile the modal IS the scroll container */
+    border-radius: 0;
+    min-height: 100%;
+    min-height: 100dvh;
+  }
+  /* Override overflow:clip so modal itself scrolls on mobile */
+  .pmodal,
+  .pmodal:where([style]) {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  /* Undo the @supports fallback border-radius on mobile */
+  .pmodal-gallery { border-radius: 0 !important; }
+  .pmodal-footer { border-radius: 0 !important; }
   .pmodal-main-img { min-height: 360px; max-height: 480px; }
   .pthumb { width: 48px; height: 60px; }
-  .pmodal-info { padding: 28px 22px 40px; }
+  .pmodal-info { padding: 28px 22px 120px; } /* extra bottom for sticky footer */
   .pmodal-name { font-size: 24px; }
   .pmodal-price { font-size: 20px; }
   .pmodal-features { grid-template-columns: 1fr; gap: 8px; }
@@ -2666,6 +2706,16 @@ input, textarea {
 
   /* Collection filter tabs */
   .fcol-tab { padding: 6px 10px; font-size: 8.5px; }
+}
+
+/* ═══════════════════════════════════════
+   BODY LOCKED — scroll lock helper class
+═══════════════════════════════════════ */
+.body-locked {
+  position: fixed;
+  left: 0;
+  right: 0;
+  overflow-y: scroll; /* keep scrollbar gutter to prevent width shift */
 }
 
 /* ═══════════════════════════════════════
@@ -3624,6 +3674,72 @@ body.body-locked {
 
 <script>
 /* ═══════════════════════════════════════
+   ANDROID BACK BUTTON — OVERLAY MANAGER
+   ─────────────────────────────────────
+   Uses history.pushState() to intercept the
+   Android hardware back button (popstate event).
+
+   Supports multi-layer stacking:
+     1. Mobile Menu
+     2. Filter Sheet
+     3. Product Modal
+     4. Order Modal (on top of Product Modal)
+
+   Back press closes the topmost overlay first.
+   User stays on page until all overlays closed.
+
+   Works on:
+   - Android Chrome / Samsung Internet / Firefox Mobile
+   - Edge Mobile / Opera Mobile / Android WebView
+   Desktop ESC behavior unchanged.
+═══════════════════════════════════════ */
+const OverlayManager = (function() {
+  // Stack of currently open overlays (each entry: { key, close })
+  const _stack = [];
+  // Are we on a mobile device? (used to skip history push on desktop)
+  const _isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  function _push(key, closeFn) {
+    // Prevent duplicate entries for same key
+    if (_stack.some(e => e.key === key)) return;
+    _stack.push({ key, close: closeFn });
+    if (_isMobile) {
+      // Push a new history entry so back button fires popstate
+      history.pushState({ zariah_overlay: key }, '', window.location.href);
+    }
+  }
+
+  function _pop(key) {
+    const idx = _stack.findIndex(e => e.key === key);
+    if (idx === -1) return;
+    _stack.splice(idx, 1);
+    // On mobile, go back in history ONLY if this was a programmatic close
+    // (not triggered by popstate itself — _inPopstate guards this)
+    if (_isMobile && !_inPopstate) {
+      history.back();
+    }
+  }
+
+  let _inPopstate = false;
+
+  // Listen for browser back button
+  window.addEventListener('popstate', function(e) {
+    if (_stack.length === 0) return;
+    _inPopstate = true;
+    // Close topmost overlay
+    const top = _stack[_stack.length - 1];
+    top.close();
+    _inPopstate = false;
+    // Prevent the browser from navigating away
+    // (history.back() has already been consumed by popping our state)
+    // No need to pushState again — the overlay close removes it from stack
+  });
+
+  return { push: _push, pop: _pop };
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════
    PRODUCT DATA — 18 pieces
 ═══════════════════════════════════════ */
 const PRODUCTS = [
@@ -3785,6 +3901,18 @@ function renderProducts() {
     // Don't wait for side — side is optional (hover only on desktop).
     function onFrontLoad() {
       imgContainer.classList.add('has-images');
+      // Preload side image now that front is confirmed — prevents green flash on hover
+      if (sideImgEl.complete) {
+        if (sideImgEl.naturalWidth > 0) {
+          imgContainer.classList.add('side-loaded');
+        }
+        // else: side 404'd, side-loaded never added, hover guard keeps front visible
+      } else {
+        sideImgEl.addEventListener('load', function onSideLoad() {
+          imgContainer.classList.add('side-loaded');
+          sideImgEl.removeEventListener('load', onSideLoad);
+        });
+      }
     }
     function onFrontError() {
       frontImgEl.style.display = 'none';
@@ -3792,6 +3920,7 @@ function renderProducts() {
     }
     function onSideError() {
       sideImgEl.style.display = 'none';
+      // side-loaded never added — hover guard prevents green flash
     }
 
     // Handle already-cached images (complete before listener attaches)
@@ -3932,6 +4061,7 @@ function filterCollection(coll) {
     sheet.setAttribute('aria-hidden', 'false');
     lockScroll();
     syncSheetTabs();
+    OverlayManager.push('filtersheet', closeSheet);
   }
 
   function closeSheet() {
@@ -3940,6 +4070,7 @@ function filterCollection(coll) {
     overlay.setAttribute('aria-hidden', 'true');
     sheet.setAttribute('aria-hidden', 'true');
     unlockScroll();
+    OverlayManager.pop('filtersheet');
   }
 
   function syncSheetTabs() {
@@ -4297,6 +4428,7 @@ function openPModal(id) {
   overlay.classList.add('open');
   overlay.setAttribute('aria-hidden', 'false');
   lockScroll();
+  OverlayManager.push('pmodal', closePModal);
   requestAnimationFrame(() => document.getElementById('pmodalClose').focus());
 }
 
@@ -4305,6 +4437,7 @@ function closePModal() {
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden', 'true');
   unlockScroll();
+  OverlayManager.pop('pmodal');
   if (lastFocusedElement) lastFocusedElement.focus();
 }
 
@@ -4367,6 +4500,7 @@ function openOModal(id) {
   overlay.classList.add('open');
   overlay.setAttribute('aria-hidden', 'false');
   lockScroll();
+  OverlayManager.push('omodal', closeOModal);
   requestAnimationFrame(() => document.getElementById('oName').focus());
 }
 
@@ -4389,6 +4523,7 @@ function closeOModal() {
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden', 'true');
   unlockScroll();
+  OverlayManager.pop('omodal');
   if (lastFocusedElement) lastFocusedElement.focus();
 }
 
@@ -4409,17 +4544,30 @@ document.getElementById('omodalClose').addEventListener('click', closeOModal);
 ═══════════════════════════════════════ */
 const GFORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSdboOf5IbffkEJzfWGkwk7-Fol-4D7X70dPuHsnmGZsps4AJg/formResponse';
 
-// Entry IDs — confirmed from Google Form source
-// ⚠️ entry.REPLACE_PRODUCT_ENTRY_ID, COLLECTION, CODE, PRICE not supplied.
-// Product/collection/code/price are consolidated into the Notes field (entry.648796592)
-// until separate entry IDs are provided. Replace 'entry.648796592' below with the
-// dedicated product entry ID when available, and restore individual field mapping.
+/* ─────────────────────────────────────────────
+   GOOGLE FORM ENTRY ID MAPPING
+   ─────────────────────────────────────────────
+   Each key maps to the Google Form field that
+   should receive that value.
+
+   Entry IDs confirmed from the form's page source
+   (entry.1763700777 = Product Name,
+    entry.1834361909 = Product Code).
+
+   HOW TO VERIFY YOUR OWN IDs:
+   1. Open your Google Form in Chrome (not the editor — the public form URL)
+   2. Right-click → View Page Source
+   3. Ctrl+F / Cmd+F and search for "entry."
+   4. Each visible question has an entry.XXXXXXXXXX attribute
+   ───────────────────────────────────────────── */
 const GFORM_FIELDS = {
-  name:     'entry.1581991692',
-  phone:    'entry.1842706937',
-  address:  'entry.669354498',
-  district: 'entry.1796616796',
-  notes:    'entry.648796592',   // Holds product+collection+code+price until dedicated IDs provided
+  name:        'entry.1581991692',  // Customer full name
+  phone:       'entry.1842706937',  // Customer phone number
+  address:     'entry.669354498',   // Delivery address
+  district:    'entry.1796616796',  // Area / District
+  productName: 'entry.1763700777',  // Product name (e.g. "The Maison Tote")
+  productCode: 'entry.1834361909',  // Product code (e.g. "Noir01")
+  notes:       'entry.648796592',   // Customer notes ONLY — no product data
 };
 
 function submitToGoogleForm(data) {
@@ -4427,17 +4575,25 @@ function submitToGoogleForm(data) {
   // This is the only cross-origin submission method that works in all browsers/WebViews.
   try {
     const body = new URLSearchParams();
-    body.append(GFORM_FIELDS.name,     data.name);
-    body.append(GFORM_FIELDS.phone,    data.phone);
-    body.append(GFORM_FIELDS.address,  data.address);
-    body.append(GFORM_FIELDS.district, data.district || '');
-    // Consolidate order details into notes field (no data loss — all fields captured)
-    body.append(GFORM_FIELDS.notes,
-      'Product: ' + data.productName +
-      ' | Collection: ' + data.collection +
-      ' | Code: ' + data.code +
-      ' | Price: ' + data.price
-    );
+    body.append(GFORM_FIELDS.name,        data.name);
+    body.append(GFORM_FIELDS.phone,       data.phone);
+    body.append(GFORM_FIELDS.address,     data.address);
+    body.append(GFORM_FIELDS.district,    data.district || '');
+    body.append(GFORM_FIELDS.productName, data.productName);   // e.g. "Crescent Shoulder Bag"
+    body.append(GFORM_FIELDS.productCode, data.productCode);   // e.g. "Essence01"
+    body.append(GFORM_FIELDS.notes,       data.notes || '');   // customer notes only
+
+    // Debug: log the full payload before submission
+    console.log('[ZARIAH] Google Form payload:', {
+      customerName: data.name,
+      phone:        data.phone,
+      address:      data.address,
+      district:     data.district,
+      productName:  data.productName,
+      productCode:  data.productCode,
+      quantity:     data.quantity,
+      notes:        data.notes,
+    });
 
     fetch(GFORM_ACTION, {
       method: 'POST',
@@ -4516,7 +4672,16 @@ document.getElementById('btnSubmitOrder').addEventListener('click', () => {
   const waUrl = `https://wa.me/8801642779056?text=${waMsg}`;
 
   // 1. Submit silently to Google Form (background)
-  submitToGoogleForm({ name, phone, address, productName, collection, code: productCode, price: `${price} x${qty}` });
+  submitToGoogleForm({
+    name:        name,
+    phone:       phone,
+    address:     address,
+    district:    '',          // district field not in current form UI — left empty
+    productName: productName, // e.g. "Crescent Shoulder Bag"
+    productCode: productCode, // e.g. "Essence01"
+    quantity:    qty,
+    notes:       '',          // no customer notes field in current UI
+  });
 
   // 2. Show success state in modal (better UX than closing)
   const formSection = document.querySelector('.omodal-hdr');
@@ -4594,6 +4759,7 @@ function openMnav() {
   hamburger.setAttribute('aria-expanded', 'true');
   document.body.classList.add('mnav-open');
   lockScroll();
+  OverlayManager.push('mnav', closeMnav);
 }
 function closeMnav() {
   mnav.classList.remove('open');
@@ -4601,6 +4767,7 @@ function closeMnav() {
   hamburger.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('mnav-open');
   unlockScroll();
+  OverlayManager.pop('mnav');
 }
 
 hamburger.addEventListener('click', openMnav);
