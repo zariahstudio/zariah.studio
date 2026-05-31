@@ -1840,17 +1840,18 @@ body.mnav-open .hamburger {
   flex-shrink: 0;
   margin: auto;
   border-radius: 16px;
-  /* CRITICAL: overflow must NOT be hidden — it clips content on mobile
-     and breaks the sticky Place Order footer. Use clip for border-radius. */
-  overflow: clip;
-  overflow-clip-margin: 0px;
+  /* overflow:clip was used here for border-radius containment, but it is
+     not reliably overrideable on Android Chrome/WebView — the mobile rule
+     setting overflow-y:auto!important was silently ignored, causing the
+     scroll-lock bug on Pixel/Samsung/Xiaomi.
+     overflow:hidden gives identical visual clipping for border-radius
+     and IS correctly overridden by the mobile media-query rule below. */
+  overflow: hidden;
   box-shadow: 0 32px 80px rgba(0,0,0,.38), 0 8px 24px rgba(0,0,0,.2);
 }
-/* Fallback for browsers that don't support overflow:clip */
+/* Fallback no longer needed — overflow:hidden used instead of overflow:clip */
 @supports not (overflow: clip) {
-  .pmodal { overflow: visible; border-radius: 16px; }
-  .pmodal-gallery { border-radius: 16px 16px 0 0; overflow: hidden; }
-  .pmodal-footer { border-radius: 0 0 16px 16px; }
+  .pmodal { overflow: hidden; }
 }
 .pmodal-overlay.open .pmodal { transform: none; }
 
@@ -2603,24 +2604,33 @@ input, textarea {
   .pmodal {
     max-width: 100%;
     margin: 0;
-    /* On mobile the modal IS the scroll container */
+    /* On mobile the modal IS the scroll container.
+       height:100dvh gives it a bounded box so Android Chrome/WebView
+       recognises it as the scrollable element — without a bounded height,
+       Android treats it as content-sized and scroll events fall through
+       to the overlay or get lost entirely (the Pixel 6a bug). */
+    height: 100dvh;
+    height: 100vh; /* fallback for browsers without dvh */
     border-radius: 0;
-    min-height: 100%;
-    min-height: 100dvh;
   }
-  /* Override overflow:clip so modal itself scrolls on mobile */
+  /* Override overflow:hidden so modal itself scrolls on mobile.
+     display:flex + flex-direction:column ensures pmodal-info grows to
+     fill available space and the sticky footer pins to the bottom of
+     the scroll container (required for Samsung Internet and Xiaomi WebView). */
   .pmodal,
   .pmodal:where([style]) {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
   }
   /* Undo the @supports fallback border-radius on mobile */
   .pmodal-gallery { border-radius: 0 !important; }
   .pmodal-footer { border-radius: 0 !important; }
   .pmodal-main-img { min-height: 360px; max-height: 480px; }
   .pthumb { width: 48px; height: 60px; }
-  .pmodal-info { padding: 28px 22px 120px; } /* extra bottom for sticky footer */
+  .pmodal-info { padding: 28px 22px 120px; flex: 1; } /* extra bottom for sticky footer, flex:1 fills height */
   .pmodal-name { font-size: 24px; }
   .pmodal-price { font-size: 20px; }
   .pmodal-features { grid-template-columns: 1fr; gap: 8px; }
