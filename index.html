@@ -34,7 +34,7 @@
 <link rel="preload" as="image" href="images/hero/hero-mobile.webp" media="(max-width:768px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
 <!-- ═══════════════════════════════════════
      META PIXEL — ID: 1003746465444550
@@ -72,8 +72,10 @@ gtag('config', 'G-VWTCQTCSN1', {
 
 <!-- ═══════════════════════════════════════
      GOOGLE SEARCH CONSOLE VERIFICATION
-     TO ACTIVATE: Uncomment and replace YOUR_GSC_CODE with the string from
-     Search Console → Settings → Ownership Verification → HTML Tag
+     STATUS: Pending — activate when verified.
+     ACTION: Go to Search Console → Settings → Ownership Verification
+             → HTML Tag → copy the content value and paste below.
+     EXAMPLE: <meta name="google-site-verification" content="abc123XYZ">
 ═══════════════════════════════════════ -->
 <!-- <meta name="google-site-verification" content="YOUR_GSC_CODE"> -->
 
@@ -103,7 +105,7 @@ gtag('config', 'G-VWTCQTCSN1', {
   "description": "ZARIAH Studio crafts refined women's handbags for quiet luxury. Premium vegan leather bags delivered across Bangladesh. Cash on delivery.",
   "foundingLocation": {
     "@type": "Place",
-    "name": "Dhaka, Bangladesh"
+    "name": "Bangladesh"
   },
   "contactPoint": {
     "@type": "ContactPoint",
@@ -117,8 +119,11 @@ gtag('config', 'G-VWTCQTCSN1', {
   "areaServed": {
     "@type": "Country",
     "name": "Bangladesh"
+  },
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "InsightBridge"
   }
-}
 </script>
 
 <!-- ═══════════════════════════════════════
@@ -310,10 +315,10 @@ gtag('config', 'G-VWTCQTCSN1', {
   "description": "Luxury handbags Bangladesh. Premium vegan leather women's bags. Cash on delivery.",
   "currenciesAccepted": "BDT",
   "paymentAccepted": "Cash on Delivery",
-  "priceRange": "৳2,900–৳4,800",
+  "priceRange": "৳2,900–৳6,000",
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Dhaka",
+    "addressLocality": "Bangladesh",
     "addressCountry": "BD"
   },
   "hasOfferCatalog": {
@@ -360,7 +365,7 @@ gtag('config', 'G-VWTCQTCSN1', {
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 300;
   background: var(--white);
   color: var(--charcoal);
@@ -384,22 +389,75 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
 /* ═══════════════════════════════════════
-   ANNOUNCEMENT BAR
+   ANNOUNCEMENT BAR — GPU TICKER
+   3 trust signals · right→left · infinite
+   No reset jump · no flicker · no lag
 ═══════════════════════════════════════ */
 .ann {
   background: var(--forest);
   color: var(--gold-soft);
-  text-align: center;
   font-size: 11px;
   letter-spacing: .16em;
-  padding: 10px 16px;
-  padding-left: max(16px, env(safe-area-inset-left));
-  padding-right: max(16px, env(safe-area-inset-right));
   font-weight: 300;
   position: relative;
   z-index: 201;
+  overflow: hidden;
+  height: 38px;
+  display: flex;
+  align-items: center;
 }
-.ann span { opacity: .5; margin: 0 12px; }
+@media (max-width: 768px) { .ann { height: 34px; font-size: 10px; } }
+
+/* Ticker container — full width, clips overflow */
+.ann-ticker {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Two identical tracks concatenated = seamless loop.
+   Animation slides exactly -50% (one full copy) so the
+   join is invisible. translate3d forces GPU compositing. */
+.ann-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+  animation: annTicker 22s linear infinite;
+  /* Pause on hover for accessibility */
+}
+.ann-ticker:hover .ann-track { animation-play-state: paused; }
+
+@keyframes annTicker {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ann-track { animation: none; }
+}
+
+.ann-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 48px;
+  flex-shrink: 0;
+}
+.ann-dot {
+  color: var(--gold);
+  font-size: 7px;
+  opacity: .6;
+  flex-shrink: 0;
+}
+.ann-sep {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  background: rgba(184,150,90,.25);
+  margin: 0 32px;
+  flex-shrink: 0;
+}
 
 /* ═══════════════════════════════════════
    HEADER
@@ -432,7 +490,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   max-width: 1440px;
   margin: 0 auto;
 }
-.logo { display: flex; flex-direction: column; line-height: 1; text-decoration: none; }
+.logo { display: flex; flex-direction: column; line-height: 1; text-decoration: none; align-items: center; }
 .logo-name {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(20px, 2.8vw, 26px);
@@ -441,13 +499,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: .3em;
   text-transform: uppercase;
 }
-.logo-tag {
-  font-size: 9px;
-  letter-spacing: .35em;
-  color: var(--gold);
-  text-transform: uppercase;
-  margin-top: 4px;
+/* STUDIO — centered under ZARIAH, same tracking rhythm, gold */
+.logo-studio {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(8px, 1vw, 10px);
   font-weight: 300;
+  color: var(--gold);
+  letter-spacing: .58em;
+  text-transform: uppercase;
+  margin-top: 5px;
+  display: block;
+  text-align: center;
+  /* Optical compensation: letter-spacing adds space AFTER last char,
+     shifting the word visually right. Nudge left by half the spacing. */
+  margin-left: .29em;
 }
 .nav-links { display: flex; gap: 38px; list-style: none; }
 .nav-links a {
@@ -455,6 +520,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: .22em;
   text-transform: uppercase;
   color: rgba(245,237,216,.7);
+  font-family: 'Inter', sans-serif;
   font-weight: 300;
   transition: color .25s;
   position: relative;
@@ -580,7 +646,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   min-height: 560px;
   overflow: hidden;
   background: var(--forest);
-  /* No max-height — true full viewport */
+  /* NOTE: contain:layout/paint intentionally omitted — it creates a new
+     stacking context that clips position:absolute children (hero-bg-img)
+     in Chrome and Safari, causing the hero to render as a solid black box. */
 }
 
 /* ── Picture element: must fill hero absolutely ── */
@@ -660,10 +728,26 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 0 clamp(24px, 6vw, 80px);
 }
 
-/* ── Hide all text content completely ── */
-.hero-eyebrow,
+/* ── Hero brand endorsement — title case, editorial, gold ── */
+.hero-eyebrow {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(11px, 1.2vw, 13px);
+  font-style: italic;
+  letter-spacing: .22em;
+  text-transform: none;
+  color: rgba(184,150,90,.8);
+  font-weight: 400;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 1s 0.3s var(--ease) forwards;
+}
 .hero-h1,
 .hero-sub { display: none; }
+
+@media (max-width: 768px) {
+  .hero-eyebrow { font-size: 11px; letter-spacing: .16em; }
+}
 
 /* ── CTA buttons ── */
 .hero-btns {
@@ -913,14 +997,45 @@ body.mnav-open .hamburger {
 /* ═══════════════════════════════════════
    PRODUCTS SECTION
 ═══════════════════════════════════════ */
-.products { padding: var(--section-pad) 0; background: var(--white); }
+.products { padding: clamp(44px,5.5vw,76px) 0; background: var(--white); }
 .products-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: clamp(36px, 5vw, 56px);
-  flex-wrap: wrap;
-  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: clamp(20px, 2.5vw, 32px);
+  gap: 0;
+}
+.filters-hidden { position: static; width: auto; height: auto; overflow: visible; opacity: 1; pointer-events: auto; }
+.prod-intro { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.prod-ttl {
+  font-size: clamp(30px, 5vw, 62px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.coll-names {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(10px, 1.1vw, 13px);
+  font-weight: 500;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin-bottom: 14px;
+}
+.prod-count-line {
+  font-family: 'Inter', sans-serif;
+  font-size: 9px;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  opacity: .8;
+  margin-bottom: 0;
 }
 .filters { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
 .filter-row {
@@ -1034,9 +1149,12 @@ body.mnav-open .hamburger {
 .pcard-img.has-images .pcard-side { display: none; }
 /* Hover: real image swap (desktop only — side hidden on mobile via media query) */
 .pcard-img.has-images:hover .pcard-img-front { opacity: 0; transform: scale(1.04); }
-.pcard-img.has-images:hover .pcard-img-side { opacity: 1; }
-/* Only fade front out when side image is also confirmed loaded */
-.pcard-img.has-images:not(.side-loaded):hover .pcard-img-front { opacity: 1; transform: none; }
+.pcard-img.has-images.side-loaded:hover .pcard-img-side { opacity: 1; }
+/* If side image failed to load, keep front visible on hover */
+.pcard-img.has-images.side-error:hover .pcard-img-front { opacity: 1; transform: none; }
+/* Mobile tap preview: show side on tap */
+.pcard-img.has-images.tap-preview .pcard-img-front { opacity: 0; transform: scale(1.04); }
+.pcard-img.has-images.side-loaded.tap-preview .pcard-img-side { opacity: 1; }
 /* SVG hover fallback (only when no real images) */
 .pcard-img:not(.has-images) .pcard:hover .pcard-front { opacity: 0; transform: scale(1.04); }
 .pcard-img:not(.has-images) .pcard:hover .pcard-side { opacity: 1; }
@@ -1716,6 +1834,7 @@ body.mnav-open .hamburger {
 }
 .footer-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; letter-spacing: .25em; text-transform: uppercase; color: var(--cream); font-weight: 400; }
 .footer-tag { font-size: 9px; letter-spacing: .32em; text-transform: uppercase; color: var(--gold); margin-top: 4px; font-weight: 300; }
+.footer-tag .brand-name { text-transform: none; }
 .footer-desc { font-size: 13px; color: rgba(245,237,216,.45); font-weight: 300; line-height: 1.75; margin-top: 18px; max-width: 280px; }
 .footer-socials { display: flex; gap: 10px; margin-top: 26px; }
 .soc-btn {
@@ -2229,7 +2348,7 @@ body.mnav-open .hamburger {
   padding: 12px 15px;
   border: 1px solid rgba(27,27,27,.13);
   background: transparent;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 16px; /* ≥16px prevents iOS Safari auto-zoom on focus */
   font-weight: 300;
   color: var(--charcoal);
@@ -2560,7 +2679,11 @@ input, textarea {
 
   /* Hide hover-only layers on touch — no hover state on mobile */
   .pcard-overlay { display: none; }
-  .pcard-img-side { display: none; }
+  /* Side image hidden by default on mobile; tap-preview class reveals it */
+  .pcard-img-side { opacity: 0; pointer-events: none; }
+  .pcard-img.has-images.side-loaded.tap-preview .pcard-img-side { opacity: 1; pointer-events: none; }
+  .pcard-img.has-images.tap-preview .pcard-img-front { opacity: 0; transform: scale(1.04); }
+  .pcard-img.has-images.side-error.tap-preview .pcard-img-front { opacity: 1; transform: none; }
 
   /* Filters: show mobile button, hide desktop type row */
   .filter-type-row { display: none !important; }
@@ -2568,13 +2691,27 @@ input, textarea {
   .filter-sheet-overlay { display: block; pointer-events: none; }
   .filter-sheet-overlay.open { pointer-events: all; }
 
-  /* Products header: stack vertically on mobile */
+  /* Products header: centered on mobile */
   .products-header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 18px;
-    margin-bottom: clamp(24px, 4vw, 40px);
+    align-items: center;
+    text-align: center;
+    gap: 0;
+    margin-bottom: clamp(14px, 3vw, 22px);
   }
+  .filters-hidden { width: 100%; margin-top: 16px; }
+  /* Single-line collection names on all mobile sizes */
+  .coll-names {
+    font-size: 9px;
+    letter-spacing: .2em;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  .prod-ttl { font-size: clamp(26px, 7vw, 38px); margin-bottom: 8px; }
   .filters { align-items: flex-start; width: 100%; }
   .filter-row { justify-content: flex-start; }
 
@@ -2982,7 +3119,22 @@ input, textarea {
 }
 
 /* ═══════════════════════════════════════
-   SKIP LINK — Keyboard / screen reader
+   SCROLL MARGIN — Prevent header overlap
+   on anchor navigation. Values = ann bar
+   height + collapsed header height.
+   Desktop: 38px ann + 62px hdr = 100px
+   Mobile:  34px ann + 50px hdr = 84px
+═══════════════════════════════════════ */
+#products, #collections, #story, #process, #testimonials, #why, #faq, #editorial {
+  scroll-margin-top: 100px;
+}
+@media (max-width: 768px) {
+  #products, #collections, #story, #process, #testimonials, #why, #faq, #editorial {
+    scroll-margin-top: 84px;
+  }
+}
+
+/* SKIP LINK — Keyboard / screen reader
    accessibility improvement
 ═══════════════════════════════════════ */
 .skip-link {
@@ -3012,14 +3164,440 @@ input, textarea {
   width: 100%;
   overflow-y: scroll;
 }
+
+/* ═══════════════════════════════════════
+   ENHANCED COLLECTION FILTER TABS
+   Tasks 3, 8, 9 — more visible, descriptors,
+   gold underline animation, premium micro interactions
+═══════════════════════════════════════ */
+.fcol-tab {
+  position: relative;
+  font-size: 10.5px;
+  letter-spacing: .22em;
+  padding: 10px 20px;
+  border: 1px solid rgba(27,27,27,.10);
+  color: var(--muted);
+  font-weight: 400;
+  overflow: hidden;
+}
+.fcol-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 2px;
+  background: var(--gold);
+  transition: left .32s var(--ease), right .32s var(--ease);
+}
+.fcol-tab:hover {
+  color: var(--charcoal);
+  border-color: rgba(184,150,90,.3);
+  background: rgba(184,150,90,.05);
+}
+.fcol-tab:hover::after { left: 0; right: 0; }
+.fcol-tab.active {
+  border-color: var(--gold);
+  color: var(--charcoal);
+  background: rgba(184,150,90,.08);
+  box-shadow: 0 3px 16px rgba(184,150,90,.14), inset 0 -2px 0 var(--gold);
+  font-weight: 400;
+}
+.fcol-tab.active::after { left: 0; right: 0; }
+.fcol-tab-count {
+  font-size: 9px;
+  letter-spacing: .06em;
+  color: var(--gold);
+  opacity: .7;
+  margin-left: 4px;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════
+   DESKTOP FILTER BAR
+   Tasks 1, 2, 7 — sticky, visible, sort
+═══════════════════════════════════════ */
+.dfbar {
+  display: none;
+  background: var(--white);
+  border-bottom: 1px solid rgba(184,150,90,.14);
+  border-top: 1px solid rgba(184,150,90,.09);
+  margin-bottom: clamp(18px,2vw,28px);
+  position: relative;
+  z-index: 10;
+  transition: box-shadow .35s var(--ease), background .35s, border-color .3s;
+}
+.dfbar.is-sticky {
+  position: fixed;
+  top: 62px; /* collapsed header height — sits flush below fixed nav */
+  left: 0;
+  right: 0;
+  z-index: 155;
+  box-shadow: 0 4px 32px rgba(8,18,10,.10), 0 1px 0 rgba(184,150,90,.22);
+  background: rgba(253,250,245,.97);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-top: none;
+  border-bottom: 1px solid rgba(184,150,90,.22);
+}
+.dfbar-spacer {
+  display: none;
+  height: 65px;
+  pointer-events: none;
+}
+.dfbar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(20px,5vw,72px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 65px;
+}
+.dfbar-left { display: flex; align-items: center; gap: 0; flex: 1; }
+.dfbar-right { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.dfbar-sect-lbl {
+  font-size: 8.5px;
+  letter-spacing: .36em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 14px;
+  opacity: .85;
+}
+.dftabs {
+  display: flex;
+  gap: 2px;
+  align-items: stretch;
+}
+/* Desktop filter tabs — premium redesign */
+.dftab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 22px;
+  height: 65px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(184,150,90,.08);
+  transition: background .22s, color .22s;
+  overflow: hidden;
+  min-width: 90px;
+}
+.dftab:first-child { border-left: 1px solid rgba(184,150,90,.08); }
+.dftab::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 2.5px;
+  background: var(--gold);
+  transition: left .32s var(--ease), right .32s var(--ease);
+}
+.dftab:hover { background: rgba(184,150,90,.05); }
+.dftab:hover::before { left: 0; right: 0; }
+.dftab.active {
+  background: rgba(184,150,90,.09);
+  box-shadow: inset 0 -2.5px 0 var(--gold);
+}
+.dftab.active::before { left: 0; right: 0; }
+.dftab-name {
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 300;
+  transition: color .22s;
+  line-height: 1.2;
+  display: block;
+}
+.dftab:hover .dftab-name,
+.dftab.active .dftab-name { color: var(--charcoal); }
+.dftab.active .dftab-name { font-weight: 400; }
+.dftab-desc {
+  font-size: 8px;
+  letter-spacing: .06em;
+  color: rgba(122,114,101,.55);
+  font-weight: 300;
+  text-transform: none;
+  display: block;
+  margin-top: 2px;
+  white-space: nowrap;
+  transition: color .22s;
+  font-style: italic;
+}
+.dftab:hover .dftab-desc { color: rgba(122,114,101,.75); }
+.dftab.active .dftab-desc { color: var(--gold); opacity: .75; }
+.dftab-count {
+  font-size: 9px;
+  letter-spacing: .08em;
+  color: rgba(184,150,90,.6);
+  font-weight: 300;
+  display: inline;
+  margin-left: 3px;
+}
+
+/* Sort control */
+.dfbar-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.dfbar-sort-lbl {
+  font-size: 8.5px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  white-space: nowrap;
+  opacity: .8;
+}
+.dfbar-sort {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  font-weight: 300;
+  background: transparent;
+  border: 1px solid rgba(27,27,27,.14);
+  padding: 7px 30px 7px 13px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23B8965A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  transition: border-color .22s;
+  min-width: 170px;
+}
+.dfbar-sort:hover, .dfbar-sort:focus { border-color: var(--gold); outline: none; }
+
+/* Filter status indicator — Task 5 */
+.filter-status-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0 14px;
+  flex-wrap: wrap;
+}
+.filter-status-bar.visible { display: flex; }
+.filter-status-txt {
+  font-size: 10px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 300;
+}
+.filter-status-txt em {
+  font-style: normal;
+  color: var(--charcoal);
+  font-weight: 400;
+}
+.filter-status-txt strong {
+  color: var(--gold);
+  font-weight: 400;
+}
+/* Reset / View All — Task 6 */
+.filter-reset-btn {
+  font-size: 9px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 300;
+  background: none;
+  border: 1px solid rgba(27,27,27,.14);
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: border-color .22s, color .22s, background .22s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.filter-reset-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(184,150,90,.05);
+}
+.filter-reset-btn.hidden { display: none; }
+
+/* Mobile collection tab bar */
+.mob-coll-bar {
+  display: none;
+  width: 100%;
+  overflow: hidden;
+}
+.mob-coll-track {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  white-space: nowrap;
+  scroll-snap-type: x mandatory;
+}
+.mob-coll-track::-webkit-scrollbar { display: none; }
+.mob-coll-tab {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 0;
+  font-weight: 300;
+  cursor: pointer;
+  transition: background .22s, color .22s;
+  background: rgba(27,27,27,.07);
+  color: var(--muted);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.mob-coll-tab.active { background: var(--forest); color: var(--gold); }
+/* Mobile type + sort controls row */
+.mob-controls-row {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  width: 100%;
+}
+.mob-ctrl-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.mob-ctrl-lbl {
+  font-size: 9px;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  flex-shrink: 0;
+  opacity: .85;
+}
+.mob-ctrl-select {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  font-weight: 300;
+  background: transparent;
+  border: 1px solid rgba(27,27,27,.14);
+  padding: 7px 26px 7px 10px;
+  cursor: pointer;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23B8965A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  transition: border-color .22s;
+}
+.mob-ctrl-select:focus { border-color: var(--gold); }
+
+/* Mobile sort row — Task 1 (mobile) */
+.mobile-sort-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.mobile-sort-lbl {
+  font-size: 9px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 300;
+  flex-shrink: 0;
+}
+.mobile-sort-select {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  font-weight: 300;
+  background: transparent;
+  border: 1px solid rgba(27,27,27,.14);
+  padding: 7px 28px 7px 10px;
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23B8965A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: border-color .22s;
+}
+.mobile-sort-select:focus { border-color: var(--gold); }
+
+/* Show desktop bar only when sticky (user scrolled to products section) */
+@media (min-width: 769px) {
+  .dfbar { display: none; }
+  .dfbar.is-sticky { display: block; }
+  .filter-status-bar { display: none; }
+  /* Hide duplicate collection filter row — desktop bar is the primary nav */
+  .filter-row:has([data-coll]) { display: none !important; }
+  /* Hide inline type filter row — type select lives in the desktop bar */
+  .filter-type-row { display: none !important; }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .mobile-sort-row { display: none !important; }
+  .mob-coll-bar { display: block; }
+  .mob-controls-row { display: flex; }
+  .dfbar { display: none !important; }
+  .dfbar-spacer { display: none !important; }
+  .filter-status-bar { display: none !important; }
+}
 </style>
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
 
-<!-- ANNOUNCEMENT BAR -->
+<!-- ANNOUNCEMENT BAR — GPU TICKER (3 signals · right→left · infinite · no jump) -->
 <div class="ann" role="region" aria-label="Store announcement">
-  Free Delivery Over ৳2,000 <span aria-hidden="true">·</span> Pay Only When You Receive — No Advance Needed <span aria-hidden="true">·</span> Easy Exchange Within 7 Days <span aria-hidden="true">·</span> 500+ Orders Delivered Across Bangladesh
+  <div class="ann-ticker" aria-hidden="true">
+    <!-- Two identical copies concatenated. Animation slides -50% = one full set.
+         The join is invisible because both ends are identical. -->
+    <div class="ann-track">
+      <!-- Copy 1 -->
+      <span class="ann-item"><span class="ann-dot">◆</span>Free Delivery Over ৳2,000</span>
+      <span class="ann-sep"></span>
+      <span class="ann-item"><span class="ann-dot">◆</span>Pay Only When You Receive</span>
+      <span class="ann-sep"></span>
+      <span class="ann-item"><span class="ann-dot">◆</span>7-Day Easy Exchange</span>
+      <span class="ann-sep"></span>
+      <!-- Copy 2 — exact duplicate for seamless loop -->
+      <span class="ann-item"><span class="ann-dot">◆</span>Free Delivery Over ৳2,000</span>
+      <span class="ann-sep"></span>
+      <span class="ann-item"><span class="ann-dot">◆</span>Pay Only When You Receive</span>
+      <span class="ann-sep"></span>
+      <span class="ann-item"><span class="ann-dot">◆</span>7-Day Easy Exchange</span>
+      <span class="ann-sep"></span>
+    </div>
+  </div>
+  <!-- Screen-reader accessible version (hidden visually) -->
+  <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">Free Delivery Over ৳2,000 · Pay Only When You Receive · 7-Day Easy Exchange</span>
 </div>
 
 <!-- HEADER -->
@@ -3027,7 +3605,7 @@ input, textarea {
   <div class="hdr-inner">
     <a href="#" class="logo" aria-label="ZARIAH Studio — Home">
       <span class="logo-name">Zariah</span>
-      <span class="logo-tag">Studio · Dhaka</span>
+      <span class="logo-studio">Studio</span>
     </a>
     <nav aria-label="Main navigation">
       <ul class="nav-links">
@@ -3038,9 +3616,9 @@ input, textarea {
       </ul>
     </nav>
     <div class="hdr-right">
-      <a href="https://wa.me/8801642779056?text=Hello%20ZARIAH%20Studio%2C%20I%27d%20like%20to%20inquire%20about%20your%20collection." class="btn-wa" target="_blank" rel="noopener noreferrer">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Order via WhatsApp
+      <a href="https://www.facebook.com/zariah.studioo" class="btn-wa" target="_blank" rel="noopener noreferrer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+        Follow us on Facebook
       </a>
       <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mnav">
         <span></span><span></span><span></span>
@@ -3087,8 +3665,9 @@ input, textarea {
   <div class="hero-gradient" aria-hidden="true"></div>
   <div class="hero-vignette" aria-hidden="true"></div>
 
-  <!-- Lower-middle CTA block — no text, image is the hero -->
+  <!-- Hero CTA block — parent brand endorsement + primary actions -->
   <div class="hero-content">
+    <p class="hero-eyebrow">— A Brand of InsightBridge —</p>
     <div class="hero-btns">
       <a href="#products" class="btn-primary">
         Explore Collection
@@ -3096,7 +3675,7 @@ input, textarea {
       </a>
       <a href="https://wa.me/8801642779056?text=Hello%20ZARIAH%20Studio%2C%20I%27d%20like%20to%20inquire." class="btn-outline" target="_blank" rel="noopener noreferrer">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp Us
+        Order via WhatsApp
       </a>
     </div>
   </div>
@@ -3113,16 +3692,16 @@ input, textarea {
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">✦</span><span class="trust-txt">Premium Packaging</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">✓</span><span class="trust-txt">Quality Checked</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">◈</span><span class="trust-txt">Photos on WhatsApp</span></div>
-    <div class="trust-item"><span class="trust-dot" aria-hidden="true">◇</span><span class="trust-txt">Dhaka &amp; Chittagong</span></div>
-    <div class="trust-item"><span class="trust-dot" aria-hidden="true">✧</span><span class="trust-txt">18 Refined Styles</span></div>
+    <div class="trust-item"><span class="trust-dot" aria-hidden="true">◇</span><span class="trust-txt">Nationwide Delivery</span></div>
+    <div class="trust-item"><span class="trust-dot" aria-hidden="true">✧</span><span class="trust-txt">Made in Bangladesh</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">✓</span><span class="trust-txt">Cash on Delivery</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">◈</span><span class="trust-txt">Pay After Receiving</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">◇</span><span class="trust-txt">7-Day Exchange</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">✦</span><span class="trust-txt">Premium Packaging</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">✓</span><span class="trust-txt">Quality Checked</span></div>
     <div class="trust-item"><span class="trust-dot" aria-hidden="true">◈</span><span class="trust-txt">Photos on WhatsApp</span></div>
-    <div class="trust-item"><span class="trust-dot" aria-hidden="true">◇</span><span class="trust-txt">Dhaka &amp; Chittagong</span></div>
-    <div class="trust-item"><span class="trust-dot" aria-hidden="true">✧</span><span class="trust-txt">18 Refined Styles</span></div>
+    <div class="trust-item"><span class="trust-dot" aria-hidden="true">◇</span><span class="trust-txt">Nationwide Delivery</span></div>
+    <div class="trust-item"><span class="trust-dot" aria-hidden="true">✧</span><span class="trust-txt">Made in Bangladesh</span></div>
   </div>
 </div>
 
@@ -3130,44 +3709,132 @@ input, textarea {
 <section class="products" id="products" aria-labelledby="products-heading">
   <div class="container">
     <div class="products-header reveal">
-      <div>
-        <span class="lbl">The Collection</span>
-        <h2 class="ttl" id="products-heading">Bags That Speak<br><em>Before You Do</em></h2>
-        <p class="sub">Eighteen refined silhouettes across three curated collections.</p>
+      <div class="prod-intro">
+        <h2 class="ttl prod-ttl" id="products-heading">Chosen To Be Carried.</h2>
+        <p class="coll-names">Essence • Signature • Noir</p>
+        <div class="prod-count-line" id="prodCountLine">Showing 18 Products</div>
       </div>
-      <div class="filters" role="group" aria-label="Filter products">
-        <div class="filter-row">
-          <span class="filter-label" id="coll-filter-label">Collection:</span>
-          <div role="group" aria-labelledby="coll-filter-label">
-            <button class="fcol-tab active" data-coll="all" aria-pressed="true">All</button>
-            <button class="fcol-tab" data-coll="Essence" aria-pressed="false">Essence</button>
-            <button class="fcol-tab" data-coll="Signature" aria-pressed="false">Signature</button>
-            <button class="fcol-tab" data-coll="Noir" aria-pressed="false">Noir</button>
-          </div>
-        </div>
-        <!-- Desktop type filter row (hidden on mobile) -->
-        <div class="filter-row filter-type-row">
-          <span class="filter-label" id="type-filter-label">Type:</span>
-          <div role="group" aria-labelledby="type-filter-label">
-            <button class="ftab active" data-type="all" aria-pressed="true">All</button>
-            <button class="ftab" data-type="Shoulder Bag" aria-pressed="false">Shoulder</button>
-            <button class="ftab" data-type="Crossbody" aria-pressed="false">Crossbody</button>
-            <button class="ftab" data-type="Tote" aria-pressed="false">Tote</button>
-            <button class="ftab" data-type="Top Handle" aria-pressed="false">Top Handle</button>
-            <button class="ftab" data-type="East-West" aria-pressed="false">East-West</button>
-            <button class="ftab" data-type="Flap Bag" aria-pressed="false">Flap</button>
-            <button class="ftab" data-type="Satchel" aria-pressed="false">Satchel</button>
-            <button class="ftab" data-type="Bucket Bag" aria-pressed="false">Bucket</button>
-          </div>
-        </div>
-        <!-- Mobile: single filter button -->
-        <button class="filter-btn-mobile" id="filterBtnMobile" aria-label="Filter by bag type" aria-haspopup="dialog">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-          Filter
-          <span class="filter-active-label" id="filterActiveLabel"></span>
+      <!-- JS state sync only: fcol-tabs and ftabs hidden, never rendered -->
+      <div aria-hidden="true" style="display:none">
+        <button class="fcol-tab active" data-coll="all" aria-pressed="true">All<span class="fcol-tab-count" id="fcol-count-all"></span></button>
+        <button class="fcol-tab" data-coll="Essence" aria-pressed="false">Essence<span class="fcol-tab-count" id="fcol-count-essence"></span></button>
+        <button class="fcol-tab" data-coll="Signature" aria-pressed="false">Signature<span class="fcol-tab-count" id="fcol-count-signature"></span></button>
+        <button class="fcol-tab" data-coll="Noir" aria-pressed="false">Noir<span class="fcol-tab-count" id="fcol-count-noir"></span></button>
+        <button class="ftab active" data-type="all" aria-pressed="true">All</button>
+        <button class="ftab" data-type="Shoulder Bag" aria-pressed="false">Shoulder</button>
+        <button class="ftab" data-type="Crossbody" aria-pressed="false">Crossbody</button>
+        <button class="ftab" data-type="Tote" aria-pressed="false">Tote</button>
+        <button class="ftab" data-type="Top Handle" aria-pressed="false">Top Handle</button>
+        <button class="ftab" data-type="East-West" aria-pressed="false">East-West</button>
+        <button class="ftab" data-type="Flap Bag" aria-pressed="false">Flap</button>
+        <button class="ftab" data-type="Satchel" aria-pressed="false">Satchel</button>
+        <button class="ftab" data-type="Bucket Bag" aria-pressed="false">Bucket</button>
+      </div>
+      <div class="filters filters-hidden" role="group" aria-label="Filter products">
+        <!-- Mobile: hidden trigger (kept for JS compatibility) -->
+        <button class="filter-btn-mobile" id="filterBtnMobile" aria-label="Filter by bag type" aria-haspopup="dialog" style="display:none!important">
+          Filter<span class="filter-active-label" id="filterActiveLabel"></span>
         </button>
+        <!-- Mobile collection tab bar -->
+        <div class="mob-coll-bar" role="group" aria-label="Filter by collection">
+          <div class="mob-coll-track">
+            <button class="mob-coll-tab active" data-mobcoll="all" aria-pressed="true">All</button>
+            <button class="mob-coll-tab" data-mobcoll="Essence" aria-pressed="false">Essence</button>
+            <button class="mob-coll-tab" data-mobcoll="Signature" aria-pressed="false">Signature</button>
+            <button class="mob-coll-tab" data-mobcoll="Noir" aria-pressed="false">Noir</button>
+          </div>
+        </div>
+        <!-- Mobile type + sort selects -->
+        <div class="mob-controls-row">
+          <div class="mob-ctrl-wrap">
+            <span class="mob-ctrl-lbl">Type</span>
+            <select class="mob-ctrl-select" id="mobileTypeSelect" aria-label="Filter by bag type">
+              <option value="all">All Types</option>
+              <option value="Shoulder Bag">Shoulder</option>
+              <option value="Crossbody">Crossbody</option>
+              <option value="Tote">Tote</option>
+              <option value="Top Handle">Top Handle</option>
+              <option value="East-West">East-West</option>
+              <option value="Flap Bag">Flap</option>
+              <option value="Satchel">Satchel</option>
+              <option value="Bucket Bag">Bucket</option>
+            </select>
+          </div>
+          <div class="mob-ctrl-wrap">
+            <span class="mob-ctrl-lbl">Sort</span>
+            <select class="mob-ctrl-select" id="mobileSortSelect" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- DESKTOP FILTER BAR — Tasks 1, 2, 3, 4, 7, 8, 9 -->
+    <!-- Spacer holds layout space when bar becomes sticky -->
+    <div class="dfbar-spacer" id="dfbarSpacer" aria-hidden="true"></div>
+    <div class="dfbar" id="desktopFilterBar" role="group" aria-label="Filter and sort products">
+      <div class="dfbar-inner">
+        <div class="dfbar-left">
+          <span class="dfbar-sect-lbl">Collections</span>
+          <div class="dftabs" role="group" aria-label="Filter by collection">
+            <button class="dftab active" data-dfcoll="all" aria-pressed="true" aria-label="Show all collections">
+              <span class="dftab-name">All</span>
+              <span class="dftab-desc">All Collections</span>
+              <span class="dftab-count" id="dfcount-all"></span>
+            </button>
+            <button class="dftab" data-dfcoll="Essence" aria-pressed="false" aria-label="Show Essence collection">
+              <span class="dftab-name">Essence<span class="dftab-count" id="dfcount-essence"></span></span>
+              <span class="dftab-desc">Everyday Elegance</span>
+            </button>
+            <button class="dftab" data-dfcoll="Signature" aria-pressed="false" aria-label="Show Signature collection">
+              <span class="dftab-name">Signature<span class="dftab-count" id="dfcount-signature"></span></span>
+              <span class="dftab-desc">Timeless Luxury</span>
+            </button>
+            <button class="dftab" data-dfcoll="Noir" aria-pressed="false" aria-label="Show Noir collection">
+              <span class="dftab-name">Noir<span class="dftab-count" id="dfcount-noir"></span></span>
+              <span class="dftab-desc">Bold Statements</span>
+            </button>
+          </div>
+        </div>
+        <div class="dfbar-right">
+          <div class="dfbar-sort-wrap">
+            <span class="dfbar-sort-lbl">Type</span>
+            <select class="dfbar-sort" id="dfbarType" aria-label="Filter by bag type">
+              <option value="all">All Types</option>
+              <option value="Shoulder Bag">Shoulder</option>
+              <option value="Crossbody">Crossbody</option>
+              <option value="Tote">Tote</option>
+              <option value="Top Handle">Top Handle</option>
+              <option value="East-West">East-West</option>
+              <option value="Flap Bag">Flap</option>
+              <option value="Satchel">Satchel</option>
+              <option value="Bucket Bag">Bucket</option>
+            </select>
+          </div>
+          <div class="dfbar-sort-wrap">
+            <span class="dfbar-sort-lbl">Sort</span>
+            <select class="dfbar-sort" id="dfbarSort" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER STATUS BAR — Tasks 5, 6 -->
+    <div class="filter-status-bar" id="filterStatusBar" role="status" aria-live="polite" aria-atomic="true">
+      <span class="filter-status-txt" id="filterStatusTxt"></span>
+      <button class="filter-reset-btn hidden" id="filterResetBtn" aria-label="Reset all filters to show all collections" type="button">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+        View All
+      </button>
+    </div>
+
     <div class="prod-grid" id="prodGrid" role="list" aria-live="polite" aria-label="Product listing"></div>
 
     <!-- CRO: Post-grid trust signal bar — for cold Meta Ads traffic -->
@@ -3430,11 +4097,11 @@ input, textarea {
         <span class="lbl">Our Story</span>
         <h2 class="ttl" id="story-heading" style="margin-bottom:24px">Born from a<br><em>Quiet Belief</em></h2>
         <div class="story-body">
-          <p>ZARIAH Studio was born from a simple observation: Bangladeshi women deserve beautiful things — beautifully made, beautifully presented, and honestly priced.</p>
-          <p>We believe luxury doesn't have to announce itself. The most refined things speak softly — in the weight of good hardware, in the clean line of a well-structured flap, in the quiet satisfaction of carrying something truly well-made.</p>
-          <p>Every ZARIAH bag is chosen for women who are confident enough to not need a logo to be noticed. Women who carry themselves with intention, and want their bag to match.</p>
+          <p>ZARIAH Studio was founded on a single conviction: Bangladeshi women deserve refined things — beautifully made, thoughtfully designed, and honestly priced. Not imported. Not imitated. Made here, for us.</p>
+          <p>We believe luxury has no obligation to announce itself. It lives in the weight of precisely finished hardware, in the clean geometry of a well-structured silhouette, in the quiet confidence of carrying something that was made with genuine care.</p>
+          <p>Every ZARIAH bag is designed for women who are certain of who they are — who carry themselves with intention, and expect the same from what they carry. Three collections. Eighteen silhouettes. One standard of quality.</p>
         </div>
-        <p class="story-sig">— ZARIAH Studio, Dhaka</p>
+        <p class="story-sig">— ZARIAH Studio · A Brand of <span class="brand-name">InsightBridge</span> · Made in Bangladesh</p>
       </div>
     </div>
   </div>
@@ -3525,9 +4192,9 @@ input, textarea {
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="footer-name">Zariah</div>
-        <div class="footer-tag">Studio · Dhaka, Bangladesh</div>
-        <p class="footer-desc">Refined handbags across three collections for women who carry confidence quietly. Premium quality, honest prices, delivered across Bangladesh.</p>
+        <div class="footer-name">ZARIAH Studio</div>
+        <div class="footer-tag">A Brand of <span class="brand-name">InsightBridge</span> · Made in Bangladesh</div>
+        <p class="footer-desc">Refined handbags designed for women who appreciate understated luxury, timeless silhouettes, and thoughtful craftsmanship. Delivered across Bangladesh.</p>
         <div class="footer-socials">
           <a href="https://www.facebook.com/zariah.studioo" class="soc-btn" aria-label="Follow ZARIAH Studio on Facebook" target="_blank" rel="noopener noreferrer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
@@ -3568,16 +4235,19 @@ input, textarea {
         </div>
         <div class="fcon-item">
           <span class="fcon-ico" aria-hidden="true">📍</span>
-          <div class="fcon-txt">Dhaka &amp; Chittagong, Bangladesh</div>
+          <div class="fcon-txt">Delivering across Bangladesh</div>
         </div>
         <div class="fcon-item">
           <span class="fcon-ico" aria-hidden="true">⏱</span>
           <div class="fcon-txt">Orders: Sun–Fri, 10am–8pm</div>
         </div>
+        <div class="fcon-item" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(184,150,90,.1)">
+          <div class="fcon-txt" style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.45">A Brand of <span style="text-transform:none">InsightBridge</span></div>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2026 ZARIAH Studio. All rights reserved.</p>
+      <p class="footer-copy">© 2026 ZARIAH Studio. A Brand of InsightBridge. Made in Bangladesh. All Rights Reserved.</p>
       <nav class="footer-legal" aria-label="Legal links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>
@@ -3650,7 +4320,7 @@ input, textarea {
       <div class="pmodal-divider" aria-hidden="true"></div>
       <p class="pmodal-desc" id="pmodalDesc"></p>
       <div class="pmodal-size" id="pmodalSize"></div>
-      <div class="pmodal-features">
+      <div class="pmodal-features" id="pmodalFeatures">
         <span class="pfeat">Premium vegan leather</span>
         <span class="pfeat">Gold-tone hardware</span>
         <span class="pfeat">Interior pockets</span>
@@ -3793,7 +4463,20 @@ const OverlayManager = (function() {
     // No need to pushState again — the overlay close removes it from stack
   });
 
-  return { push: _push, pop: _pop };
+  return { push: _push, pop: _pop, swap: _swap };
+
+  // ─── Internal ────────────────────────────────
+  function _swap(oldKey, newKey, newClose) {
+    // Replace an existing overlay slot without touching browser history.
+    // Used when transitioning product modal → order modal so back button
+    // correctly closes the order modal (not the already-gone product modal).
+    const idx = _stack.findIndex(e => e.key === oldKey);
+    if (idx !== -1) {
+      _stack[idx] = { key: newKey, close: newClose };
+    }
+    // No history.pushState/back — the existing history entry from the old
+    // overlay now implicitly belongs to the new overlay.
+  }
 })();
 </script>
 <script>
@@ -3801,24 +4484,24 @@ const OverlayManager = (function() {
    PRODUCT DATA — 18 pieces
 ═══════════════════════════════════════ */
 const PRODUCTS = [
-  { id:'Essence01', name:'Crescent Shoulder Bag',  collection:'Essence',   type:'Shoulder Bag', desc:'Modern everyday luxury with a soft curved silhouette. Perfect for office mornings and weekend outings.',                    size:'Small–Medium · L 26cm × H 15cm × D 6cm',  price:'৳3,800', badge:'Bestseller',    badgeClass:'badge-b' },
-  { id:'Essence02', name:'Slim Flap Crossbody',    collection:'Essence',   type:'Crossbody',    desc:'Minimal and feminine crossbody for daily essentials. Adjustable strap, elegant closure.',                                  size:'Small · L 20cm × H 13cm × D 5cm',         price:'৳2,900', badge:'New',           badgeClass:'badge-n' },
-  { id:'Essence03', name:'Structured Mini Tote',   collection:'Essence',   type:'Tote',         desc:'Elegant mini tote that keeps you organized in style. Interior zip pocket and card slots.',                                  size:'Medium · L 24cm × H 20cm × D 10cm',       price:'৳3,400', badge:"Editor's Pick", badgeClass:'badge-e', soldOut:true },
-  { id:'Essence04', name:'East-West Bag',          collection:'Essence',   type:'East-West',    desc:'Minimal east-west design for a chic, modern look. Long strap converts to hand carry.',                                     size:'Small–Medium · L 28cm × H 13cm × D 6cm',  price:'৳3,200', badge:null,            badgeClass:'' },
-  { id:'Essence05', name:'Rounded Top Handle',     collection:'Essence',   type:'Top Handle',   desc:'Softly structured top handle for feminine sophistication. Bamboo-style handle detail.',                                    size:'Small–Medium · L 22cm × H 17cm × D 9cm',  price:'৳3,600', badge:'New',           badgeClass:'badge-n' },
-  { id:'Essence06', name:'Soft Bucket Bag',        collection:'Essence',   type:'Bucket Bag',   desc:'Relaxed bucket bag that blends comfort with elegance. Drawstring closure, inner pocket.',                                  size:'Medium · L 22cm × H 24cm × D 12cm',       price:'৳3,500', badge:null,            badgeClass:'' },
-  { id:'Signature01', name:'Structured Top Handle', collection:'Signature', type:'Top Handle',   desc:'Iconic structured silhouette that defines our signature identity. Heavy-gauge hardware, clean lines.',                    size:'Medium · L 26cm × H 20cm × D 10cm',       price:'৳4,500', badge:'Bestseller',    badgeClass:'badge-b' },
-  { id:'Signature02', name:'Elegant Satchel',       collection:'Signature', type:'Satchel',      desc:'Timeless satchel for work, meetings and everything in between. Top zip, front pocket.',                                   size:'Medium · L 28cm × H 21cm × D 11cm',       price:'৳4,800', badge:null,            badgeClass:'' },
-  { id:'Signature03', name:'Premium Flap Bag',      collection:'Signature', type:'Flap Bag',     desc:'Classic flap bag that elevates every occasion. Magnetic clasp, chain and leather strap.',                                 size:'Small–Medium · L 22cm × H 15cm × D 7cm',  price:'৳3,900', badge:"Editor's Pick", badgeClass:'badge-e' },
-  { id:'Signature04', name:'Boxy Shoulder Bag',     collection:'Signature', type:'Shoulder Bag', desc:'Modern boxy shape for a refined and powerful presence. Wide strap, subtle logo detail.',                                  size:'Medium · L 25cm × H 17cm × D 8cm',        price:'৳4,200', badge:'Limited',       badgeClass:'badge-l' },
-  { id:'Signature05', name:'Structured Crossbody',  collection:'Signature', type:'Crossbody',    desc:'Smart, practical and elegant crossbody for everyday confidence. Adjustable chain strap.',                                  size:'Small–Medium · L 21cm × H 14cm × D 6cm',  price:'৳3,600', badge:null,            badgeClass:'' },
-  { id:'Signature06', name:'Top-Zip Bowling Bag',   collection:'Signature', type:'Bowling Bag',  desc:'Soft curves with a top zip for sophisticated everyday luxury. Dual handles + long strap.',                                size:'Medium · L 28cm × H 18cm × D 12cm',       price:'৳4,600', badge:'New',           badgeClass:'badge-n' },
-  { id:'Noir01', name:'Statement Shoulder Bag',    collection:'Noir', type:'Shoulder Bag', desc:'Bold shoulder bag that commands attention. Rich texture, oversized gold hardware.',                                            size:'Small–Medium · L 26cm × H 16cm × D 6cm',  price:'৳4,000', badge:'Bestseller',    badgeClass:'badge-b' },
-  { id:'Noir02', name:'Sculptural Top Handle',     collection:'Noir', type:'Top Handle',   desc:'Artful silhouette that turns every moment iconic. Sculptural handle, architectural shape.',                                    size:'Small · L 20cm × H 16cm × D 8cm',         price:'৳3,800', badge:"Editor's Pick", badgeClass:'badge-e', soldOut:true },
-  { id:'Noir03', name:'Chain Accent Flap Bag',     collection:'Noir', type:'Flap Bag',     desc:'Luxury chain detail meets timeless feminine power. Interlocking chain strap, flap closure.',                                   size:'Small · L 21cm × H 13cm × D 6cm',         price:'৳3,500', badge:'Limited',       badgeClass:'badge-l' },
-  { id:'Noir04', name:'Sharp East-West Bag',       collection:'Noir', type:'East-West',    desc:'Sharp lines for a modern, fashion-forward edge. Minimal seaming, sleek finish.',                                               size:'Small–Medium · L 28cm × H 12cm × D 6cm',  price:'৳3,600', badge:'New',           badgeClass:'badge-n' },
-  { id:'Noir05', name:'Structured Underarm Bag',   collection:'Noir', type:'Underarm Bag', desc:'Sleek underarm bag for an effortlessly cool attitude. Rigid frame, push-lock closure.',                                       size:'Small · L 22cm × H 13cm × D 5cm',         price:'৳3,200', badge:null,            badgeClass:'' },
-  { id:'Noir06', name:'Mini Statement Tote',       collection:'Noir', type:'Tote',         desc:'Mini tote with major attitude. Pure noir elegance. Statement handles, minimal detailing.',                                     size:'Small · L 20cm × H 18cm × D 9cm',         price:'৳3,400', badge:null,            badgeClass:'' },
+  { id:'Essence01', name:'Crescent Shoulder Bag',  collection:'Essence',   type:'Shoulder Bag', color:'Camel / Black / Dusty Rose',           desc:'Modern everyday luxury with a soft curved silhouette. Perfect for office mornings and weekend outings.',                    size:'Small–Medium · L 26cm × H 15cm × D 6cm',  price:'৳3,800', badge:'Bestseller',    badgeClass:'badge-b' },
+  { id:'Essence02', name:'Slim Flap Crossbody',    collection:'Essence',   type:'Crossbody',    color:'Camel / Black / Olive',                  desc:'Minimal and feminine crossbody for daily essentials. Adjustable strap, elegant closure.',                                  size:'Small · L 20cm × H 13cm × D 5cm',         price:'৳2,900', badge:'New',           badgeClass:'badge-n' },
+  { id:'Essence03', name:'Structured Mini Tote',   collection:'Essence',   type:'Tote',         color:'Camel / Black',                          desc:'Elegant mini tote that keeps you organized in style. Interior zip pocket and card slots.',                                  size:'Medium · L 24cm × H 20cm × D 10cm',       price:'৳3,400', badge:"Editor's Pick", badgeClass:'badge-e', soldOut:true },
+  { id:'Essence04', name:'East-West Bag',          collection:'Essence',   type:'East-West',    color:'Camel / Black / Tan',                    desc:'Minimal east-west design for a chic, modern look. Long strap converts to hand carry.',                                     size:'Small–Medium · L 28cm × H 13cm × D 6cm',  price:'৳3,200', badge:null,            badgeClass:'' },
+  { id:'Essence05', name:'Rounded Top Handle',     collection:'Essence',   type:'Top Handle',   color:'Dusty Rose / Camel / Black',             desc:'Softly structured top handle for feminine sophistication. Bamboo-style handle detail.',                                    size:'Small–Medium · L 22cm × H 17cm × D 9cm',  price:'৳3,600', badge:'New',           badgeClass:'badge-n' },
+  { id:'Essence06', name:'Soft Bucket Bag',        collection:'Essence',   type:'Bucket Bag',   color:'Camel / Olive / Black',                  desc:'Relaxed bucket bag that blends comfort with elegance. Drawstring closure, inner pocket.',                                  size:'Medium · L 22cm × H 24cm × D 12cm',       price:'৳3,500', badge:null,            badgeClass:'' },
+  { id:'Signature01', name:'Structured Top Handle', collection:'Signature', type:'Top Handle',  color:'Black / Cognac / Forest Green',           desc:'Iconic structured silhouette that defines our signature identity. Heavy-gauge hardware, clean lines.',                    size:'Medium · L 26cm × H 20cm × D 10cm',       price:'৳4,500', badge:'Bestseller',    badgeClass:'badge-b' },
+  { id:'Signature02', name:'Elegant Satchel',       collection:'Signature', type:'Satchel',     color:'Black / Cognac / Burgundy',               desc:'Timeless satchel for work, meetings and everything in between. Top zip, front pocket.',                                   size:'Medium · L 28cm × H 21cm × D 11cm',       price:'৳4,800', badge:null,            badgeClass:'' },
+  { id:'Signature03', name:'Premium Flap Bag',      collection:'Signature', type:'Flap Bag',    color:'Black / Cognac / Ivory',                  desc:'Classic flap bag that elevates every occasion. Magnetic clasp, chain and leather strap.',                                 size:'Small–Medium · L 22cm × H 15cm × D 7cm',  price:'৳3,900', badge:"Editor's Pick", badgeClass:'badge-e' },
+  { id:'Signature04', name:'Boxy Shoulder Bag',     collection:'Signature', type:'Shoulder Bag', color:'Black / Forest Green / Cognac',          desc:'Modern boxy shape for a refined and powerful presence. Wide strap, subtle logo detail.',                                  size:'Medium · L 25cm × H 17cm × D 8cm',        price:'৳4,200', badge:'Limited',       badgeClass:'badge-l' },
+  { id:'Signature05', name:'Structured Crossbody',  collection:'Signature', type:'Crossbody',   color:'Black / Cognac / Dusty Mauve',            desc:'Smart, practical and elegant crossbody for everyday confidence. Adjustable chain strap.',                                  size:'Small–Medium · L 21cm × H 14cm × D 6cm',  price:'৳3,600', badge:null,            badgeClass:'' },
+  { id:'Signature06', name:'Top-Zip Bowling Bag',   collection:'Signature', type:'Bowling Bag', color:'Black / Cognac / Burgundy',               desc:'Soft curves with a top zip for sophisticated everyday luxury. Dual handles + long strap.',                                size:'Medium · L 28cm × H 18cm × D 12cm',       price:'৳4,600', badge:'New',           badgeClass:'badge-n' },
+  { id:'Noir01', name:'Statement Shoulder Bag',    collection:'Noir', type:'Shoulder Bag', color:'Noir Black / Deep Plum',                       desc:'Bold shoulder bag that commands attention. Rich texture, oversized gold hardware.',                                            size:'Small–Medium · L 26cm × H 16cm × D 6cm',  price:'৳4,000', badge:'Bestseller',    badgeClass:'badge-b' },
+  { id:'Noir02', name:'Sculptural Top Handle',     collection:'Noir', type:'Top Handle',   color:'Noir Black / Midnight Blue',                   desc:'Artful silhouette that turns every moment iconic. Sculptural handle, architectural shape.',                                    size:'Small · L 20cm × H 16cm × D 8cm',         price:'৳3,800', badge:"Editor's Pick", badgeClass:'badge-e', soldOut:true },
+  { id:'Noir03', name:'Chain Accent Flap Bag',     collection:'Noir', type:'Flap Bag',     color:'Noir Black / Deep Plum',                       desc:'Luxury chain detail meets timeless feminine power. Interlocking chain strap, flap closure.',                                   size:'Small · L 21cm × H 13cm × D 6cm',         price:'৳3,500', badge:'Limited',       badgeClass:'badge-l' },
+  { id:'Noir04', name:'Sharp East-West Bag',       collection:'Noir', type:'East-West',    color:'Noir Black / Midnight Navy',                   desc:'Sharp lines for a modern, fashion-forward edge. Minimal seaming, sleek finish.',                                               size:'Small–Medium · L 28cm × H 12cm × D 6cm',  price:'৳3,600', badge:'New',           badgeClass:'badge-n' },
+  { id:'Noir05', name:'Structured Underarm Bag',   collection:'Noir', type:'Underarm Bag', color:'Noir Black',                                   desc:'Sleek underarm bag for an effortlessly cool attitude. Rigid frame, push-lock closure.',                                       size:'Small · L 22cm × H 13cm × D 5cm',         price:'৳3,200', badge:null,            badgeClass:'' },
+  { id:'Noir06', name:'Mini Statement Tote',       collection:'Noir', type:'Tote',         color:'Noir Black / Deep Wine',                       desc:'Mini tote with major attitude. Pure noir elegance. Statement handles, minimal detailing.',                                     size:'Small · L 20cm × H 18cm × D 9cm',         price:'৳3,400', badge:null,            badgeClass:'' },
 ];
 
 /* ═══════════════════════════════════════
@@ -3875,6 +4558,7 @@ function getGalleryImagesFallback(product, idx) {
 ═══════════════════════════════════════ */
 let activeCollection = 'all';
 let activeType = 'all';
+let activeSortOrder = 'featured';
 let currentProductModal = null;
 let currentGalleryIdx = 0;
 let lastFocusedElement = null;
@@ -3884,11 +4568,25 @@ let lastFocusedElement = null;
 ═══════════════════════════════════════ */
 function renderProducts() {
   const grid = document.getElementById('prodGrid');
-  const filtered = PRODUCTS.filter(p => {
+  let filtered = PRODUCTS.filter(p => {
     const collMatch = activeCollection === 'all' || p.collection === activeCollection;
     const typeMatch = activeType === 'all' || p.type === activeType;
     return collMatch && typeMatch;
   });
+
+  // ── TASK 1: Sort ─────────────────────────────────
+  if (activeSortOrder === 'price-asc') {
+    filtered = filtered.slice().sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  } else if (activeSortOrder === 'price-desc') {
+    filtered = filtered.slice().sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  }
+  // 'featured' = natural PRODUCTS array order (already filtered above)
+
+  // ── TASK 4: Live counts ──────────────────────────
+  updateFilterCounts();
+
+  // ── TASK 5: Active filter indicator ─────────────
+  updateFilterStatus(filtered.length);
 
   const frag = document.createDocumentFragment();
 
@@ -3955,16 +4653,22 @@ function renderProducts() {
     const frontImgEl = art.querySelector('.pcard-img-front');
     const sideImgEl  = art.querySelector('.pcard-img-side');
 
-    // Add has-images as soon as the FRONT image loads successfully.
-    // Don't wait for side — side is optional (hover only on desktop).
+    // Switch side image from lazy to eager once front loads
+    // so it preloads before user hovers, ensuring smooth transition.
     function onFrontLoad() {
       imgContainer.classList.add('has-images');
-      // Preload side image now that front is confirmed — prevents green flash on hover
+      // Force-load side image immediately (override lazy deferral by re-triggering src)
+      if (!sideImgEl.complete) {
+        const sideSrc = sideImgEl.src;
+        sideImgEl.loading = 'eager';
+        if (sideSrc) { sideImgEl.src = sideSrc; }
+      }
       if (sideImgEl.complete) {
         if (sideImgEl.naturalWidth > 0) {
           imgContainer.classList.add('side-loaded');
+        } else {
+          imgContainer.classList.add('side-error');
         }
-        // else: side 404'd, side-loaded never added, hover guard keeps front visible
       } else {
         sideImgEl.addEventListener('load', function onSideLoad() {
           imgContainer.classList.add('side-loaded');
@@ -3978,7 +4682,8 @@ function renderProducts() {
     }
     function onSideError() {
       sideImgEl.style.display = 'none';
-      // side-loaded never added — hover guard prevents green flash
+      // Mark as error so CSS hover guard shows front image instead of blank
+      imgContainer.classList.add('side-error');
     }
 
     // Handle already-cached images (complete before listener attaches)
@@ -3989,13 +4694,39 @@ function renderProducts() {
       frontImgEl.addEventListener('load',  onFrontLoad);
       frontImgEl.addEventListener('error', onFrontError);
     }
-    if (sideImgEl.complete && sideImgEl.naturalWidth === 0) {
-      onSideError();
+    if (sideImgEl.complete) {
+      if (sideImgEl.naturalWidth === 0) { onSideError(); }
     } else {
       sideImgEl.addEventListener('error', onSideError);
     }
 
-    art.querySelector('.pcard-img').addEventListener('click', () => openPModal(p.id));
+    // Mobile tap-preview: first tap shows side image, second tap opens modal
+    (function() {
+      const pcImg = art.querySelector('.pcard-img');
+      let tapTimer = null;
+      pcImg.addEventListener('click', function(e) {
+        // Desktop: always open modal (hover handles preview)
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          openPModal(p.id);
+          return;
+        }
+        // Mobile: first tap previews side, second tap opens modal
+        const hasSide = imgContainer.classList.contains('side-loaded') && !imgContainer.classList.contains('side-error');
+        if (!hasSide) { openPModal(p.id); return; }
+        if (imgContainer.classList.contains('tap-preview')) {
+          imgContainer.classList.remove('tap-preview');
+          if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
+          openPModal(p.id);
+        } else {
+          e.stopPropagation();
+          imgContainer.classList.add('tap-preview');
+          tapTimer = setTimeout(function() {
+            imgContainer.classList.remove('tap-preview');
+            tapTimer = null;
+          }, 2500);
+        }
+      });
+    })();
     art.querySelector('.pcard-overlay-btn').addEventListener('click', (e) => { e.stopPropagation(); openPModal(p.id); });
 
     if (p.soldOut) {
@@ -4067,10 +4798,89 @@ function toggleFaq(btn) {
 /* ═══════════════════════════════════════
    FILTER SYSTEM
 ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   TASK 4 — LIVE PRODUCT COUNTS
+═══════════════════════════════════════ */
+function updateFilterCounts() {
+  const allCount = PRODUCTS.length;
+  const essenceCount = PRODUCTS.filter(p => p.collection === 'Essence').length;
+  const sigCount = PRODUCTS.filter(p => p.collection === 'Signature').length;
+  const noirCount = PRODUCTS.filter(p => p.collection === 'Noir').length;
+
+  // Mobile header tabs
+  const setCount = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = ` (${n})`; };
+  setCount('fcol-count-all', allCount);
+  setCount('fcol-count-essence', essenceCount);
+  setCount('fcol-count-signature', sigCount);
+  setCount('fcol-count-noir', noirCount);
+
+  // Desktop filter bar
+  const setDf = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = ` (${n})`; };
+  setDf('dfcount-all', allCount);
+  setDf('dfcount-essence', essenceCount);
+  setDf('dfcount-signature', sigCount);
+  setDf('dfcount-noir', noirCount);
+}
+
+/* ═══════════════════════════════════════
+   TASK 5 — ACTIVE FILTER INDICATOR
+   TASK 6 — RESET FILTERS
+═══════════════════════════════════════ */
+function updateFilterStatus(visibleCount) {
+  const statusBar = document.getElementById('filterStatusBar');
+  const statusTxt = document.getElementById('filterStatusTxt');
+  const resetBtn  = document.getElementById('filterResetBtn');
+  if (!statusBar || !statusTxt) return;
+
+  const collLabels = { all: 'All Collections', Essence: 'Essence Collection', Signature: 'Signature Collection', Noir: 'Noir Collection' };
+  const collLabel = collLabels[activeCollection] || 'All Collections';
+  const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeSortOrder !== 'featured';
+
+  statusTxt.innerHTML = `Showing <em>${collLabel}</em> &mdash; <strong>${visibleCount} ${visibleCount === 1 ? 'Product' : 'Products'}</strong>`;
+  if (resetBtn) resetBtn.classList.toggle('hidden', !isFiltered);
+  statusBar.classList.toggle('visible', true);
+  // Sync heading count line
+  const countLine = document.getElementById('prodCountLine');
+  if (countLine) {
+    if (isFiltered) {
+      const collShort = { all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection;
+      const typeLabel = activeType !== 'all' ? ' — ' + activeType : '';
+      countLine.textContent = 'Showing ' + collShort + typeLabel + ' — ' + visibleCount + ' ' + (visibleCount === 1 ? 'Product' : 'Products');
+    } else {
+      countLine.textContent = 'Showing ' + visibleCount + ' Products';
+    }
+  }
+}
+
+/* ═══════════════════════════════════════
+   TASK 1 — SORT STATE
+═══════════════════════════════════════ */
+function setSortOrder(order) {
+  activeSortOrder = order;
+  // Sync all sort selects
+  ['dfbarSort', 'mobileSortSelect'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = order;
+  });
+}
+
 function setCollFilter(coll) {
   activeCollection = coll;
+  // Sync hidden fcol-tabs (DOM state)
   document.querySelectorAll('.fcol-tab').forEach(t => {
     const active = t.dataset.coll === coll;
+    t.classList.toggle('active', active);
+    t.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  // Sync mobile collection tab bar
+  document.querySelectorAll('.mob-coll-tab').forEach(t => {
+    const active = t.dataset.mobcoll === coll;
+    t.classList.toggle('active', active);
+    t.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  // Sync desktop bar tabs
+  document.querySelectorAll('.dftab').forEach(t => {
+    const active = t.dataset.dfcoll === coll;
     t.classList.toggle('active', active);
     t.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
@@ -4082,6 +4892,12 @@ function setTypeFilter(type) {
     t.classList.toggle('active', active);
     t.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
+  // Sync desktop Type dropdown
+  const dfType = document.getElementById('dfbarType');
+  if (dfType) dfType.value = type;
+  // Sync mobile type select
+  const mType = document.getElementById('mobileTypeSelect');
+  if (mType) mType.value = type;
   // Keep mobile trigger in sync
   if (window.__mobileFilterSync) window.__mobileFilterSync();
 }
@@ -4091,6 +4907,77 @@ document.querySelectorAll('.fcol-tab').forEach(tab => {
 document.querySelectorAll('.ftab').forEach(tab => {
   tab.addEventListener('click', () => { setTypeFilter(tab.dataset.type); renderProducts(); });
 });
+
+/* ── Desktop filter bar tab clicks ── */
+document.querySelectorAll('.dftab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    setCollFilter(tab.dataset.dfcoll);
+    setTypeFilter('all'); // reset type when switching collection
+    renderProducts();
+  });
+});
+
+/* ── Sort select event listeners ── */
+(function initSortControls() {
+  const dfSort = document.getElementById('dfbarSort');
+  const mSort  = document.getElementById('mobileSortSelect');
+  function onSortChange(e) {
+    setSortOrder(e.target.value);
+    renderProducts();
+  }
+  if (dfSort)  dfSort.addEventListener('change', onSortChange);
+  if (mSort)   mSort.addEventListener('change', onSortChange);
+})();
+
+/* ── Mobile collection tabs ── */
+(function initMobileColl() {
+  document.querySelectorAll('.mob-coll-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      setCollFilter(tab.dataset.mobcoll);
+      setTypeFilter('all');
+      // Sync mobile type select back to all
+      var mType = document.getElementById('mobileTypeSelect');
+      if (mType) mType.value = 'all';
+      renderProducts();
+    });
+  });
+})();
+
+/* ── Mobile type select ── */
+(function initMobileType() {
+  var mType = document.getElementById('mobileTypeSelect');
+  if (!mType) return;
+  mType.addEventListener('change', function() {
+    setTypeFilter(this.value);
+    renderProducts();
+  });
+})();
+
+/* ── Desktop Type dropdown ── */
+(function initTypeDropdown() {
+  var dfType = document.getElementById("dfbarType");
+  if (!dfType) return;
+  dfType.addEventListener("change", function() {
+    setTypeFilter(this.value);
+    renderProducts();
+  });
+  // Reset type dropdown when collection tab switches
+  document.querySelectorAll(".dftab").forEach(function(tab) {
+    tab.addEventListener("click", function() { dfType.value = "all"; });
+  });
+})();
+
+/* ── Reset button — Task 6 ── */
+(function initResetButton() {
+  const btn = document.getElementById('filterResetBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    setCollFilter('all');
+    setTypeFilter('all');
+    setSortOrder('featured');
+    renderProducts();
+  });
+})();
 function filterCollection(coll) {
   setCollFilter(coll);
   setTypeFilter('all');
@@ -4463,7 +5350,7 @@ function openPModal(id) {
   document.getElementById('pmodalType').textContent = p.type;
   document.getElementById('pmodalPrice').textContent = p.price;
   document.getElementById('pmodalDesc').textContent = p.desc;
-  document.getElementById('pmodalSize').textContent = '📐 ' + p.size;
+  document.getElementById('pmodalSize').textContent = '📐 ' + p.size + (p.color ? '  ·  🎨 ' + p.color : '');
 
   const mainImg = document.getElementById('pmodalMainImg');
   mainImg.src = imgs[0];
@@ -4479,7 +5366,29 @@ function openPModal(id) {
     thumb.addEventListener('error', function() { this.src = this.dataset.fallback; this.onerror = null; });
   });
 
-  document.getElementById('pmodalOrderBtn').onclick = () => { closePModal(); openOModal(id); };
+  const featuresEl = document.getElementById('pmodalFeatures');
+  if (featuresEl) {
+    const materialLabel = p.collection === 'Noir' ? 'Top-grain genuine cowhide' : 'Premium vegan leather';
+    featuresEl.innerHTML = `
+      <span class="pfeat">${materialLabel}</span>
+      <span class="pfeat">Gold-tone hardware</span>
+      <span class="pfeat">Interior pockets</span>
+      <span class="pfeat">Checked before dispatch</span>
+      <span class="pfeat">Luxury gift packaging</span>
+      <span class="pfeat">Pay on delivery</span>
+    `;
+  }
+
+  document.getElementById('pmodalOrderBtn').onclick = () => {
+    // Safe transition: hide product modal visually without popping OverlayManager
+    // (avoids history.back() race condition that would close the order modal).
+    const pov = document.getElementById('pmodalOverlay');
+    pov.classList.remove('open');
+    pov.setAttribute('aria-hidden', 'true');
+    // openOModal with fromPModal=true swaps the OverlayManager slot and
+    // skips lockScroll (already locked) and OverlayManager.push (already in stack).
+    openOModal(id, true);
+  };
 
   lastFocusedElement = document.activeElement;
   const overlay = document.getElementById('pmodalOverlay');
@@ -4525,7 +5434,7 @@ document.getElementById('pmodalClose').addEventListener('click', closePModal);
 /* ═══════════════════════════════════════
    ORDER MODAL
 ═══════════════════════════════════════ */
-function openOModal(id) {
+function openOModal(id, fromPModal) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
 
@@ -4553,12 +5462,19 @@ function openOModal(id) {
   ['oName','oPhone','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
   document.getElementById('oQty').value = '1';
 
-  lastFocusedElement = document.activeElement;
+  lastFocusedElement = fromPModal ? lastFocusedElement : document.activeElement;
   const overlay = document.getElementById('omodalOverlay');
   overlay.classList.add('open');
   overlay.setAttribute('aria-hidden', 'false');
-  lockScroll();
-  OverlayManager.push('omodal', closeOModal);
+  if (fromPModal) {
+    // Swap pmodal → omodal in OverlayManager without touching browser history.
+    // This prevents history.back() race condition where the async popstate
+    // from closePModal() would immediately close the newly-opened order modal.
+    OverlayManager.swap('pmodal', 'omodal', closeOModal);
+  } else {
+    lockScroll();
+    OverlayManager.push('omodal', closeOModal);
+  }
   requestAnimationFrame(() => document.getElementById('oName').focus());
 }
 
@@ -4641,18 +5557,6 @@ function submitToGoogleForm(data) {
     body.append(GFORM_FIELDS.productCode, data.productCode);   // e.g. "Essence01"
     body.append(GFORM_FIELDS.notes,       data.notes || '');   // customer notes only
 
-    // Debug: log the full payload before submission
-    console.log('[ZARIAH] Google Form payload:', {
-      customerName: data.name,
-      phone:        data.phone,
-      address:      data.address,
-      district:     data.district,
-      productName:  data.productName,
-      productCode:  data.productCode,
-      quantity:     data.quantity,
-      notes:        data.notes,
-    });
-
     fetch(GFORM_ACTION, {
       method: 'POST',
       mode: 'no-cors',
@@ -4720,6 +5624,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', () => {
     `📦 Product: ${productName}\n` +
     `🏷 Collection: ${collection}\n` +
     `🔖 Code: ${productCode}\n` +
+    `🎨 Color: ${productObj ? productObj.color : 'Please advise'}\n` +
     `💰 Price: ${price}\n` +
     `🔢 Quantity: ${qty}\n\n` +
     `👤 Name: ${name}\n` +
@@ -4949,6 +5854,54 @@ function parsePrice(priceStr) {
 
 renderProducts();
 renderFAQ();
+
+/* ═══════════════════════════════════════
+   TASK 7 — STICKY DESKTOP FILTER BAR
+   Only appears when user scrolls the
+   products header OUT of the viewport.
+   Never shown on page load.
+═══════════════════════════════════════ */
+(function initStickyFilterBar() {
+  const bar       = document.getElementById('desktopFilterBar');
+  const spacer    = document.getElementById('dfbarSpacer');
+  const productsSection = document.getElementById('products');
+  if (!bar || !spacer || !productsSection) return;
+
+  const mq = window.matchMedia('(min-width: 769px)');
+  if (!mq.matches) return;
+
+  let isSticky = false;
+  let ticking  = false;
+
+  function checkSticky() {
+    if (!window.matchMedia('(min-width: 769px)').matches) {
+      if (isSticky) {
+        isSticky = false;
+        bar.classList.remove('is-sticky');
+        spacer.style.display = 'none';
+      }
+      return;
+    }
+    // The bar should stick only after the products section header
+    // has scrolled above the collapsed nav (62px).
+    const productsTop = productsSection.getBoundingClientRect().top;
+    const shouldStick = productsTop < 62;
+
+    if (shouldStick === isSticky) return;
+    isSticky = shouldStick;
+    bar.classList.toggle('is-sticky', shouldStick);
+    spacer.style.display = shouldStick ? 'block' : 'none';
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => { checkSticky(); ticking = false; });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', checkSticky, { passive: true });
+})();
 
 /* ═══════════════════════════════════════
    META PIXEL EVENT TRACKING ARCHITECTURE
