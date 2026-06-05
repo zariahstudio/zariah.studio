@@ -37,7 +37,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
 <!-- ═══════════════════════════════════════
-     META PIXEL — ID: 1003746465444550
+     META PIXEL — ID: 1765030204483711
      Pixel verified and active.
 ═══════════════════════════════════════ -->
 <script>
@@ -49,11 +49,11 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1003746465444550');
+fbq('init', '1765030204483711');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1003746465444550&ev=PageView&noscript=1"/></noscript>
+src="https://www.facebook.com/tr?id=1765030204483711&ev=PageView&noscript=1"/></noscript>
 
 <!-- ═══════════════════════════════════════
      GOOGLE ANALYTICS 4 — ID: G-VWTCQTCSN1
@@ -406,7 +406,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex;
   align-items: center;
 }
-@media (max-width: 768px) { .ann { height: 34px; font-size: 10px; } }
+@media (max-width: 768px) {
+  .ann {
+    height: 34px;
+    font-size: 10px;
+    /* PATCH P1: sticky so bar stays visible above fixed header on scroll */
+    position: sticky;
+    top: 0;
+    z-index: 202; /* above header z-index:200 */
+  }
+}
 
 /* Ticker container — full width, clips overflow */
 .ann-ticker {
@@ -2548,7 +2557,8 @@ input, textarea {
 @media (max-width: 768px) {
   .ann { font-size: 10px; padding: 8px 12px; }
   .hdr { padding: 16px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
-  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 0; }
+  /* PATCH P1: when scrolled, keep header below sticky ann bar (not top:0) */
+  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
   .nav-links { display: none; }
   .btn-wa { display: none; }
   .hamburger { display: flex; }
@@ -2799,7 +2809,7 @@ input, textarea {
    height approach used above.
 ═══════════════════════════════════════ */
 @media (max-width: 480px) {
-  .ann span { display: none; }
+  .ann .ann-sep { display: none; } /* PATCH P1: only hide separators on tiny screens, not item text */
   .hero-content { padding: 0 20px; bottom: clamp(36px, 7vh, 60px); }
   .btn-primary, .btn-outline { padding: 13px 24px; }
 
@@ -2936,7 +2946,161 @@ input, textarea {
   }
   .btn-order { margin-top: auto; }
 }
-/* IOS SCROLL LOCK — handled by .body-locked above */
+/* ═══════════════════════════════════════
+   MOBILE AUDIT PATCHES
+   All rules scoped to max-width:768px —
+   zero desktop impact guaranteed.
+═══════════════════════════════════════ */
+
+/* ── PHASE 2: Collection Quick-Nav Chips (hero → products shortcut) ── */
+.m-coll-chips {
+  display: none; /* hidden on desktop */
+}
+@media (max-width: 768px) {
+  .m-coll-chips {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 18px 20px;
+    background: var(--forest);
+    border-top: 1px solid rgba(184,150,90,.1);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Prevent this from being a scroll trap */
+    overscroll-behavior-x: contain;
+  }
+  .m-coll-chips::-webkit-scrollbar { display: none; }
+  .m-chip {
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: var(--gold-soft);
+    border: 1px solid rgba(184,150,90,.35);
+    padding: 9px 20px;
+    background: transparent;
+    cursor: pointer;
+    transition: background .22s, color .22s, border-color .22s;
+    /* Minimum 44px touch target */
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    text-decoration: none;
+  }
+  .m-chip:active {
+    background: rgba(184,150,90,.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+}
+
+/* ── PHASE 4: Early Mobile Trust Strip ── */
+.m-trust-early {
+  display: none;
+}
+@media (max-width: 768px) {
+  .m-trust-early {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--cream);
+    border-bottom: 1px solid rgba(184,150,90,.15);
+  }
+  .m-trust-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .m-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 18px;
+    border-right: 1px solid rgba(184,150,90,.12);
+    border-bottom: 1px solid rgba(184,150,90,.12);
+  }
+  .m-trust-item:nth-child(2n) { border-right: none; }
+  .m-trust-item:nth-last-child(-n+2) { border-bottom: none; }
+  .m-trust-ico {
+    color: var(--gold);
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .m-trust-txt {
+    font-size: 11px;
+    letter-spacing: .06em;
+    color: var(--charcoal);
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  .m-trust-sub {
+    font-size: 9.5px;
+    color: var(--muted);
+    font-weight: 300;
+    display: block;
+    margin-top: 1px;
+  }
+}
+
+/* ── PHASE 5: Minimum 44px touch targets ── */
+@media (max-width: 768px) {
+  /* btn-order: ensure 44px min height */
+  .btn-order { min-height: 44px; }
+  /* mob-coll-tab: ensure 44px tap area */
+  .mob-coll-tab { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  /* fsheet-tab touch target */
+  .fsheet-tab { min-height: 44px; display: flex; align-items: center; }
+  /* filter-sheet-close */
+  .filter-sheet-close { min-width: 44px; min-height: 44px; }
+  /* pmodal-close already 36px — bump to 44px on mobile */
+  .pmodal-close { width: 44px; height: 44px; font-size: 17px; }
+  /* Testimonial nav buttons already 48px — fine */
+  /* FAQ toggle: bump to 44px */
+  .faq-toggle { width: 44px; height: 44px; }
+  /* mnav-close already 44px — fine */
+}
+
+/* ── PHASE 6: Mobile performance improvements ── */
+@media (max-width: 768px) {
+  /* Reduce hero scale animation intensity on mobile to cut GPU load */
+  @keyframes heroScaleMobile {
+    from { transform: scale(1.03); }
+    to   { transform: scale(1); }
+  }
+  .hero-bg-img { animation: heroScaleMobile 7s var(--ease-out) forwards; }
+
+  /* Reduce marquee repaints on trust ribbon */
+  .trust-track { contain: layout style paint; }
+
+  /* Ann-track: ensure GPU compositing works on older Android WebViews */
+  .ann-track { transform: translateZ(0); }
+}
+
+/* ── PHASE 8: Smoother popup open/close ── */
+@media (max-width: 768px) {
+  /* Soften the close: scale stays at 1 (no shrink), pure vertical slide */
+  .pmodal {
+    transform: translateY(40px);
+    transition: transform .38s cubic-bezier(0.32, 0, 0.67, 0);
+  }
+  .pmodal-overlay.open .pmodal {
+    transform: translateY(0);
+    transition: transform .44s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  /* Overlay fade: slightly faster close than open for snappier feel */
+  .pmodal-overlay {
+    transition: opacity .28s var(--ease);
+  }
+  .pmodal-overlay.open {
+    transition: opacity .38s var(--ease);
+  }
+}
+
 
 /* ═══════════════════════════════════════
    SCROLL-MARGIN-TOP — fixed header offset
@@ -2956,7 +3120,7 @@ input, textarea {
   scroll-margin-top: 90px;
 }
 @media (max-width: 768px) {
-  /* Mobile: announcement bar (34px) + header (56px) + 8px breathing = 98px */
+  /* Mobile: sticky ann bar (34px) + collapsed header (~56px) = 90px */
   #products,
   #story,
   #process,
@@ -2964,7 +3128,7 @@ input, textarea {
   #faq,
   #collections,
   #why {
-    scroll-margin-top: 100px;
+    scroll-margin-top: 90px;
   }
 }
 
@@ -3638,6 +3802,9 @@ input, textarea {
     <li><a href="#faq" data-mnav-target="faq">FAQ</a></li>
   </ul>
   <div class="mnav-footer">
+    <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer" style="background:transparent;border:1px solid rgba(184,150,90,.35);color:var(--gold);margin-bottom:10px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>Follow us on Facebook
+    </a>
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
   </div>
 </nav>
@@ -4154,10 +4321,18 @@ input, textarea {
     </div>
   </div>
   <div class="container">
-    <div class="ig-cta reveal">
+    <div class="ig-cta reveal" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;">
+      <a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener noreferrer" class="btn-ig">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Follow on Instagram
+      </a>
       <a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener noreferrer" class="btn-ig">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
         Follow on Facebook
+      </a>
+      <a href="mailto:studioo.zariah@gmail.com" class="btn-ig">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+        Email Us
       </a>
     </div>
   </div>
@@ -4196,6 +4371,9 @@ input, textarea {
         <div class="footer-tag">A Brand of <span class="brand-name">InsightBridge</span> · Made in Bangladesh</div>
         <p class="footer-desc">Refined handbags designed for women who appreciate understated luxury, timeless silhouettes, and thoughtful craftsmanship. Delivered across Bangladesh.</p>
         <div class="footer-socials">
+          <a href="https://www.instagram.com/zariah.studioo" class="soc-btn" aria-label="Follow ZARIAH Studio on Instagram" target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
           <a href="https://www.facebook.com/zariah.studioo" class="soc-btn" aria-label="Follow ZARIAH Studio on Facebook" target="_blank" rel="noopener noreferrer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
           </a>
@@ -4232,6 +4410,14 @@ input, textarea {
         <div class="fcon-item">
           <span class="fcon-ico" aria-hidden="true">📘</span>
           <div class="fcon-txt"><a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener noreferrer">@zariah.studioo</a></div>
+        </div>
+        <div class="fcon-item">
+          <span class="fcon-ico" aria-hidden="true">📷</span>
+          <div class="fcon-txt"><a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener noreferrer">@zariah.studioo</a></div>
+        </div>
+        <div class="fcon-item">
+          <span class="fcon-ico" aria-hidden="true">✉️</span>
+          <div class="fcon-txt"><a href="mailto:studioo.zariah@gmail.com">studioo.zariah@gmail.com</a></div>
         </div>
         <div class="fcon-item">
           <span class="fcon-ico" aria-hidden="true">📍</span>
