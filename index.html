@@ -363,12 +363,13 @@ gtag('config', 'G-VWTCQTCSN1', {
    RESET & BASE
 ═══════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
   background: var(--white);
   color: var(--charcoal);
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: auto;
@@ -387,86 +388,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
-/* ═══════════════════════════════════════
-   ANNOUNCEMENT BAR — GPU TICKER
-   3 trust signals · right→left · infinite
-   No reset jump · no flicker · no lag
-═══════════════════════════════════════ */
-.ann {
-  background: var(--forest);
-  color: var(--gold-soft);
-  font-size: 11px;
-  letter-spacing: .16em;
-  font-weight: 300;
-  position: relative;
-  z-index: 201;
-  overflow: hidden;
-  height: 38px;
-  display: flex;
-  align-items: center;
-}
-@media (max-width: 768px) {
-  .ann {
-    height: 34px;
-    font-size: 10px;
-    /* PATCH P1: sticky so bar stays visible above fixed header on scroll */
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    z-index: 202; /* above header z-index:200 */
-  }
-}
-
-/* Ticker container — full width, clips overflow */
-.ann-ticker {
-  display: flex;
-  width: 100%;
-  overflow: hidden;
-}
-
-/* Two identical tracks concatenated = seamless loop.
-   Animation slides exactly -50% (one full copy) so the
-   join is invisible. translate3d forces GPU compositing. */
-.ann-track {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  will-change: transform;
-  animation: annTicker 22s linear infinite;
-  /* Pause on hover for accessibility */
-}
-.ann-ticker:hover .ann-track { animation-play-state: paused; }
-
-@keyframes annTicker {
-  0%   { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-50%, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ann-track { animation: none; }
-}
-
-.ann-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 48px;
-  flex-shrink: 0;
-}
-.ann-dot {
-  color: var(--gold);
-  font-size: 7px;
-  opacity: .6;
-  flex-shrink: 0;
-}
-.ann-sep {
-  display: inline-block;
-  width: 1px;
-  height: 10px;
-  background: rgba(184,150,90,.25);
-  margin: 0 32px;
-  flex-shrink: 0;
-}
 
 /* ═══════════════════════════════════════
    HEADER
@@ -480,7 +401,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding-left: max(52px, env(safe-area-inset-left));
   padding-right: max(52px, env(safe-area-inset-right));
   transition: background .4s var(--ease), padding .35s var(--ease), box-shadow .4s;
-  top: 38px;
+  top: 0;
 }
 .hdr.scrolled {
   top: 0;
@@ -591,16 +512,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   z-index: 210;
   transform: translateX(100%);
   transition: transform .45s var(--ease);
-  /* FIX: flex column so footer is always pinned visible at bottom */
-  display: flex;
-  flex-direction: column;
   padding: 80px 40px 40px;
   padding-top: max(80px, calc(60px + env(safe-area-inset-top)));
   padding-left: max(40px, env(safe-area-inset-left));
   padding-right: max(40px, env(safe-area-inset-right));
   padding-bottom: max(40px, env(safe-area-inset-bottom));
-  /* FIX: overflow moved to mnav-links — mnav itself clips cleanly */
-  overflow: hidden;
+  overflow-y: auto;
   visibility: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -623,8 +540,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: none;
   border: 1px solid rgba(184,150,90,.2);
 }
-/* FIX: mnav-links scrolls internally; flex:1 + min-height:0 lets it shrink below content size */
-.mnav-links { list-style: none; display: flex; flex-direction: column; flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
+.mnav-links { list-style: none; display: flex; flex-direction: column; }
 .mnav-links li { border-bottom: 1px solid rgba(184,150,90,.1); }
 .mnav-links a {
   display: block;
@@ -636,18 +552,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: color .2s, padding-left .2s;
 }
 .mnav-links a:hover { color: var(--gold); padding-left: 10px; }
-/* FIX: footer is always visible — flex:0 0 auto prevents it from being pushed off-screen */
-.mnav-footer { margin-top: 24px; flex: 0 0 auto; }
-.mnav-social { margin-top: 16px; }
-.mnav-social-lbl {
-  font-size: 9px;
-  letter-spacing: .38em;
-  text-transform: uppercase;
-  color: var(--gold);
-  font-weight: 300;
-  margin-bottom: 12px;
-  opacity: .8;
-}
+.mnav-footer { margin-top: 40px; }
 .btn-wa-mobile {
   display: block;
   background: var(--gold);
@@ -658,7 +563,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: .22em;
   text-transform: uppercase;
   font-weight: 500;
-  margin-bottom: 8px;
 }
 
 /* ═══════════════════════════════════════
@@ -1679,7 +1583,6 @@ body.mnav-open .hamburger {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 3px;
-  margin-bottom: 36px;
 }
 .ig-tile {
   position: relative;
@@ -1688,7 +1591,7 @@ body.mnav-open .hamburger {
   cursor: pointer;
 }
 .ig-tile:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-.ig-tile-bg { position: absolute; inset: 0; z-index: 0; transition: transform .6s var(--ease); will-change: transform; }
+.ig-tile-bg { width: 100%; height: 100%; transition: transform .6s var(--ease); will-change: transform; }
 .ig-tile-img {
   position: absolute;
   inset: 0;
@@ -1717,23 +1620,6 @@ body.mnav-open .hamburger {
 .ig-ov span { font-size: 22px; color: var(--cream); opacity: 0; transition: opacity .3s; }
 .ig-tile:hover .ig-ov span { opacity: 1; }
 .ig-deco { position: absolute; inset: 16px; border: 1px solid rgba(184,150,90,.08); pointer-events: none; z-index: 4; }
-.ig-cta { text-align: center; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; }
-.btn-ig {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid rgba(27,27,27,.2);
-  padding: 13px 34px;
-  font-size: 11px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--charcoal);
-  font-weight: 300;
-  transition: all .25s;
-  background: none;
-  cursor: pointer;
-}
-.btn-ig:hover { background: var(--forest); color: var(--cream); border-color: var(--forest); }
 
 /* ═══════════════════════════════════════
    FAQ
@@ -2572,10 +2458,8 @@ input, textarea {
    RESPONSIVE — 768px
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
-  .ann { font-size: 10px; } /* FIX: removed padding:8px 12px — was eating 16px from fixed 34px height via border-box, leaving 18px content area clipped by overflow:hidden */
-  .hdr { padding: 16px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
-  /* PATCH P1: when scrolled, keep header below sticky ann bar (not top:0) */
-  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
+  .hdr { padding: 16px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 0; }
+  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 0; }
   .nav-links { display: none; }
   .btn-wa { display: none; }
   .hamburger { display: flex; }
@@ -2825,7 +2709,6 @@ input, textarea {
    height approach used above.
 ═══════════════════════════════════════ */
 @media (max-width: 480px) {
-  .ann .ann-sep { display: none; } /* PATCH P1: only hide separators on tiny screens, not item text */
   .hero-content { padding: 0 20px; bottom: clamp(36px, 7vh, 60px); }
   .btn-primary, .btn-outline { padding: 13px 24px; }
 
@@ -2910,7 +2793,6 @@ input, textarea {
   .pcard-name { font-size: 11.5px; }
   .pcard-price { font-size: 10.5px; }
   .btn-order { font-size: 7.5px; letter-spacing: .1em; padding: 9px 3px; }
-  .ann { font-size: 9px; letter-spacing: .1em; }
   .logo-name { font-size: 18px; }
 }
 
@@ -2967,63 +2849,6 @@ input, textarea {
    All rules scoped to max-width:768px —
    zero desktop impact guaranteed.
 ═══════════════════════════════════════ */
-
-/* ── Mobile nav social buttons ── */
-@media (max-width: 768px) {
-.mnav-fb-btn,
-.mnav-ig-btn,
-.mnav-email-btn {
-  background: transparent !important;
-  border: 1px solid rgba(184,150,90,.3) !important;
-  color: rgba(245,237,216,.7) !important;
-  margin-bottom: 8px;
-  display: flex !important;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-}
-.mnav-fb-btn:hover,
-.mnav-ig-btn:hover,
-.mnav-email-btn:hover {
-  border-color: var(--gold) !important;
-  color: var(--gold) !important;
-}
-}
-
-/* ── Editorial section: ensure buttons visible on mobile ── */
-@media (max-width: 768px) {
-  .ig-cta {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 0 20px;
-  }
-  .btn-ig {
-    width: 100%;
-    justify-content: center;
-    padding: 14px 20px;
-    border-color: rgba(27,27,27,.25);
-    font-size: 10px;
-    letter-spacing: .18em;
-  }
-}
-
-/* ── Announcement ticker: force animation on mobile ── */
-@media (max-width: 768px) {
-  .ann-track {
-    animation: annTicker 18s linear infinite !important;
-    -webkit-animation: annTicker 18s linear infinite !important;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-  @-webkit-keyframes annTicker {
-    0%   { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
-    100% { -webkit-transform: translate3d(-50%, 0, 0); transform: translate3d(-50%, 0, 0); }
-  }
-}
 
 .m-coll-chips {
   display: none; /* hidden on desktop */
@@ -3149,8 +2974,6 @@ input, textarea {
   /* Reduce marquee repaints on trust ribbon */
   .trust-track { contain: layout style paint; }
 
-  /* Ann-track: ensure GPU compositing works on older Android WebViews */
-  .ann-track { transform: translateZ(0); }
 }
 
 /* ── PHASE 8: Smoother popup open/close ── */
@@ -3176,11 +2999,9 @@ input, textarea {
 
 /* ═══════════════════════════════════════
    SCROLL-MARGIN-TOP — fixed header offset
-   The fixed header is ~90px tall on mobile
-   (announcement bar + header). Without this,
-   anchor targets are hidden under the header.
-   Desktop header is ~90px scrolled — same value
-   works for both breakpoints.
+   The fixed header is ~62px collapsed on desktop,
+   ~50px on mobile. These values add a safe buffer
+   so anchor targets are not hidden under the header.
 ═══════════════════════════════════════ */
 #products,
 #story,
@@ -3188,19 +3009,21 @@ input, textarea {
 #testimonials,
 #faq,
 #collections,
-#why {
-  scroll-margin-top: 90px;
+#why,
+#editorial {
+  scroll-margin-top: 80px;
 }
 @media (max-width: 768px) {
-  /* Mobile: sticky ann bar (34px) + collapsed header (~56px) = 90px */
+  /* Mobile: collapsed header (~50px) + safe buffer */
   #products,
   #story,
   #process,
   #testimonials,
   #faq,
   #collections,
-  #why {
-    scroll-margin-top: 90px;
+  #why,
+  #editorial {
+    scroll-margin-top: 68px;
   }
 }
 
@@ -3356,17 +3179,17 @@ input, textarea {
 
 /* ═══════════════════════════════════════
    SCROLL MARGIN — Prevent header overlap
-   on anchor navigation. Values = ann bar
-   height + collapsed header height.
-   Desktop: 38px ann + 62px hdr = 100px
-   Mobile:  34px ann + 50px hdr = 84px
+   on anchor navigation. Values = collapsed
+   header height with safe buffer.
+   Desktop: ~62px collapsed header + buffer = 80px
+   Mobile:  ~50px collapsed header + buffer = 68px
 ═══════════════════════════════════════ */
 #products, #collections, #story, #process, #testimonials, #why, #faq, #editorial {
-  scroll-margin-top: 100px;
+  scroll-margin-top: 80px;
 }
 @media (max-width: 768px) {
   #products, #collections, #story, #process, #testimonials, #why, #faq, #editorial {
-    scroll-margin-top: 84px;
+    scroll-margin-top: 68px;
   }
 }
 
@@ -3810,32 +3633,6 @@ input, textarea {
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
 
-<!-- ANNOUNCEMENT BAR — GPU TICKER (3 signals · right→left · infinite · no jump) -->
-<div class="ann" role="region" aria-label="Store announcement">
-  <div class="ann-ticker" aria-hidden="true">
-    <!-- Two identical copies concatenated. Animation slides -50% = one full set.
-         The join is invisible because both ends are identical. -->
-    <div class="ann-track">
-      <!-- Copy 1 -->
-      <span class="ann-item"><span class="ann-dot">◆</span>Free Delivery Over ৳2,000</span>
-      <span class="ann-sep"></span>
-      <span class="ann-item"><span class="ann-dot">◆</span>Pay Only When You Receive</span>
-      <span class="ann-sep"></span>
-      <span class="ann-item"><span class="ann-dot">◆</span>7-Day Easy Exchange</span>
-      <span class="ann-sep"></span>
-      <!-- Copy 2 — exact duplicate for seamless loop -->
-      <span class="ann-item"><span class="ann-dot">◆</span>Free Delivery Over ৳2,000</span>
-      <span class="ann-sep"></span>
-      <span class="ann-item"><span class="ann-dot">◆</span>Pay Only When You Receive</span>
-      <span class="ann-sep"></span>
-      <span class="ann-item"><span class="ann-dot">◆</span>7-Day Easy Exchange</span>
-      <span class="ann-sep"></span>
-    </div>
-  </div>
-  <!-- Screen-reader accessible version (hidden visually) -->
-  <span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">Free Delivery Over ৳2,000 · Pay Only When You Receive · 7-Day Easy Exchange</span>
-</div>
-
 <!-- HEADER -->
 <header class="hdr" id="hdr">
   <div class="hdr-inner">
@@ -3875,18 +3672,6 @@ input, textarea {
   </ul>
   <div class="mnav-footer">
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
-    <div class="mnav-social">
-      <p class="mnav-social-lbl">Follow Us</p>
-      <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
-      </a>
-      <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
-      </a>
-      <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
-      </a>
-    </div>
   </div>
 </nav>
 
@@ -4399,22 +4184,6 @@ input, textarea {
       <img class="ig-tile-img" src="images/editorial/editorial01.webp" alt="ZARIAH editorial 7" loading="lazy" style="object-position:center 60%" onerror="this.style.display='none'">
       <div class="ig-tile-bg" style="background:linear-gradient(145deg,#1a2c1a,#101810);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="ig-cta reveal">
-      <a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener noreferrer" class="btn-ig">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-        Follow on Instagram
-      </a>
-      <a href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener noreferrer" class="btn-ig">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-        Follow on Facebook
-      </a>
-      <a href="mailto:studioo.zariah@gmail.com" class="btn-ig">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
-        Email Us
-      </a>
     </div>
   </div>
 </section>
