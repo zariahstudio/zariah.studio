@@ -363,27 +363,15 @@ gtag('config', 'G-VWTCQTCSN1', {
    RESET & BASE
 ═══════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  /* PATCH P1: overflow-x:clip does NOT create a scroll container,
-     so position:sticky works correctly on Android Chrome.
-     overflow-x:hidden on <body> was the root cause of the ann bar
-     disappearing — it silently converts body into a scroll container
-     which kills all sticky descendants. */
-  overflow-x: clip;
-}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
 body {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
   background: var(--white);
   color: var(--charcoal);
-  /* PATCH P1: removed overflow-x:hidden — moved to html with overflow-x:clip */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior-y: none; /* PATCH P7: prevent Android pull-to-refresh mid-scroll */
+  overscroll-behavior-y: auto;
 }
 img { display: block; max-width: 100%; height: auto; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 a { text-decoration: none; color: inherit; }
@@ -412,10 +400,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: 300;
   position: relative;
   z-index: 201;
-  /* PATCH P1: overflow:clip clips content without creating a scroll container.
-     overflow:hidden was creating a nested scroll context that defeated
-     position:sticky on Android Chrome (the second of two causes). */
-  overflow: clip;
+  overflow: hidden;
   height: 38px;
   display: flex;
   align-items: center;
@@ -424,20 +409,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .ann {
     height: 34px;
     font-size: 10px;
-    /* PATCH P1 FINAL FIX: position:sticky is fatally broken on Android Chrome
-       when any ancestor has overflow-x:hidden (or the body acts as scroll
-       container). Switching to position:fixed is the only fully reliable
-       solution across all Android versions (8–14) and all Chromium builds.
-       body gets padding-top:34px below to push content down. */
-    position: fixed;
+    /* PATCH P1: sticky so bar stays visible above fixed header on scroll */
+    position: -webkit-sticky;
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
     z-index: 202; /* above header z-index:200 */
-  }
-  /* Push ALL page content below the fixed ann bar */
-  body {
-    padding-top: 34px;
   }
 }
 
@@ -615,51 +591,23 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   z-index: 210;
   transform: translateX(100%);
   transition: transform .45s var(--ease);
+  /* FIX: flex column so footer is always pinned visible at bottom */
+  display: flex;
+  flex-direction: column;
   padding: 80px 40px 40px;
   padding-top: max(80px, calc(60px + env(safe-area-inset-top)));
   padding-left: max(40px, env(safe-area-inset-left));
   padding-right: max(40px, env(safe-area-inset-right));
-  /* PATCH P6: Use fixed bottom padding that accounts for Android gesture bar.
-     env(safe-area-inset-bottom) returns 0px on Android (unlike iOS) — the
-     gesture navigation bar (24–48px) is NOT included in this value.
-     Adding 56px of extra clearance ensures social buttons are never
-     physically hidden behind the Android system navigation bar. */
-  padding-bottom: max(56px, calc(env(safe-area-inset-bottom) + 56px));
-  overflow-y: auto;
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+  /* FIX: overflow moved to mnav-links — mnav itself clips cleanly */
+  overflow: hidden;
   visibility: hidden;
   -webkit-overflow-scrolling: touch;
-  /* PATCH P6: Make mnav a flex column so .mnav-links expands and
-     .mnav-footer is pushed to the bottom with margin-top:auto.
-     This ensures social links are always visible without requiring
-     the user to scroll — they anchor to the visible bottom of the panel. */
-  display: flex;
-  flex-direction: column;
 }
 .mnav.open { transform: none; visibility: visible; }
 /* Ensure transition includes visibility for browsers that need it */
 .mnav { transition: transform .45s var(--ease), visibility 0s .45s; }
 .mnav.open { transition: transform .45s var(--ease), visibility 0s 0s; }
-
-/* PATCH P11: Scroll affordance — subtle gradient at bottom of mnav when
-   content overflows on short screens (<680px height). Signals to the user
-   that the panel is scrollable and more content (social links) is below.
-   The ::after pseudo-element sits above the content, pointer-events:none
-   so it never blocks taps. Fades out when scrolled to bottom via JS class. */
-.mnav::after {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 72px;
-  background: linear-gradient(to top, rgba(10,26,18,0.92) 0%, transparent 100%);
-  pointer-events: none;
-  z-index: 211;
-  opacity: 0;
-  transition: opacity .3s;
-}
-.mnav.open.has-overflow::after { opacity: 1; }
-.mnav.open.scrolled-bottom::after { opacity: 0; }
 .mnav-close {
   position: absolute;
   top: 24px;
@@ -675,14 +623,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: none;
   border: 1px solid rgba(184,150,90,.2);
 }
-.mnav-links {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  /* PATCH P6: flex:1 makes the links section grow to fill available space,
-     pushing .mnav-footer to the bottom of the panel via margin-top:auto */
-  flex: 1;
-}
+/* FIX: mnav-links scrolls internally; flex:1 + min-height:0 lets it shrink below content size */
+.mnav-links { list-style: none; display: flex; flex-direction: column; flex: 1 1 auto; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; }
 .mnav-links li { border-bottom: 1px solid rgba(184,150,90,.1); }
 .mnav-links a {
   display: block;
@@ -694,13 +636,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: color .2s, padding-left .2s;
 }
 .mnav-links a:hover { color: var(--gold); padding-left: 10px; }
-.mnav-footer {
-  /* PATCH P6: margin-top:auto pushes footer to bottom of flex container.
-     flex-shrink:0 prevents it from being crushed if links section is tall.
-     This guarantees social buttons are always visible without scrolling. */
-  margin-top: auto;
-  padding-top: 32px;
-  flex-shrink: 0;
+/* FIX: footer is always visible — flex:0 0 auto prevents it from being pushed off-screen */
+.mnav-footer { margin-top: 24px; flex: 0 0 auto; }
+.mnav-social { margin-top: 16px; }
+.mnav-social-lbl {
+  font-size: 9px;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  margin-bottom: 12px;
+  opacity: .8;
 }
 .btn-wa-mobile {
   display: block;
@@ -712,6 +658,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: .22em;
   text-transform: uppercase;
   font-weight: 500;
+  margin-bottom: 8px;
 }
 
 /* ═══════════════════════════════════════
@@ -1741,7 +1688,7 @@ body.mnav-open .hamburger {
   cursor: pointer;
 }
 .ig-tile:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-.ig-tile-bg { width: 100%; height: 100%; transition: transform .6s var(--ease); will-change: transform; }
+.ig-tile-bg { position: absolute; inset: 0; z-index: 0; transition: transform .6s var(--ease); will-change: transform; }
 .ig-tile-img {
   position: absolute;
   inset: 0;
@@ -2625,11 +2572,9 @@ input, textarea {
    RESPONSIVE — 768px
 ═══════════════════════════════════════ */
 @media (max-width: 768px) {
-  .ann { font-size: 10px; padding: 8px 12px; }
+  .ann { font-size: 10px; } /* FIX: removed padding:8px 12px — was eating 16px from fixed 34px height via border-box, leaving 18px content area clipped by overflow:hidden */
   .hdr { padding: 16px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
-  /* PATCH P1: .hdr.scrolled must NEVER go to top:0 on mobile.
-     The ann bar is fixed at top:0 (z-index:202). Header sits at top:34px.
-     If .hdr.scrolled went to top:0 it would slide UNDER the ann bar. */
+  /* PATCH P1: when scrolled, keep header below sticky ann bar (not top:0) */
   .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
   .nav-links { display: none; }
   .btn-wa { display: none; }
@@ -2857,13 +2802,9 @@ input, textarea {
 
   /* ── Floating WhatsApp: safe zone above bottom edge ──
      Prevent overlap with product card CTA buttons when
-     the grid rows are near the bottom of the viewport.
-     PATCH P8: raised from 28px to 80px on mobile so the
-     floating button never occludes the Order Now CTA in
-     the bottom product card row at 360–412px widths. */
+     the grid rows are near the bottom of the viewport */
   .wa-float {
-    bottom: 80px;
-    bottom: max(80px, calc(68px + env(safe-area-inset-bottom)));
+    bottom: 28px;
     right: 16px;
     right: max(16px, calc(8px + env(safe-area-inset-right)));
   }
@@ -3028,6 +2969,7 @@ input, textarea {
 ═══════════════════════════════════════ */
 
 /* ── Mobile nav social buttons ── */
+@media (max-width: 768px) {
 .mnav-fb-btn,
 .mnav-ig-btn,
 .mnav-email-btn {
@@ -3045,6 +2987,7 @@ input, textarea {
 .mnav-email-btn:hover {
   border-color: var(--gold) !important;
   color: var(--gold) !important;
+}
 }
 
 /* ── Editorial section: ensure buttons visible on mobile ── */
@@ -3201,16 +3144,7 @@ input, textarea {
     from { transform: scale(1.03); }
     to   { transform: scale(1); }
   }
-  .hero-bg-img {
-    animation: heroScaleMobile 7s var(--ease-out) forwards;
-    /* PATCH P4: Remove will-change:transform on mobile.
-       On Android Chrome 89–102 (factory Android 11 on Pixel 6a),
-       will-change:transform promotes this element to a GPU compositor
-       layer that can render above position:fixed ann bar z-index:202.
-       The ann bar paints correctly but is occluded by the composited layer.
-       Removing will-change on mobile eliminates this stacking context conflict. */
-    will-change: auto;
-  }
+  .hero-bg-img { animation: heroScaleMobile 7s var(--ease-out) forwards; }
 
   /* Reduce marquee repaints on trust ribbon */
   .trust-track { contain: layout style paint; }
@@ -3258,17 +3192,14 @@ input, textarea {
   scroll-margin-top: 90px;
 }
 @media (max-width: 768px) {
-  /* Mobile: fixed ann bar (34px) + fixed header (~50px) = 84px.
-     PATCH P1: ann bar is now position:fixed so it contributes to
-     the scroll offset. scroll-margin-top must include both bars. */
+  /* Mobile: sticky ann bar (34px) + collapsed header (~56px) = 90px */
   #products,
-  #collections,
   #story,
   #process,
   #testimonials,
-  #why,
   #faq,
-  #editorial {
+  #collections,
+  #why {
     scroll-margin-top: 90px;
   }
 }
@@ -3435,7 +3366,7 @@ input, textarea {
 }
 @media (max-width: 768px) {
   #products, #collections, #story, #process, #testimonials, #why, #faq, #editorial {
-    scroll-margin-top: 90px;
+    scroll-margin-top: 84px;
   }
 }
 
@@ -3943,16 +3874,19 @@ input, textarea {
     <li><a href="#faq" data-mnav-target="faq">FAQ</a></li>
   </ul>
   <div class="mnav-footer">
-    <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
-    </a>
-    <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
-    </a>
-    <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
-    </a>
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
+    <div class="mnav-social">
+      <p class="mnav-social-lbl">Follow Us</p>
+      <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
+      </a>
+      <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
+      </a>
+      <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -6025,15 +5959,7 @@ function lockScroll() {
 function unlockScroll() {
   document.body.classList.remove('body-locked');
   document.body.style.top = '';
-  // PATCH P10: Double rAF prevents the Android Chrome one-frame repaint delay
-  // between removing position:fixed and window.scrollTo() executing.
-  // Without this, Android Chrome repaints at scrollY=0 for one frame
-  // before the scrollTo fires, causing a visible jump on Pixel devices.
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      window.scrollTo(0, _scrollY);
-    });
-  });
+  window.scrollTo(0, _scrollY);
 }
 
 /* ═══════════════════════════════════════
@@ -6064,30 +5990,15 @@ function openMnav() {
   document.body.classList.add('mnav-open');
   lockScroll();
   OverlayManager.push('mnav', closeMnav);
-  // PATCH P11: Check if nav content overflows viewport (short screens)
-  // and show scroll affordance gradient if it does
-  requestAnimationFrame(function() {
-    if (mnav.scrollHeight > mnav.clientHeight + 10) {
-      mnav.classList.add('has-overflow');
-    }
-  });
 }
 function closeMnav() {
   mnav.classList.remove('open');
-  mnav.classList.remove('has-overflow');
-  mnav.classList.remove('scrolled-bottom');
   mnav.setAttribute('aria-hidden', 'true');
   hamburger.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('mnav-open');
   unlockScroll();
   OverlayManager.pop('mnav');
 }
-
-// PATCH P11: Update gradient affordance on mnav scroll
-mnav.addEventListener('scroll', function() {
-  const atBottom = mnav.scrollTop + mnav.clientHeight >= mnav.scrollHeight - 20;
-  mnav.classList.toggle('scrolled-bottom', atBottom);
-}, { passive: true });
 
 hamburger.addEventListener('click', () => {
   if (mnav.classList.contains('open')) {
