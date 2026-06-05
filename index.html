@@ -363,13 +363,12 @@ gtag('config', 'G-VWTCQTCSN1', {
    RESET & BASE
 ═══════════════════════════════════════ */
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; -moz-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
 body {
   font-family: 'Inter', sans-serif;
   font-weight: 300;
   background: var(--white);
   color: var(--charcoal);
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: auto;
@@ -411,6 +410,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
     height: 34px;
     font-size: 10px;
     /* PATCH P1: sticky so bar stays visible above fixed header on scroll */
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 202; /* above header z-index:200 */
@@ -631,9 +631,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: color .2s, padding-left .2s;
 }
 .mnav-links a:hover { color: var(--gold); padding-left: 10px; }
-.mnav-footer {
-  margin-top: 40px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
+.mnav-footer { margin-top: 40px; }
+.mnav-social { margin-top: 16px; }
+.mnav-social-lbl {
+  font-size: 9px;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 300;
+  margin-bottom: 12px;
+  opacity: .8;
 }
 .btn-wa-mobile {
   display: block;
@@ -645,6 +652,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: .22em;
   text-transform: uppercase;
   font-weight: 500;
+  margin-bottom: 8px;
 }
 
 /* ═══════════════════════════════════════
@@ -937,8 +945,8 @@ button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-/* Hamburger: always above hero, ann bar, and header — but below open nav */
-.hamburger { z-index: 205; position: relative; }
+/* Hamburger: always above hero but below open nav */
+.hamburger { z-index: 201; position: relative; }
 /* When mobile nav is open, header must not intercept touches
    EXCEPT the hamburger itself — users expect to tap it to close */
 body.mnav-open .hdr { pointer-events: none; }
@@ -1674,7 +1682,7 @@ body.mnav-open .hamburger {
   cursor: pointer;
 }
 .ig-tile:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-.ig-tile-bg { width: 100%; height: 100%; transition: transform .6s var(--ease); will-change: transform; }
+.ig-tile-bg { position: absolute; inset: 0; z-index: 0; transition: transform .6s var(--ease); will-change: transform; }
 .ig-tile-img {
   position: absolute;
   inset: 0;
@@ -1850,8 +1858,8 @@ body.mnav-open .hamburger {
 .footer-desc { font-size: 13px; color: rgba(245,237,216,.45); font-weight: 300; line-height: 1.75; margin-top: 18px; max-width: 280px; }
 .footer-socials { display: flex; gap: 10px; margin-top: 26px; }
 .soc-btn {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border: 1px solid rgba(255,255,255,.1);
   display: flex;
   align-items: center;
@@ -2955,6 +2963,7 @@ input, textarea {
 ═══════════════════════════════════════ */
 
 /* ── Mobile nav social buttons ── */
+@media (max-width: 768px) {
 .mnav-fb-btn,
 .mnav-ig-btn,
 .mnav-email-btn {
@@ -2972,6 +2981,7 @@ input, textarea {
 .mnav-email-btn:hover {
   border-color: var(--gold) !important;
   color: var(--gold) !important;
+}
 }
 
 /* ── Editorial section: ensure buttons visible on mobile ── */
@@ -3158,182 +3168,8 @@ input, textarea {
 }
 
 
-/* ── Mobile why-stats strip (desktop: hidden — why-visual shows stats) ── */
-.m-why-stats { display: none; }
-@media (max-width: 900px) {
-  .m-why-stats {
-    display: flex;
-    gap: 0;
-    margin: 28px 0 32px;
-    border: 1px solid rgba(184,150,90,.2);
-  }
-  .m-why-stat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 18px 8px;
-    border-right: 1px solid rgba(184,150,90,.15);
-    text-align: center;
-  }
-  .m-why-stat:last-child { border-right: none; }
-  .m-why-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 300;
-    color: var(--forest);
-    line-height: 1;
-    margin-bottom: 5px;
-  }
-  .m-why-lbl {
-    font-size: 9px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 300;
-    line-height: 1.3;
-  }
-}
-
-/* ── FIX 5: Process steps — 2-col on mobile (was 1-col, too much scroll) ── */
-@media (max-width: 768px) {
-  .process-steps {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 3px;
-  }
-  .step { padding: 28px 18px; }
-  .step-num { font-size: 40px; margin-bottom: 12px; }
-  .step-ico { font-size: 18px; margin-bottom: 8px; }
-  .step-ttl { font-size: 16px; margin-bottom: 6px; }
-  .step-txt { font-size: 12px; line-height: 1.6; }
-  /* Hide connectors on 2-col mobile layout */
-  .step-con { display: none; }
-}
-
-/* ── FIX 6: Why-visual stat counter — show on mobile in a compact form ── */
-@media (max-width: 768px) {
-  .why-counter {
-    /* Move counter in-flow on mobile — visual is hidden so counter floats oddly */
-    position: static;
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    border-left: 3px solid var(--gold);
-    padding: 12px 20px;
-    background: var(--white);
-    box-shadow: 0 4px 20px rgba(0,0,0,.07);
-    margin-bottom: 32px;
-    margin-top: 8px;
-  }
-  .cnum { font-size: 30px; }
-  .clbl { font-size: 10px; margin-top: 0; }
-  /* Ensure the why-inner shows the counter above pillars on mobile */
-  .why-inner > div:first-child {
-    display: flex;
-    flex-direction: column;
-  }
-  /* Move counter visually after the text heading, before pillars */
-  .why-counter { order: 3; }
-  .why-inner > div:first-child > .reveal { order: 1; }
-  .why-pillars { order: 2; }
-}
-
-/* ── FIX 7: story-stats — prevent horizontal overflow on 320px ── */
-@media (max-width: 360px) {
-  .story-stats {
-    flex-direction: column !important;
-    gap: 16px;
-  }
-  .stat-num { font-size: 32px; }
-}
-
-/* ── FIX 8: btn-coll — ensure 44px min touch target on mobile ── */
-@media (max-width: 768px) {
-  .btn-coll {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    padding-bottom: 6px;
-  }
-  /* Collection panel info: more readable on mobile */
-  .coll-info { padding: 24px 20px; }
-  .coll-title { font-size: clamp(20px, 5vw, 28px); margin-bottom: 10px; }
-  .coll-count { margin-bottom: 16px; }
-}
-
-/* ── FIX 9: Footer — reorder on mobile for better contact access ── */
-@media (max-width: 768px) {
-  .footer-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-  /* Move Contact Us column to top on mobile — most important for conversions */
-  .footer-grid > div:last-child { order: -1; }
-  /* Social buttons row */
-  .footer-socials { gap: 12px; }
-  /* Increase footer link tap targets */
-  .footer-links a {
-    display: block;
-    padding: 6px 0;
-    font-size: 14px;
-  }
-  .fcon-item { margin-bottom: 16px; }
-  .fcon-txt { font-size: 14px; }
-  .fcon-txt a { color: rgba(245,237,216,.7); }
-}
-
-/* ── FIX 10: footer-bottom — prevent copyright text overflow on 320px ── */
-@media (max-width: 768px) {
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .footer-copy { font-size: 11px; line-height: 1.6; }
-  .footer-legal { gap: 16px; }
-  .footer-legal a { font-size: 11px; padding: 4px 0; }
-}
-
-/* ── FIX 11: pmodal-footer safe-area on Android ── */
-@media (max-width: 768px) {
-  .pmodal-footer {
-    padding-bottom: max(28px, calc(20px + env(safe-area-inset-bottom)));
-  }
-  /* Ensure order button is full-height comfortable tap target */
-  .btn-modal-order { min-height: 52px; }
-}
-
-/* ── FIX 12: tcard readability on 320px ── */
-@media (max-width: 360px) {
-  .ttext { font-size: 13px; line-height: 1.75; }
-  .tname { font-size: 10px; }
-  .tcity { font-size: 10px; }
-}
-
-/* ── FIX 13: Hero CTA buttons — ensure min 44px on all screen sizes ── */
-@media (max-width: 768px) {
-  .btn-primary, .btn-outline { min-height: 48px; }
-}
-
-/* ── FIX 14: Announcement bar — ensure it doesn't clip on 320px ── */
-@media (max-width: 320px) {
-  .ann-item { padding: 0 24px; font-size: 9px; }
-}
-
-/* ── FIX 15: mob-coll-bar — ensure it's always visible and controls are easy to tap ── */
-@media (max-width: 768px) {
-  .mob-coll-track { padding-bottom: 4px; padding-top: 2px; }
-  .mob-coll-tab {
-    padding: 10px 18px;
-    font-size: 10px;
-  }
-  .mob-ctrl-select {
-    min-height: 40px;
-    font-size: 13px; /* prevent iOS zoom */
-  }
-}
-
+/* ═══════════════════════════════════════
+   SCROLL-MARGIN-TOP — fixed header offset
    The fixed header is ~90px tall on mobile
    (announcement bar + header). Without this,
    anchor targets are hidden under the header.
@@ -4032,16 +3868,19 @@ input, textarea {
     <li><a href="#faq" data-mnav-target="faq">FAQ</a></li>
   </ul>
   <div class="mnav-footer">
-    <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
-    </a>
-    <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
-    </a>
-    <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
-    </a>
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
+    <div class="mnav-social">
+      <p class="mnav-social-lbl">Follow Us</p>
+      <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
+      </a>
+      <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
+      </a>
+      <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
+      </a>
+    </div>
   </div>
 </nav>
 
@@ -4316,12 +4155,6 @@ input, textarea {
           <span class="lbl">Why Zariah</span>
           <h2 class="ttl" id="why-heading">Quiet Luxury<br>Is a <em>Statement</em></h2>
           <p class="sub">Every ZARIAH bag is designed with restraint — no excess, no noise. Just intentional elegance built for women who know exactly who they are.</p>
-        </div>
-        <!-- Mobile-only stat strip: why-visual is hidden on mobile so surface key stats here -->
-        <div class="m-why-stats reveal" aria-label="ZARIAH Studio at a glance">
-          <div class="m-why-stat"><span class="m-why-num">500+</span><span class="m-why-lbl">Happy Customers</span></div>
-          <div class="m-why-stat"><span class="m-why-num">18</span><span class="m-why-lbl">Refined Styles</span></div>
-          <div class="m-why-stat"><span class="m-why-num">100%</span><span class="m-why-lbl">Quality Guaranteed</span></div>
         </div>
         <div class="why-pillars">
           <div class="pillar reveal">
@@ -6225,7 +6058,7 @@ const revealObserver = new IntersectionObserver((entries) => {
       revealObserver.unobserve(entry.target);
     }
   });
-}, { threshold: 0.06, rootMargin: '0px 0px -20px 0px' });
+}, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
