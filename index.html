@@ -1700,7 +1700,7 @@ body.mnav-open .hamburger {
 .ig-ov span { font-size: 22px; color: var(--cream); opacity: 0; transition: opacity .3s; }
 .ig-tile:hover .ig-ov span { opacity: 1; }
 .ig-deco { position: absolute; inset: 16px; border: 1px solid rgba(184,150,90,.08); pointer-events: none; z-index: 4; }
-.ig-cta { text-align: center; }
+.ig-cta { text-align: center; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; align-items: center; }
 .btn-ig {
   display: inline-flex;
   align-items: center;
@@ -2951,7 +2951,61 @@ input, textarea {
    zero desktop impact guaranteed.
 ═══════════════════════════════════════ */
 
-/* ── PHASE 2: Collection Quick-Nav Chips (hero → products shortcut) ── */
+/* ── Mobile nav social buttons ── */
+.mnav-fb-btn,
+.mnav-ig-btn,
+.mnav-email-btn {
+  background: transparent !important;
+  border: 1px solid rgba(184,150,90,.3) !important;
+  color: rgba(245,237,216,.7) !important;
+  margin-bottom: 8px;
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+.mnav-fb-btn:hover,
+.mnav-ig-btn:hover,
+.mnav-email-btn:hover {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+}
+
+/* ── Editorial section: ensure buttons visible on mobile ── */
+@media (max-width: 768px) {
+  .ig-cta {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 0 20px;
+  }
+  .btn-ig {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    border-color: rgba(27,27,27,.25);
+    font-size: 10px;
+    letter-spacing: .18em;
+  }
+}
+
+/* ── Announcement ticker: force animation on mobile ── */
+@media (max-width: 768px) {
+  .ann-track {
+    animation: annTicker 18s linear infinite !important;
+    -webkit-animation: annTicker 18s linear infinite !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  @-webkit-keyframes annTicker {
+    0%   { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
+    100% { -webkit-transform: translate3d(-50%, 0, 0); transform: translate3d(-50%, 0, 0); }
+  }
+}
+
 .m-coll-chips {
   display: none; /* hidden on desktop */
 }
@@ -3801,8 +3855,14 @@ input, textarea {
     <li><a href="#faq" data-mnav-target="faq">FAQ</a></li>
   </ul>
   <div class="mnav-footer">
-    <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer" style="background:transparent;border:1px solid rgba(184,150,90,.35);color:var(--gold);margin-bottom:10px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="vertical-align:middle;margin-right:6px"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>Follow us on Facebook
+    <a href="https://www.facebook.com/zariah.studioo" class="btn-wa-mobile mnav-fb-btn" target="_blank" rel="noopener noreferrer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Follow us on Facebook
+    </a>
+    <a href="https://www.instagram.com/zariah.studioo" class="btn-wa-mobile mnav-ig-btn" target="_blank" rel="noopener noreferrer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Follow on Instagram
+    </a>
+    <a href="mailto:studioo.zariah@gmail.com" class="btn-wa-mobile mnav-email-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg> Email Us
     </a>
     <a href="https://wa.me/8801642779056" class="btn-wa-mobile" target="_blank" rel="noopener noreferrer">💬 Order via WhatsApp</a>
   </div>
@@ -4320,7 +4380,7 @@ input, textarea {
     </div>
   </div>
   <div class="container">
-    <div class="ig-cta reveal" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center;">
+    <div class="ig-cta reveal">
       <a href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener noreferrer" class="btn-ig">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
         Follow on Instagram
