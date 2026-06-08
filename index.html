@@ -406,6 +406,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   height: 38px;
   display: flex;
   align-items: center;
+  /* Transition for scroll-hide: matches .hdr top transition duration
+     so both elements animate in lockstep — no gap at any frame */
+  transition: transform .3s var(--ease), opacity .3s var(--ease);
 }
 @media (max-width: 768px) {
   .ann {
@@ -493,7 +496,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 24px 52px;
   padding-left: max(52px, env(safe-area-inset-left));
   padding-right: max(52px, env(safe-area-inset-right));
-  transition: background .4s var(--ease), padding .35s var(--ease), box-shadow .4s;
+  transition: background .4s var(--ease), padding .35s var(--ease), box-shadow .4s, top .3s var(--ease);
   top: 38px;
 }
 .hdr.scrolled {
@@ -505,6 +508,46 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding-left: max(52px, env(safe-area-inset-left));
   padding-right: max(52px, env(safe-area-inset-right));
   box-shadow: 0 1px 0 rgba(184,150,90,.12);
+}
+
+/* ═══════════════════════════════════════
+   ANN BAR SCROLL-HIDE SYSTEM
+   ─────────────────────────────────────
+   body.page-scrolled is toggled by JS at
+   window.scrollY > 5 (effectively any
+   intentional scroll gesture).
+
+   WHY body class instead of .ann.hidden:
+   A body class lets both .ann and .hdr
+   respond in one rAF tick — guaranteeing
+   they animate as a single unit with zero
+   gap between them at any animation frame.
+
+   GAP PREVENTION:
+   Both .ann { transform } and .hdr { top }
+   use identical .3s var(--ease) timing.
+   They animate frame-for-frame in lockstep:
+   as the ann bar vacates top:0→-38px, the
+   header simultaneously fills top:38px→0.
+   No background is ever exposed.
+
+   MOBILE (.ann is position:fixed):
+   Identical behaviour — both are in the
+   same visual-viewport coordinate system
+   so the lockstep synchronisation holds.
+═══════════════════════════════════════ */
+body.page-scrolled .ann {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+/* Both selectors required:
+   .hdr alone covers the un-scrolled state;
+   .hdr.scrolled ensures specificity win
+   over the mobile PATCH P1 top:34px rule */
+body.page-scrolled .hdr,
+body.page-scrolled .hdr.scrolled {
+  top: 0;
 }
 .hdr-inner {
   display: flex;
@@ -2582,8 +2625,8 @@ input, textarea {
 @media (max-width: 768px) {
   .ann { font-size: 10px; padding: 8px 12px; }
   .hdr { padding: 16px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
-  /* PATCH P1: when scrolled, keep header below sticky ann bar (not top:0) */
-  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); top: 34px; }
+  /* top now controlled by body.page-scrolled .hdr — padding only here */
+  .hdr.scrolled { padding: 12px 20px; padding-left: max(20px, env(safe-area-inset-left)); padding-right: max(20px, env(safe-area-inset-right)); }
   .nav-links { display: none; }
   .btn-wa { display: none; }
   .hamburger { display: flex; }
@@ -5971,13 +6014,21 @@ function unlockScroll() {
 
 /* ═══════════════════════════════════════
    HEADER SCROLL
+   Threshold: scrollY > 5 — triggers on
+   any intentional scroll gesture.
+   Toggles two classes simultaneously in
+   the same rAF tick:
+     hdr.scrolled  → background + padding
+     body.page-scrolled → ann hide + top:0
 ═══════════════════════════════════════ */
 const hdr = document.getElementById('hdr');
 let ticking = false;
 window.addEventListener('scroll', () => {
   if (!ticking) {
     requestAnimationFrame(() => {
-      hdr.classList.toggle('scrolled', window.scrollY > 80);
+      const isScrolled = window.scrollY > 5;
+      hdr.classList.toggle('scrolled', isScrolled);
+      document.body.classList.toggle('page-scrolled', isScrolled);
       ticking = false;
     });
     ticking = true;
