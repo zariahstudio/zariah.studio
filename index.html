@@ -411,10 +411,22 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .ann {
     height: 34px;
     font-size: 10px;
-    /* PATCH P1: sticky so bar stays visible above fixed header on scroll */
-    position: -webkit-sticky;
-    position: sticky;
+    /* FIX: position:fixed eliminates the sticky/fixed desync race condition
+       that caused a white gap above .hdr on iPhone Mini, SE, and Chrome
+       Android during browser-chrome (address bar) collapse/expand events.
+       With sticky positioning, .ann recalculates its position relative to
+       the scroll container whenever the visual viewport resizes — there is
+       a brief repaint window where .ann has not yet settled at top:0 while
+       the fixed .hdr still renders at top:34px, exposing the body
+       background (white) as a visible gap.
+       With position:fixed, both .ann and .hdr live in the same visual
+       viewport coordinate system and always paint in lockstep — the gap
+       is structurally impossible. */
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     z-index: 202; /* above header z-index:200 */
   }
 }
