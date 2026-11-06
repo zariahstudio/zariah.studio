@@ -3844,6 +3844,24 @@ input, textarea {
   .filter-status-bar { display: none !important; }
 }
 
+
+/* Mobile product discovery: clear, direct quick-view affordance */
+@media (max-width: 768px) {
+  .pcard-overlay { align-items: flex-end; justify-content: center; padding: 0 10px 12px; background: transparent !important; }
+  .pcard-overlay-btn {
+    opacity: 1;
+    transform: none;
+    min-height: 40px;
+    padding: 10px 16px;
+    background: rgba(251,247,241,.94);
+    color: var(--ash-deep);
+    border: 1px solid rgba(197,160,106,.55);
+    font-size: 9px;
+    letter-spacing: .16em;
+    pointer-events: none;
+  }
+}
+
 /* ═══════════════════════════════════════
    ZARIAH MOBILE LAYOUT REFINEMENT — 2026
    Scoped to mobile/tablet only. Desktop is untouched.
@@ -5139,33 +5157,11 @@ function renderProducts() {
       sideImgEl.addEventListener('error', onSideError);
     }
 
-    // Mobile tap-preview: first tap shows side image, second tap opens modal
-    (function() {
-      const pcImg = art.querySelector('.pcard-img');
-      let tapTimer = null;
-      pcImg.addEventListener('click', function(e) {
-        // Desktop: always open modal (hover handles preview)
-        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-          openPModal(p.id);
-          return;
-        }
-        // Mobile: first tap previews side, second tap opens modal
-        const hasSide = imgContainer.classList.contains('side-loaded') && !imgContainer.classList.contains('side-error');
-        if (!hasSide) { openPModal(p.id); return; }
-        if (imgContainer.classList.contains('tap-preview')) {
-          imgContainer.classList.remove('tap-preview');
-          if (tapTimer) { clearTimeout(tapTimer); tapTimer = null; }
-          openPModal(p.id);
-        } else {
-          e.stopPropagation();
-          imgContainer.classList.add('tap-preview');
-          tapTimer = setTimeout(function() {
-            imgContainer.classList.remove('tap-preview');
-            tapTimer = null;
-          }, 2500);
-        }
-      });
-    })();
+    // Product image: open details on the first tap/click on every device.
+    // Side-view hover remains available on desktop; mobile users do not need a double tap.
+    art.querySelector('.pcard-img').addEventListener('click', function() {
+      openPModal(p.id);
+    });
     art.querySelector('.pcard-overlay-btn').addEventListener('click', (e) => { e.stopPropagation(); openPModal(p.id); });
 
     if (p.soldOut) {
