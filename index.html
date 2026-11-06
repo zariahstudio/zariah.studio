@@ -4219,6 +4219,103 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   .prod-grid { margin-top:15px; }
 }
 
+
+/* DIOR-INSPIRED EDITORIAL REFINEMENT — ZARIAH identity retained
+   Visual-only layer. Existing content, controls and interactions remain intact. */
+:root {
+  --page: #F7F3ED;
+  --line: rgba(98,93,89,.16);
+}
+@media (min-width:769px) {
+  .hero { min-height:650px; height:min(790px, calc(100svh - 34px)); }
+  .hero-content { align-items:flex-start; text-align:left; left:clamp(6vw,10vw,160px); transform:none; width:min(680px,58%); }
+  .hero-btns { justify-content:flex-start; }
+  .products { padding:82px 0 92px; }
+  .products-header {
+    flex-direction:row;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:36px;
+    text-align:left;
+    margin-bottom:28px;
+  }
+  .prod-intro { align-items:flex-start; text-align:left; }
+  .prod-ttl { font-size:clamp(42px,4.4vw,60px); margin-bottom:9px; }
+  .coll-names { margin-bottom:8px; }
+  .prod-count-line { letter-spacing:.16em; }
+  .filters { align-items:flex-end; }
+  .coll-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .coll-panel { aspect-ratio:4/5; }
+  .collections { padding-top:90px; padding-bottom:90px; }
+}
+.products-header { border-bottom:1px solid var(--line); padding-bottom:22px; }
+.prod-ttl { letter-spacing:-.035em; }
+.coll-names { letter-spacing:.2em; }
+.prod-count-line { color:var(--muted); opacity:1; }
+.prod-grid { align-items:start; }
+.pcard-img { background:#EEE7DE; }
+.pcard-info { padding-top:13px; }
+.pcard-name { letter-spacing:.005em; }
+.pcard-price { font-variant-numeric:tabular-nums; }
+.pcard-type { letter-spacing:.13em; text-transform:uppercase; }
+.pcard-overlay-btn { backdrop-filter:blur(8px); }
+.collections { background:#6D6660; }
+.collections .container > .reveal { max-width:720px; }
+.collections .ttl { font-size:clamp(36px,4.5vw,58px); line-height:1.03; }
+.coll-grid { margin-top:44px; }
+.coll-panel { border-radius:1px; }
+.coll-info { background:linear-gradient(0deg,rgba(30,26,23,.38),transparent 85%); }
+.coll-title { line-height:1.05; }
+.why { background:#F0E8DE; }
+.why-pillars { gap:12px; }
+.pillar { box-shadow:none; }
+.pillar:hover { transform:translateY(-2px); }
+.editorial { background:#F0E8DE; }
+.faq { background:#F7F3ED; }
+.footer { background:#302B27; }
+@media (max-width:768px) {
+  .products { padding:28px 0 42px; }
+  .products-header { padding-bottom:16px; margin-bottom:14px; }
+  .prod-intro { width:100%; }
+  .prod-ttl { font-size:clamp(29px,7.5vw,36px); }
+  .coll-names { margin-bottom:7px; }
+  .prod-count-line { font-size:8px; letter-spacing:.2em; }
+  .filters-hidden { margin-top:10px; }
+  .mob-coll-bar { margin-top:0; }
+  .mob-coll-track { padding:0 0 3px; }
+  .mob-coll-tab { border:1px solid var(--line); background:transparent; color:var(--ash-deep); }
+  .mob-coll-tab.active { background:var(--charcoal); color:var(--cream); border-color:var(--charcoal); }
+  .mob-controls-row { margin-top:7px; }
+  .mob-ctrl-select { background-color:rgba(255,255,255,.45); border-color:var(--line); }
+  .prod-grid { margin-top:15px; gap:20px 10px; }
+  .coll-grid {
+    display:flex;
+    overflow-x:auto;
+    gap:12px;
+    margin:26px -18px 0;
+    padding:0 18px 8px;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .coll-grid::-webkit-scrollbar { display:none; }
+  .coll-panel { flex:0 0 84%; min-width:0; aspect-ratio:4/5; scroll-snap-align:start; }
+  .collections { padding:58px 0; }
+  .collections .ttl { font-size:36px; }
+  .coll-info { padding:20px; }
+  .coll-title { font-size:27px; }
+  .why { padding:58px 0; }
+  .process { padding:58px 0; }
+  .story { padding:58px 0; }
+  .editorial { padding:58px 0; }
+  .faq { padding:58px 0; }
+}
+@media (max-width:420px) {
+  .coll-panel { flex-basis:88%; }
+  .products-header { padding-bottom:13px; }
+  .prod-grid { gap:18px 9px; }
+}
+
 </style>
 </head>
 <body>
