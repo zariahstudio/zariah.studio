@@ -4184,6 +4184,41 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   .footer-grid { gap:24px 12px; }
 }
 
+
+/* MOBILE SPACING CORRECTION — tighten the first-screen shopping flow */
+@media (max-width:768px) {
+  .hero { margin-top:88px; }
+  .hero-content { padding:14px 18px 18px; }
+  .hero-eyebrow { margin-bottom:10px; }
+  .hero-btns { gap:7px; }
+  .btn-primary,.btn-outline { min-height:44px; padding:12px 16px; }
+  .trust { height:46px; min-height:46px; }
+  .products { padding:30px 0 42px; }
+  .products-header { margin-bottom:18px; }
+  .prod-ttl { font-size:32px; line-height:1.05; margin-bottom:7px; }
+  .coll-names { margin-bottom:8px; font-size:9px; letter-spacing:.2em; }
+  .prod-count-line { font-size:9px; margin-bottom:0; }
+  .mob-coll-bar { margin-top:12px; }
+  .mob-coll-track { gap:7px; }
+  .mob-coll-tab { min-height:38px; padding:8px 14px; }
+  .mob-controls-row { margin-top:8px; gap:8px; }
+  .mob-ctrl-wrap { gap:5px; }
+  .mob-ctrl-lbl { font-size:8px; letter-spacing:.16em; }
+  .mob-ctrl-select { min-height:42px; padding:8px 10px; font-size:11px; }
+  .prod-grid { margin-top:18px; gap:20px 10px; }
+}
+@media (max-width:420px) {
+  .hero { margin-top:82px; }
+  .hero-content { padding:12px 14px 16px; }
+  .products { padding-top:26px; }
+  .prod-ttl { font-size:29px; }
+  .products-header { margin-bottom:15px; }
+  .mob-controls-row { gap:6px; }
+  .mob-ctrl-lbl { letter-spacing:.12em; }
+  .mob-ctrl-select { font-size:10px; }
+  .prod-grid { margin-top:15px; }
+}
+
 </style>
 </head>
 <body>
