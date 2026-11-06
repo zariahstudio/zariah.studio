@@ -6740,6 +6740,34 @@ async function loadPublishedProductsFromSupabase() {
     const client = window.supabase.createClient(config.url, config.publishableKey, {
       auth: { persistSession: false, autoRefreshToken: false }
     });
+    // Load optional CMS-managed images. If unavailable, the original static assets remain untouched.
+    try {
+      const { data: mediaRows, error: mediaError } = await client.from('site_media').select('slot_key,public_url,alt_text').eq('is_published', true);
+      if (!mediaError && Array.isArray(mediaRows)) {
+        const media = Object.fromEntries(mediaRows.map(item => [item.slot_key, item]));
+        const desktop = media['hero.desktop']?.public_url;
+        const mobile = media['hero.mobile']?.public_url || desktop;
+        const heroPicture = document.querySelector('.hero picture');
+        const heroImage = heroPicture?.querySelector('img');
+        if (heroPicture && heroImage) {
+          const sources = heroPicture.querySelectorAll('source');
+          if (sources[0] && mobile) sources[0].srcset = mobile;
+          if (sources[1] && desktop) sources[1].srcset = desktop;
+          if (desktop) heroImage.src = desktop;
+          if (media['hero.desktop']?.alt_text) heroImage.alt = media['hero.desktop'].alt_text;
+        }
+        const collectionSlots = [['essence','collection.essence.cover'],['signature','collection.signature.cover'],['noir','collection.noir.cover']];
+        collectionSlots.forEach(([slug,key]) => { const node=document.querySelector('.bg-'+slug); if(node && media[key]?.public_url) node.style.backgroundImage='url("'+media[key].public_url.replace(/"/g,'%22')+'")'; });
+        const campaign = media['campaign.main'];
+        const campaignNode = document.querySelector('[data-media-slot="campaign.main"]');
+        if (campaignNode && campaign?.public_url) campaignNode.style.backgroundImage='url("'+campaign.public_url.replace(/"/g,'%22')+'")';
+        const lookbook = media['lookbook.main']; const lookbookNode=document.querySelector('[data-media-slot="lookbook.main"]');
+        if(lookbookNode && lookbook?.public_url) { if(lookbookNode.matches('img')) {lookbookNode.src=lookbook.public_url;lookbookNode.alt=lookbook.alt_text||'';} else lookbookNode.style.backgroundImage='url("'+lookbook.public_url.replace(/"/g,'%22')+'")'; }
+        const about = media['about.main']; const aboutNode=document.querySelector('[data-media-slot="about.main"]');
+        if(aboutNode && about?.public_url) { if(aboutNode.matches('img')) {aboutNode.src=about.public_url;aboutNode.alt=about.alt_text||'';} else aboutNode.style.backgroundImage='url("'+about.public_url.replace(/"/g,'%22')+'")'; }
+      }
+    } catch (mediaError) { console.warn('[ZARIAH] Media CMS unavailable; keeping static images.', mediaError); }
+
     const { data, error } = await client.rpc('get_storefront_catalogue');
     if (error) throw error;
     if (!Array.isArray(data) || data.length === 0) {
