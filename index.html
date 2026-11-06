@@ -2588,10 +2588,41 @@ input, textarea {
   .btn-wa { display: none; }
   .hamburger { display: flex; }
 
-  /* Hero mobile */
-  .hero { min-height: 100vh; min-height: 100svh; }
-  .hero-bg-img { object-position: center 20%; }
-  .hero-content { bottom: clamp(44px, 8vh, 72px); }
+  /* Hero mobile — compact horizontal banner, desktop remains untouched */
+  .hero {
+    height: auto;
+    min-height: 0;
+    margin-top: 104px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .hero > picture {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .hero-bg-img {
+    object-position: center center;
+    animation: none;
+    will-change: auto;
+  }
+  .hero-gradient, .hero-vignette { display: none; }
+  .hero-content {
+    position: relative;
+    inset: auto;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: 100%;
+    padding: 22px 20px 26px;
+    background: var(--white);
+  }
+  .hero-eyebrow { color: var(--ash); margin-bottom: 14px; }
   .hero-btns { gap: 10px; flex-direction: column; align-items: center; }
   .btn-primary, .btn-outline { padding: 14px 30px; font-size: 10px; width: auto; }
 
@@ -3902,7 +3933,7 @@ input, textarea {
 
   <!-- Responsive cinematic image — picture element for mobile/desktop swap -->
   <picture>
-    <source media="(max-width: 768px)" srcset="images/hero/hero-mobile.webp" type="image/webp">
+    <source media="(max-width: 768px)" srcset="images/hero/hero-desktop.jpg" type="image/jpeg">
     <source media="(min-width: 769px)" srcset="images/hero/hero-desktop.jpg" type="image/jpeg">
     <img class="hero-bg-img"
          src="images/hero/hero-desktop.jpg"
