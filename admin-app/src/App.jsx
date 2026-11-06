@@ -153,7 +153,8 @@ function App() {
     setDataLoading(true);
     const [p, c, m] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted)').order('display_order').order('created_at', { ascending: false }),
-      supabase.from('collections').select('*').order('display_order').order('name')
+      supabase.from('collections').select('*').order('display_order').order('name'),
+      supabase.from('site_media').select('*').order('slot_key')
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
