@@ -44,19 +44,19 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
   const submit = async (e) => {
     e.preventDefault(); setError('');
     if (!form.collection_id) return setError('Select a collection.');
-    if (!form.sku.trim() || !form.name.trim() || Number(form.price_bdt) < 0 || form.price_bdt === '') return setError('SKU, name and a valid price are required.');
+    if (!(form.sku ?? '').trim() || !(form.name ?? '').trim() || Number(form.price_bdt) < 0 || form.price_bdt === '') return setError('SKU, name and a valid price are required.');
     if (images.some(file => !['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024)) return setError('Images must be JPG, PNG or WebP and no larger than 10 MB each.');
     const payload = {
-      sku: form.sku.trim(), name: form.name.trim(),
-      slug: form.slug.trim() || slugify(form.name),
+      sku: (form.sku ?? '').trim(), name: (form.name ?? '').trim(),
+      slug: (form.slug ?? '').trim() || slugify(form.name ?? ''),
       collection_id: form.collection_id,
-      product_type: form.product_type.trim() || null,
-      color: form.color.trim() || null,
-      description: form.description.trim() || null,
-      specifications: { size: form.size.trim() },
+      product_type: (form.product_type ?? '').trim() || null,
+      color: (form.color ?? '').trim() || null,
+      description: (form.description ?? '').trim() || null,
+      specifications: { size: (form.size ?? '').trim() },
       price_bdt: Number(form.price_bdt),
       compare_at_price_bdt: form.compare_at_price_bdt === '' ? null : Number(form.compare_at_price_bdt),
-      badge: form.badge.trim() || null,
+      badge: (form.badge ?? '').trim() || null,
       is_featured: Boolean(form.is_featured),
       is_bestseller: Boolean(form.is_bestseller),
       is_published: Boolean(form.is_published),
