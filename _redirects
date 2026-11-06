@@ -1,2 +1,3 @@
-/admin  https://meek-rolypoly-90a8a1.netlify.app/  200
-/admin/*  https://meek-rolypoly-90a8a1.netlify.app/:splat  200
+/admin   https://meek-rolypoly-90a8a1.netlify.app/   200
+/admin/  https://meek-rolypoly-90a8a1.netlify.app/   200
+/admin/* https://meek-rolypoly-90a8a1.netlify.app/:splat 200
