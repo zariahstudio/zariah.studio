@@ -184,7 +184,8 @@ function App() {
         if (error) throw error;
         productId = data.id;
       }
-      const { error: stockError } = await supabase.from('inventory').upsert({ product_id: productId, on_hand: stock, reserved: 0, low_stock_threshold: 2 }, { onConflict: 'product_id' });
+      const existingReserved = editor?.inventory?.[0]?.reserved ?? 0;
+      const { error: stockError } = await supabase.from('inventory').upsert({ product_id: productId, on_hand: stock, reserved: existingReserved, low_stock_threshold: 2 }, { onConflict: 'product_id' });
       if (stockError) throw stockError;
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
