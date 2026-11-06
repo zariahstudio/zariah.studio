@@ -4356,6 +4356,34 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
 }
 @media(max-width:380px){.hero-content{padding:16px 12px 18px}.hero-content:before{font-size:36px}.coll-title{font-size:7px}.prod-ttl{font-size:22px}.pcard-name{font-size:10px}}
 
+
+/* ZARIAH storefront refinement — isolated additions */
+.z-hero-carousel{position:relative;overflow:hidden;min-height:clamp(480px,62vw,760px);background:#d8cbbd}
+.z-hero-slides{position:absolute;inset:0}
+.z-hero-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .8s ease;display:block}
+.z-hero-slide.is-active{opacity:1;visibility:visible;z-index:1}
+.z-hero-slide>img,.z-hero-slide picture,.z-hero-slide picture img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;object-position:center}
+.z-hero-slide:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(30,25,21,.48),rgba(30,25,21,.04) 75%)}
+.z-hero-copy{position:absolute;z-index:2;left:clamp(24px,8vw,120px);bottom:clamp(70px,12vw,140px);display:flex;flex-direction:column;gap:14px;color:#fff;max-width:620px}
+.z-hero-copy small{font-size:10px;letter-spacing:.28em;text-transform:uppercase}
+.z-hero-copy strong{font:300 clamp(42px,7vw,88px)/.98 'Cormorant Garamond',serif}
+.z-hero-copy em{font:400 10px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;font-style:normal;margin-top:12px}
+.z-hero-arrow{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:42px;height:42px;border:1px solid rgba(255,255,255,.65);border-radius:50%;color:#fff;font-size:26px;background:rgba(40,35,30,.15)}
+.z-hero-arrow.prev{left:22px}.z-hero-arrow.next{right:22px}
+.z-hero-dots{position:absolute;z-index:4;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:9px}
+.z-hero-dots button{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);border:0;padding:0}
+.z-hero-dots button.active{background:#fff;transform:scale(1.35)}
+.pcard{cursor:pointer}.pcard-info{padding-top:12px}
+.pcard-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pcard-name{font-size:13px;font-weight:400;letter-spacing:.015em}
+.pcard-price{font-size:12px;white-space:nowrap}
+.pcard-type,.pcard-size{display:none!important}
+.pcard-info .btn-order,.pcard-info .btn-notify{display:none!important}
+.pcard-img{cursor:pointer}
+.pcard-overlay{opacity:0!important;pointer-events:none!important}
+@media(min-width:769px){.prod-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}}
+@media(max-width:768px){.prod-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.z-hero-carousel{min-height: min(155vw,720px)}.z-hero-copy{left:22px;right:20px;bottom:74px}.z-hero-copy strong{font-size:clamp(42px,12vw,64px)}.z-hero-arrow{width:34px;height:34px;font-size:21px}.z-hero-arrow.prev{left:10px}.z-hero-arrow.next{right:10px}}
+
 </style>
 </head>
 <body>
@@ -4442,103 +4470,31 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
 </nav>
 
 <!-- HERO -->
-<section class="hero" aria-label="ZARIAH Studio — Luxury Handbags">
-
-  <!-- Responsive cinematic image — picture element for mobile/desktop swap -->
-  <picture>
-    <source media="(max-width: 768px)" srcset="images/hero/hero-desktop.jpg" type="image/jpeg">
-    <source media="(min-width: 769px)" srcset="images/hero/hero-desktop.jpg" type="image/jpeg">
-    <img class="hero-bg-img"
-         src="images/hero/hero-desktop.jpg"
-         alt=""
-         role="presentation"
-         loading="eager"
-         fetchpriority="high"
-         decoding="async">
-  </picture>
-
-  <!-- Fallback background while image loads -->
-  <div class="hero-bg-fallback" aria-hidden="true"></div>
-
-  <!-- Cinematic overlay layers -->
-  <div class="hero-gradient" aria-hidden="true"></div>
-  <div class="hero-vignette" aria-hidden="true"></div>
-
-  <!-- Hero CTA block — parent brand endorsement + primary actions -->
-  <div class="hero-content">
-    <p class="hero-eyebrow">— A Brand of InsightBridge —</p>
-    <div class="hero-btns">
-      <a href="#products" class="btn-primary">
-        Explore Collection
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-      <a href="https://wa.me/8801642779056?text=Hello%20ZARIAH%20Studio%2C%20I%27d%20like%20to%20inquire." class="btn-outline" target="_blank" rel="noopener noreferrer">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Order via WhatsApp
-      </a>
-    </div>
+<section class="hero z-hero-carousel" aria-label="ZARIAH Studio collections">
+  <div class="z-hero-slides" id="zHeroSlides">
+    <a class="z-hero-slide is-active" href="#products" data-slide="0" aria-label="Explore ZARIAH Studio">
+      <picture><source media="(max-width:768px)" srcset="images/hero/hero-mobile.webp"><img src="images/hero/hero-desktop.jpg" alt="ZARIAH Studio — refined handbags" fetchpriority="high"></picture>
+      <span class="z-hero-copy"><small>— A Brand of InsightBridge —</small><strong>Quiet Luxury,<br>Beautifully Carried.</strong><em>Explore Collection&nbsp; →</em></span>
+    </a>
+    <a class="z-hero-slide" href="#products" data-slide="1" data-collection="Essence" aria-label="Explore Essence Collection">
+      <img src="images/collections/essence-cover.webp" alt="Essence Collection">
+      <span class="z-hero-copy"><small>THE EVERYDAY EDIT</small><strong>Essence</strong><em>Discover Essence&nbsp; →</em></span>
+    </a>
+    <a class="z-hero-slide" href="#products" data-slide="2" data-collection="Signature" aria-label="Explore Signature Collection">
+      <img src="images/collections/signature-cover.webp" alt="Signature Collection">
+      <span class="z-hero-copy"><small>TIMELESS BY DESIGN</small><strong>Signature</strong><em>Discover Signature&nbsp; →</em></span>
+    </a>
+    <a class="z-hero-slide" href="#products" data-slide="3" data-collection="Noir" aria-label="Explore Noir Collection">
+      <img src="images/collections/noir-cover.webp" alt="Noir Collection">
+      <span class="z-hero-copy"><small>THE STATEMENT EDIT</small><strong>Noir</strong><em>Discover Noir&nbsp; →</em></span>
+    </a>
   </div>
-
-
-</section>
-
-<!-- COLLECTION SHOWCASE -->
-<section class="collections" id="collections" aria-labelledby="coll-heading">
-  <div class="container">
-    <div class="reveal">
-      <span class="lbl">Curated Edits</span>
-      <h2 class="ttl light" id="coll-heading">Three Worlds,<br><em>One Vision</em></h2>
-    </div>
-    <div class="coll-grid reveal">
-      <article class="coll-panel" onclick="filterCollection('Essence')" tabindex="0" role="button" aria-label="Browse Essence Collection">
-        <img class="coll-panel-img" src="images/collections/essence-cover.webp" alt="Essence Collection" loading="lazy" onerror="this.style.display='none'">
-        <div class="coll-panel-bg bg-essence" aria-hidden="true"></div>
-        <div class="coll-deco" aria-hidden="true"></div>
-        <div class="coll-overlay" aria-hidden="true"></div>
-        <div class="coll-info">
-          <p class="coll-lbl">Essence Collection</p>
-          <h3 class="coll-title">Soft. Effortless.<br><em>Everyday Luxury</em></h3>
-          <p class="coll-count">6 Pieces</p>
-          <button class="btn-coll" onclick="event.stopPropagation();filterCollection('Essence')" aria-label="Shop Essence Collection">
-            Shop Essence
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </article>
-      <article class="coll-panel" onclick="filterCollection('Signature')" tabindex="0" role="button" aria-label="Browse Signature Collection">
-        <img class="coll-panel-img" src="images/collections/signature-cover.webp" alt="Signature Collection" loading="lazy" onerror="this.style.display='none'">
-        <div class="coll-panel-bg bg-signature" aria-hidden="true"></div>
-        <div class="coll-deco" aria-hidden="true"></div>
-        <div class="coll-overlay" aria-hidden="true"></div>
-        <div class="coll-info">
-          <p class="coll-lbl">Signature Collection</p>
-          <h3 class="coll-title">Timeless. Confident.<br><em>Signature of You</em></h3>
-          <p class="coll-count">6 Pieces</p>
-          <button class="btn-coll" onclick="event.stopPropagation();filterCollection('Signature')" aria-label="Shop Signature Collection">
-            Shop Signature
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </article>
-      <article class="coll-panel" onclick="filterCollection('Noir')" tabindex="0" role="button" aria-label="Browse Noir Collection">
-        <img class="coll-panel-img" src="images/collections/noir-cover.webp" alt="Noir Collection" loading="lazy" onerror="this.style.display='none'">
-        <div class="coll-panel-bg bg-noir" aria-hidden="true"></div>
-        <div class="coll-deco" aria-hidden="true"></div>
-        <div class="coll-overlay" aria-hidden="true"></div>
-        <div class="coll-info">
-          <p class="coll-lbl">Noir Collection</p>
-          <h3 class="coll-title">Bold. Mysterious.<br><em>Unapologetically You</em></h3>
-          <p class="coll-count">6 Pieces</p>
-          <button class="btn-coll" onclick="event.stopPropagation();filterCollection('Noir')" aria-label="Shop Noir Collection">
-            Shop Noir
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7h8M8 4l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </article>
-    </div>
+  <button class="z-hero-arrow prev" type="button" aria-label="Previous banner">‹</button>
+  <button class="z-hero-arrow next" type="button" aria-label="Next banner">›</button>
+  <div class="z-hero-dots" role="group" aria-label="Choose banner">
+    <button class="active" aria-label="Banner 1" aria-pressed="true"></button><button aria-label="Banner 2" aria-pressed="false"></button><button aria-label="Banner 3" aria-pressed="false"></button><button aria-label="Banner 4" aria-pressed="false"></button>
   </div>
 </section>
-
 
 <!-- PRODUCTS -->
 <section class="products" id="products" aria-labelledby="products-heading">
@@ -6822,6 +6778,26 @@ async function loadPublishedProductsFromSupabase() {
 }
 
 loadPublishedProductsFromSupabase();
+
+/* Four-banner homepage carousel */
+(function(){
+ const root=document.getElementById('zHeroSlides'); if(!root)return;
+ const slides=[...root.querySelectorAll('.z-hero-slide')], dots=[...document.querySelectorAll('.z-hero-dots button')];
+ let active=0,timer=null;
+ function show(n){active=(n+slides.length)%slides.length;slides.forEach((el,i)=>el.classList.toggle('is-active',i===active));dots.forEach((el,i)=>{el.classList.toggle('active',i===active);el.setAttribute('aria-pressed',String(i===active));});}
+ function stop(){if(timer)clearInterval(timer);}
+ function start(){stop();timer=setInterval(()=>show(active+1),4500);}
+ document.querySelector('.z-hero-arrow.prev')?.addEventListener('click',()=>{show(active-1);start()});
+ document.querySelector('.z-hero-arrow.next')?.addEventListener('click',()=>{show(active+1);start()});
+ dots.forEach((d,i)=>d.addEventListener('click',()=>{show(i);start()}));
+ slides.forEach(slide=>slide.addEventListener('click',()=>{const c=slide.dataset.collection;if(c&&typeof filterCollection==='function')filterCollection(c);}));
+ const carousel=document.querySelector('.z-hero-carousel');let x0=0;
+ carousel?.addEventListener('touchstart',e=>{x0=e.changedTouches[0].clientX;},{passive:true});
+ carousel?.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>45){show(active+(dx<0?1:-1));start();}},{passive:true});
+ carousel?.addEventListener('mouseenter',stop);carousel?.addEventListener('mouseleave',start);
+ start();
+})();
+
 
 /* ═══════════════════════════════════════
    TASK 7 — STICKY DESKTOP FILTER BAR
