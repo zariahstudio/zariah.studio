@@ -140,7 +140,8 @@ function App() {
   const [section, setSection] = useState('dashboard');
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
-  const [collections, setCollections] = useState([]);\n  const [mediaAssets, setMediaAssets] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [mediaAssets, setMediaAssets] = useState([]);
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -155,7 +156,8 @@ function App() {
       supabase.from('collections').select('*').order('display_order').order('name')
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
-    if (c.error) notify('error', c.error.message); else setCollections(c.data || []);\n    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
+    if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
+    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
     setDataLoading(false);
   }, [session]);
 
@@ -225,7 +227,19 @@ function App() {
     } finally { setSaving(false); }
   };
 
-  const uploadMedia = async (slot,file,altText) => {\n    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');\n    setSaving(true); try {\n      const ext=file.name.split('.').pop().toLowerCase(); const path='site-media/'+slot.key+'/'+crypto.randomUUID()+'.'+ext;\n      const {error:upErr}=await supabase.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false}); if(upErr) throw upErr;\n      const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);\n      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'}); if(error) throw error;\n      await loadData(); notify('success',slot.label+' published.');\n    } catch(e){notify('error',e.message||'Image upload failed.');} finally{setSaving(false);}\n  };\n  const toggleMedia = async (asset) => {const {error}=await supabase.from('site_media').update({is_published:!asset.is_published,updated_at:new Date().toISOString()}).eq('id',asset.id);if(error)notify('error',error.message);else{await loadData();notify('success','Image visibility updated.');}};\n\n  const archiveProduct = async (product) => {
+  const uploadMedia = async (slot,file,altText) => {
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
+    setSaving(true); try {
+      const ext=file.name.split('.').pop().toLowerCase(); const path='site-media/'+slot.key+'/'+crypto.randomUUID()+'.'+ext;
+      const {error:upErr}=await supabase.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false}); if(upErr) throw upErr;
+      const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);
+      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'}); if(error) throw error;
+      await loadData(); notify('success',slot.label+' published.');
+    } catch(e){notify('error',e.message||'Image upload failed.');} finally{setSaving(false);}
+  };
+  const toggleMedia = async (asset) => {const {error}=await supabase.from('site_media').update({is_published:!asset.is_published,updated_at:new Date().toISOString()}).eq('id',asset.id);if(error)notify('error',error.message);else{await loadData();notify('success','Image visibility updated.');}};
+
+  const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
     const { error } = await supabase.from('products').update({ is_published: false }).eq('id', product.id);
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Product archived (not permanently deleted).'); }
@@ -283,7 +297,8 @@ function App() {
         {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
-        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}\n        {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
+        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const qty = p.inventory?.[0]?.on_hand ?? 0; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${qty > 2 ? 'live' : 'warning'}`}>{qty > 2 ? 'In stock' : 'Low stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
       </div>
