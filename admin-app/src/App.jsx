@@ -39,6 +39,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
     compare_at_price_bdt: product.compare_at_price_bdt ?? ''
   } : emptyProduct);
   const [images, setImages] = useState([]);
+  const [stockTouched, setStockTouched] = useState(false);
   const [error, setError] = useState('');
   const change = (key, value) => setForm(old => ({ ...old, [key]: value }));
   const submit = async (e) => {
@@ -62,7 +63,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       is_published: Boolean(form.is_published),
       display_order: Number(form.display_order || 0)
     };
-    try { await onSave(payload, Number(form.stock || 0), images); }
+    try { await onSave(payload, Number(form.stock || 0), images, stockTouched); }
     catch (err) { setError(err.message || 'Could not save product.'); }
   };
   return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
@@ -77,7 +78,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
-          <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => change('stock', e.target.value)}/></label>
+          <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
           <label className="span-2">Product description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the bag..."/></label>
           <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
           <label>Badge<input value={form.badge || ''} onChange={e => change('badge', e.target.value)} placeholder="New / Bestseller"/></label>
@@ -132,7 +133,7 @@ function App() {
     if (!supabase || !session) return;
     setDataLoading(true);
     const [p, c] = await Promise.all([
-      supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved)').order('display_order').order('created_at', { ascending: false }),
+      supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted)').order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name')
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
@@ -172,7 +173,7 @@ function App() {
     setLoginBusy(false);
   };
 
-  const saveProduct = async (payload, stock, imageFiles) => {
+  const saveProduct = async (payload, stock, imageFiles, stockTouched) => {
     setSaving(true);
     try {
       let productId = editor?.id;
@@ -185,7 +186,8 @@ function App() {
         productId = data.id;
       }
       const existingReserved = editor?.inventory?.[0]?.reserved ?? 0;
-      const { error: stockError } = await supabase.from('inventory').upsert({ product_id: productId, on_hand: stock, reserved: existingReserved, low_stock_threshold: 2 }, { onConflict: 'product_id' });
+      const stockCounted = stockTouched || !editor?.id ? Boolean(stockTouched) : Boolean(editor?.inventory?.[0]?.stock_counted);
+      const { error: stockError } = await supabase.from('inventory').upsert({ product_id: productId, on_hand: stock, reserved: existingReserved, low_stock_threshold: 2, stock_counted: stockCounted }, { onConflict: 'product_id' });
       if (stockError) throw stockError;
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
@@ -227,7 +229,7 @@ function App() {
   const adjustStock = async (product, nextValue) => {
     const quantity = Number(nextValue);
     if (!Number.isInteger(quantity) || quantity < 0) return notify('error', 'Stock must be a non-negative whole number.');
-    const { error } = await supabase.from('inventory').upsert({ product_id: product.id, on_hand: quantity, reserved: product.inventory?.[0]?.reserved || 0, low_stock_threshold: 2 }, { onConflict: 'product_id' });
+    const { error } = await supabase.from('inventory').upsert({ product_id: product.id, on_hand: quantity, reserved: product.inventory?.[0]?.reserved || 0, low_stock_threshold: 2, stock_counted: true }, { onConflict: 'product_id' });
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Stock updated.'); }
   };
 
