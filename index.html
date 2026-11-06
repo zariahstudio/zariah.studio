@@ -338,8 +338,8 @@ gtag('config', 'G-VWTCQTCSN1', {
    DESIGN TOKENS
 ═══════════════════════════════════════ */
 :root {
-  --forest: #77716D;
-  --forest-mid: #625D59;
+  --ash: #77716D;
+  --ash-deep: #625D59;
   --gold: #C5A06A;
   --gold-soft: #E2C18A;
   --gold-dim: rgba(197,160,106,0.18);
@@ -395,7 +395,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    No reset jump · no flicker · no lag
 ═══════════════════════════════════════ */
 .ann {
-  background: var(--forest);
+  background: var(--ash);
   color: var(--gold-soft);
   font-size: 11px;
   letter-spacing: .16em;
@@ -563,7 +563,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hdr-right { display: flex; align-items: center; gap: 18px; }
 .btn-wa {
   background: var(--gold);
-  color: var(--forest);
+  color: var(--ash);
   font-size: 10px;
   letter-spacing: .22em;
   text-transform: uppercase;
@@ -601,7 +601,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .mnav {
   position: fixed;
   inset: 0;
-  background: var(--forest);
+  background: var(--ash);
   z-index: 210;
   transform: translateX(100%);
   transition: transform .45s var(--ease);
@@ -659,7 +659,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .btn-wa-mobile {
   display: block;
   background: var(--gold);
-  color: var(--forest);
+  color: var(--ash);
   text-align: center;
   padding: 16px;
   font-size: 11px;
@@ -679,7 +679,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   height: 100svh; /* stable: excludes browser chrome — preferred */
   min-height: 560px;
   overflow: hidden;
-  background: var(--forest);
+  background: var(--ash);
   /* NOTE: contain:layout/paint intentionally omitted — it creates a new
      stacking context that clips position:absolute children (hero-bg-img)
      in Chrome and Safari, causing the hero to render as a solid black box. */
@@ -795,7 +795,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .btn-primary {
   background: var(--gold);
-  color: var(--forest);
+  color: var(--ash);
   padding: 15px 36px;
   font-size: 11px;
   letter-spacing: .22em;
@@ -973,7 +973,7 @@ body.mnav-open .hamburger {
 .mnav-close { z-index: 10; -webkit-tap-highlight-color: transparent; }
 
 .trust {
-  background: var(--forest);
+  background: var(--ash);
   border-top: 1px solid rgba(184,150,90,.1);
   padding: 20px 0;
   overflow: hidden;
@@ -1113,7 +1113,7 @@ body.mnav-open .hamburger {
   background: rgba(27,27,27,.06);
   color: var(--muted);
 }
-.fcol-tab:hover, .fcol-tab.active { background: var(--forest); color: var(--gold); }
+.fcol-tab:hover, .fcol-tab.active { background: var(--ash); color: var(--gold); }
 
 /* PRODUCT GRID */
 .prod-grid {
@@ -1203,8 +1203,8 @@ body.mnav-open .hamburger {
   padding: 5px 11px;
   font-weight: 300;
 }
-.badge-b { background: var(--forest); color: var(--gold); }
-.badge-n { background: var(--gold); color: var(--forest); }
+.badge-b { background: var(--ash); color: var(--gold); }
+.badge-n { background: var(--gold); color: var(--ash); }
 .badge-e { background: var(--charcoal); color: var(--cream); }
 .badge-l { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 .coll-badge {
@@ -1238,7 +1238,7 @@ body.mnav-open .hamburger {
   transform: translateY(8px);
   transition: opacity .3s, transform .3s;
   background: var(--cream);
-  color: var(--forest);
+  color: var(--ash);
   font-size: 10px;
   letter-spacing: .2em;
   text-transform: uppercase;
@@ -1286,7 +1286,7 @@ body.mnav-open .hamburger {
 }
 .btn-order {
   width: 100%;
-  background: var(--forest);
+  background: var(--ash);
   color: var(--cream);
   padding: 12px;
   font-size: 10px;
@@ -1301,12 +1301,12 @@ body.mnav-open .hamburger {
   cursor: pointer;
   border: none;
 }
-.btn-order:hover { background: var(--gold); color: var(--forest); }
+.btn-order:hover { background: var(--gold); color: var(--ash); }
 
 /* ═══════════════════════════════════════
    COLLECTION SHOWCASE
 ═══════════════════════════════════════ */
-.collections { background: var(--forest); padding: var(--section-pad) 0; overflow: hidden; }
+.collections { background: var(--ash); padding: var(--section-pad) 0; overflow: hidden; }
 .coll-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1331,7 +1331,7 @@ body.mnav-open .hamburger {
   will-change: transform;
   z-index: 0;
   /* Prevent layout shift while loading */
-  background: var(--forest-mid);
+  background: var(--ash-deep);
 }
 .coll-panel:hover .coll-panel-img { transform: scale(1.06); }
 .coll-panel-bg {
@@ -1436,7 +1436,7 @@ body.mnav-open .hamburger {
 .pillar-ttl { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; color: var(--charcoal); margin-bottom: 7px; }
 .pillar-txt { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.72; }
 .why-visual { position: relative; }
-.why-main { aspect-ratio: 4/5; background: var(--forest); position: relative; overflow: hidden; }
+.why-main { aspect-ratio: 4/5; background: var(--ash); position: relative; overflow: hidden; }
 .why-main-img {
   position: absolute;
   inset: 0;
@@ -1475,7 +1475,7 @@ body.mnav-open .hamburger {
   box-shadow: 0 14px 44px rgba(0,0,0,.1);
   z-index: 2;
 }
-.cnum { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--forest); line-height: 1; }
+.cnum { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 400; color: var(--ash); line-height: 1; }
 .clbl { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); font-weight: 300; margin-top: 5px; }
 .why-bag-svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2; width: 65%; opacity: .18; pointer-events: none; }
 
@@ -1497,7 +1497,7 @@ body.mnav-open .hamburger {
 /* ═══════════════════════════════════════
    TESTIMONIALS — FULLY REBUILT
 ═══════════════════════════════════════ */
-.testi { padding: var(--section-pad) 0; background: var(--forest); overflow: hidden; }
+.testi { padding: var(--section-pad) 0; background: var(--ash); overflow: hidden; }
 .testi-hdr {
   display: flex;
   justify-content: space-between;
@@ -1531,7 +1531,7 @@ body.mnav-open .hamburger {
   z-index: 10;
 }
 .testi-btn:hover,
-.testi-btn:active { background: var(--gold); color: var(--forest); border-color: var(--gold); }
+.testi-btn:active { background: var(--gold); color: var(--ash); border-color: var(--gold); }
 .testi-btn:disabled { opacity: 0.35; cursor: default; }
 
 /* Carousel container */
@@ -1671,7 +1671,7 @@ body.mnav-open .hamburger {
 }
 .story-stats { display: flex; flex-direction: column; gap: 30px; }
 .stat { padding-left: 20px; border-left: 2px solid var(--gold); }
-.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: var(--forest); line-height: 1; }
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 300; color: var(--ash); line-height: 1; }
 .stat-lbl { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 300; margin-top: 5px; }
 .story-body { font-size: clamp(14px, 1.4vw, 16px); color: var(--muted); font-weight: 300; line-height: 1.9; }
 .story-body p { margin-bottom: 18px; }
@@ -1741,7 +1741,7 @@ body.mnav-open .hamburger {
   background: none;
   cursor: pointer;
 }
-.btn-ig:hover { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.btn-ig:hover { background: var(--ash); color: var(--cream); border-color: var(--ash); }
 
 /* ═══════════════════════════════════════
    FAQ
@@ -1756,7 +1756,7 @@ body.mnav-open .hamburger {
 .faq-visual { position: sticky; top: 120px; }
 .faq-vis-box {
   aspect-ratio: 4/5;
-  background: var(--forest);
+  background: var(--ash);
   position: relative;
   overflow: hidden;
 }
@@ -1840,7 +1840,7 @@ body.mnav-open .hamburger {
   flex-shrink: 0;
   transition: transform .3s, background .25s;
 }
-.faq-q[aria-expanded="true"] .faq-toggle { transform: rotate(45deg); background: var(--gold); color: var(--forest); }
+.faq-q[aria-expanded="true"] .faq-toggle { transform: rotate(45deg); background: var(--gold); color: var(--ash); }
 .faq-a {
   max-height: 0;
   overflow: hidden;
@@ -1936,7 +1936,7 @@ body.mnav-open .hamburger {
 .wa-btn:hover { transform: scale(1.08); box-shadow: 0 6px 30px rgba(37,211,102,.55); animation: none; }
 .wa-btn svg { width: 28px; height: 28px; fill: white; }
 .wa-lbl {
-  background: var(--forest);
+  background: var(--ash);
   color: var(--cream);
   font-size: 10px;
   letter-spacing: .15em;
@@ -2278,7 +2278,7 @@ body.mnav-open .hamburger {
   border: none;
   border-radius: 6px;
 }
-.btn-modal-order:hover { background: var(--gold); color: var(--forest); }
+.btn-modal-order:hover { background: var(--gold); color: var(--ash); }
 .btn-modal-order svg { flex-shrink: 0; }
 
 .pmodal-trust {
@@ -2405,7 +2405,7 @@ textarea.finput { resize: vertical; min-height: 80px; font-size: 16px; }
 }
 .btn-submit {
   width: 100%;
-  background: var(--forest);
+  background: var(--ash);
   color: var(--cream);
   padding: 15px;
   font-size: 11px;
@@ -2420,7 +2420,7 @@ textarea.finput { resize: vertical; min-height: 80px; font-size: 16px; }
   cursor: pointer;
   border: none;
 }
-.btn-submit:hover { background: var(--gold); color: var(--forest); }
+.btn-submit:hover { background: var(--gold); color: var(--ash); }
 .omodal-trust { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
 .otrust {
   font-size: 10px;
@@ -3041,7 +3041,7 @@ input, textarea {
     gap: 10px;
     justify-content: center;
     padding: 18px 20px;
-    background: var(--forest);
+    background: var(--ash);
     border-top: 1px solid rgba(184,150,90,.1);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -3385,7 +3385,7 @@ input, textarea {
   top: -100%;
   left: 16px;
   background: var(--gold);
-  color: var(--forest);
+  color: var(--ash);
   padding: 8px 16px;
   font-size: 12px;
   font-weight: 500;
@@ -3709,7 +3709,7 @@ input, textarea {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
-.mob-coll-tab.active { background: var(--forest); color: var(--gold); }
+.mob-coll-tab.active { background: var(--ash); color: var(--gold); }
 /* Mobile type + sort controls row */
 .mob-controls-row {
   display: none;
@@ -4374,37 +4374,37 @@ input, textarea {
   <div class="ig-grid" aria-hidden="true">
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial01.webp" alt="ZARIAH editorial 1" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#1a3828,#0c2016);width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg width="70" height="90" viewBox="0 0 70 90" fill="none" aria-hidden="true"><rect x="6" y="22" width="58" height="62" rx="3" fill="none" stroke="rgba(184,150,90,.4)" stroke-width="1.5"/><path d="M6 22 Q6 8 18 5 L52 5 Q64 5 64 22" fill="none" stroke="rgba(184,150,90,.35)" stroke-width="1.5"/><path d="M24 5 Q24 1 28 1 Q35 0 35 5" stroke="rgba(184,150,90,.5)" stroke-width="1.2" fill="none"/><path d="M35 5 Q35 1 42 1 Q46 0 46 5" stroke="rgba(184,150,90,.5)" stroke-width="1.2" fill="none"/><rect x="27" y="17" width="16" height="10" rx="2" fill="rgba(184,150,90,.25)"/><circle cx="35" cy="55" r="12" fill="none" stroke="rgba(184,150,90,.3)" stroke-width="1"/><text x="35" y="59" text-anchor="middle" fill="rgba(184,150,90,.5)" font-size="10" font-style="italic" font-family="serif">Z</text></svg></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#8B8179,#625D59);width:100%;height:100%;display:flex;align-items:center;justify-content:center"><svg width="70" height="90" viewBox="0 0 70 90" fill="none" aria-hidden="true"><rect x="6" y="22" width="58" height="62" rx="3" fill="none" stroke="rgba(184,150,90,.4)" stroke-width="1.5"/><path d="M6 22 Q6 8 18 5 L52 5 Q64 5 64 22" fill="none" stroke="rgba(184,150,90,.35)" stroke-width="1.5"/><path d="M24 5 Q24 1 28 1 Q35 0 35 5" stroke="rgba(184,150,90,.5)" stroke-width="1.2" fill="none"/><path d="M35 5 Q35 1 42 1 Q46 0 46 5" stroke="rgba(184,150,90,.5)" stroke-width="1.2" fill="none"/><rect x="27" y="17" width="16" height="10" rx="2" fill="rgba(184,150,90,.25)"/><circle cx="35" cy="55" r="12" fill="none" stroke="rgba(184,150,90,.3)" stroke-width="1"/><text x="35" y="59" text-anchor="middle" fill="rgba(184,150,90,.5)" font-size="10" font-style="italic" font-family="serif">Z</text></svg></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial02.webp" alt="ZARIAH editorial 2" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#22402e,#0e2416);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#9A9088,#77716D);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial03.webp" alt="ZARIAH editorial 3" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#1e3c28,#142a1c);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#A69C94,#81776F);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial04.webp" alt="ZARIAH editorial 4" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#2a4a36,#1a3424);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#B7ADA5,#8B8179);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial05.webp" alt="ZARIAH editorial 5" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#162c1e,#0c1e14);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#9A9088,#625D59);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial06.webp" alt="ZARIAH editorial 6" loading="lazy" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#1e3828,#0e2418);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#A69C94,#77716D);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
     <div class="ig-tile">
       <img class="ig-tile-img" src="images/editorial/editorial01.webp" alt="ZARIAH editorial 7" loading="lazy" style="object-position:center 60%" onerror="this.style.display='none'">
-      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#1a2c1a,#101810);width:100%;height:100%"></div>
+      <div class="ig-tile-bg" style="background:linear-gradient(145deg,#8B8179,#625D59);width:100%;height:100%"></div>
       <div class="ig-ov"><span aria-hidden="true">♡</span></div><div class="ig-deco"></div>
     </div>
   </div>
@@ -4788,8 +4788,8 @@ function getStroke(collection) {
   return collection === 'Noir' ? 'rgba(160,140,200,0.55)' : 'rgba(184,150,90,0.5)';
 }
 function getCardBg(p) {
-  if (p.collection === 'Essence')   return 'linear-gradient(145deg,#1e3828 0%,#0e2218 100%)';
-  if (p.collection === 'Signature') return 'linear-gradient(145deg,#243820 0%,#142410 100%)';
+  if (p.collection === 'Essence')   return 'linear-gradient(145deg,#A69C94 0%,#77716D 100%)';
+  if (p.collection === 'Signature') return 'linear-gradient(145deg,#9A9088 0%,#625D59 100%)';
   return 'linear-gradient(145deg,#18181e 0%,#0e0e14 100%)';
 }
 const BAG_SVGS = {
