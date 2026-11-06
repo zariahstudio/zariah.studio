@@ -4753,11 +4753,13 @@ const OverlayManager = (function() {
   }
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/storefront-config.js"></script>
 <script>
 /* ═══════════════════════════════════════
-   PRODUCT DATA — 18 pieces
+   PRODUCT DATA — embedded fallback catalogue
 ═══════════════════════════════════════ */
-const PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   { id:'Essence01', name:'Crescent Shoulder Bag',  collection:'Essence',   type:'Shoulder Bag', color:'Camel / Black / Dusty Rose',           desc:'Modern everyday luxury with a soft curved silhouette. Perfect for office mornings and weekend outings.',                    size:'Small–Medium · L 26cm × H 15cm × D 6cm',  price:'৳3,800', badge:'Bestseller',    badgeClass:'badge-b' },
   { id:'Essence02', name:'Slim Flap Crossbody',    collection:'Essence',   type:'Crossbody',    color:'Camel / Black / Olive',                  desc:'Minimal and feminine crossbody for daily essentials. Adjustable strap, elegant closure.',                                  size:'Small · L 20cm × H 13cm × D 5cm',         price:'৳2,900', badge:'New',           badgeClass:'badge-n' },
   { id:'Essence03', name:'Structured Mini Tote',   collection:'Essence',   type:'Tote',         color:'Camel / Black',                          desc:'Elegant mini tote that keeps you organized in style. Interior zip pocket and card slots.',                                  size:'Medium · L 24cm × H 20cm × D 10cm',       price:'৳3,400', badge:"Editor's Pick", badgeClass:'badge-e', soldOut:true },
@@ -4777,6 +4779,7 @@ const PRODUCTS = [
   { id:'Noir05', name:'Structured Underarm Bag',   collection:'Noir', type:'Underarm Bag', color:'Noir Black',                                   desc:'Sleek underarm bag for an effortlessly cool attitude. Rigid frame, push-lock closure.',                                       size:'Small · L 22cm × H 13cm × D 5cm',         price:'৳3,200', badge:null,            badgeClass:'' },
   { id:'Noir06', name:'Mini Statement Tote',       collection:'Noir', type:'Tote',         color:'Noir Black / Deep Wine',                       desc:'Mini tote with major attitude. Pure noir elegance. Statement handles, minimal detailing.',                                     size:'Small · L 20cm × H 18cm × D 9cm',         price:'৳3,400', badge:null,            badgeClass:'' },
 ];
+let PRODUCTS = FALLBACK_PRODUCTS.slice();
 
 /* ═══════════════════════════════════════
    BAG ILLUSTRATION SYSTEM
@@ -4815,7 +4818,10 @@ function getBagSVG(product, variant) {
 
 function getGalleryImages(product) {
   const views = ['front', 'side', 'back', 'detail', 'lifestyle', 'inside'];
-  const folder = product.id.toLowerCase();
+  const folder = (product.assetFolder || product.id).toLowerCase();
+  if (product.remoteImages) {
+    return views.map((view, idx) => product.remoteImages[view] || getGalleryImagesFallback(product, idx));
+  }
   return views.map(view => `images/products/${folder}/${view}.webp`);
 }
 
@@ -4879,9 +4885,9 @@ function renderProducts() {
     const bg = getCardBg(p);
     const frontSVG = getBagSVG(p, 'front');
     const sideSVG  = getBagSVG(p, 'side');
-    const folder = p.id.toLowerCase();
-    const frontImg = `images/products/${folder}/front.webp`;
-    const sideImg  = `images/products/${folder}/side.webp`;
+    const folder = (p.assetFolder || p.id).toLowerCase();
+    const frontImg = p.remoteImages?.front || `images/products/${folder}/front.webp`;
+    const sideImg  = p.remoteImages?.side || p.remoteImages?.back || p.remoteImages?.front || `images/products/${folder}/side.webp`;
 
     const art = document.createElement('article');
     art.className = 'pcard reveal' + (p.soldOut ? ' sold-out' : '');
@@ -5076,24 +5082,18 @@ function toggleFaq(btn) {
    TASK 4 — LIVE PRODUCT COUNTS
 ═══════════════════════════════════════ */
 function updateFilterCounts() {
-  const allCount = PRODUCTS.length;
-  const essenceCount = PRODUCTS.filter(p => p.collection === 'Essence').length;
-  const sigCount = PRODUCTS.filter(p => p.collection === 'Signature').length;
-  const noirCount = PRODUCTS.filter(p => p.collection === 'Noir').length;
+  const countFor = (collection) => collection === 'all'
+    ? PRODUCTS.length
+    : PRODUCTS.filter(p => p.collection === collection).length;
 
-  // Mobile header tabs
-  const setCount = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = ` (${n})`; };
-  setCount('fcol-count-all', allCount);
-  setCount('fcol-count-essence', essenceCount);
-  setCount('fcol-count-signature', sigCount);
-  setCount('fcol-count-noir', noirCount);
-
-  // Desktop filter bar
-  const setDf = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = ` (${n})`; };
-  setDf('dfcount-all', allCount);
-  setDf('dfcount-essence', essenceCount);
-  setDf('dfcount-signature', sigCount);
-  setDf('dfcount-noir', noirCount);
+  document.querySelectorAll('.fcol-tab').forEach(tab => {
+    const count = tab.querySelector('.fcol-tab-count');
+    if (count) count.textContent = ` (${countFor(tab.dataset.coll)})`;
+  });
+  document.querySelectorAll('.dftab').forEach(tab => {
+    const count = tab.querySelector('.dftab-count');
+    if (count) count.textContent = ` (${countFor(tab.dataset.dfcoll)})`;
+  });
 }
 
 /* ═══════════════════════════════════════
@@ -5107,7 +5107,7 @@ function updateFilterStatus(visibleCount) {
   if (!statusBar || !statusTxt) return;
 
   const collLabels = { all: 'All Collections', Essence: 'Essence Collection', Signature: 'Signature Collection', Noir: 'Noir Collection' };
-  const collLabel = collLabels[activeCollection] || 'All Collections';
+  const collLabel = collLabels[activeCollection] || (activeCollection === 'all' ? 'All Collections' : `${activeCollection} Collection`);
   const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeSortOrder !== 'featured';
 
   statusTxt.innerHTML = `Showing <em>${collLabel}</em> &mdash; <strong>${visibleCount} ${visibleCount === 1 ? 'Product' : 'Products'}</strong>`;
@@ -6128,6 +6128,148 @@ function parsePrice(priceStr) {
 
 renderProducts();
 renderFAQ();
+
+
+// Load the published catalogue without changing the existing storefront components.
+// The embedded 18-product catalogue remains the fail-safe if Supabase is unavailable.
+function syncDynamicStorefrontFilters() {
+  const collectionNames = [...new Set(PRODUCTS.map(p => p.collection).filter(Boolean))];
+  const knownCollections = new Set([...document.querySelectorAll('.dftab')].map(el => el.dataset.dfcoll));
+  const hiddenFilterHost = document.querySelector('.products-header > div[aria-hidden="true"]');
+  const mobileCollectionHost = document.querySelector('.mob-coll-track');
+  const desktopCollectionHost = document.querySelector('.dftabs');
+
+  collectionNames.forEach(name => {
+    if (knownCollections.has(name)) return;
+    if (hiddenFilterHost) {
+      const hidden = document.createElement('button');
+      hidden.className = 'fcol-tab';
+      hidden.dataset.coll = name;
+      hidden.setAttribute('aria-pressed', 'false');
+      hidden.textContent = name;
+      hiddenFilterHost.appendChild(hidden);
+      hidden.addEventListener('click', () => { setCollFilter(name); setTypeFilter('all'); renderProducts(); });
+    }
+    if (mobileCollectionHost) {
+      const mobile = document.createElement('button');
+      mobile.className = 'mob-coll-tab';
+      mobile.dataset.mobcoll = name;
+      mobile.setAttribute('aria-pressed', 'false');
+      mobile.textContent = name;
+      mobileCollectionHost.appendChild(mobile);
+      mobile.addEventListener('click', () => { setCollFilter(name); setTypeFilter('all'); renderProducts(); });
+    }
+    if (desktopCollectionHost) {
+      const desktop = document.createElement('button');
+      desktop.className = 'dftab';
+      desktop.dataset.dfcoll = name;
+      desktop.setAttribute('aria-pressed', 'false');
+      desktop.setAttribute('aria-label', 'Show ' + name + ' collection');
+      const title = document.createElement('span');
+      title.className = 'dftab-name';
+      title.textContent = name;
+      const description = document.createElement('span');
+      description.className = 'dftab-desc';
+      description.textContent = 'Collection';
+      const count = document.createElement('span');
+      count.className = 'dftab-count';
+      desktop.append(title, description, count);
+      desktopCollectionHost.appendChild(desktop);
+      desktop.addEventListener('click', () => { setCollFilter(name); setTypeFilter('all'); renderProducts(); });
+    }
+  });
+
+  const typeNames = [...new Set(PRODUCTS.map(p => p.type).filter(Boolean))];
+  const hiddenTypeHost = document.querySelector('.products-header > div[aria-hidden="true"]');
+  const hiddenTypes = new Set([...document.querySelectorAll('.ftab')].map(el => el.dataset.type));
+  typeNames.forEach(type => {
+    if (hiddenTypes.has(type)) return;
+    if (hiddenTypeHost) {
+      const button = document.createElement('button');
+      button.className = 'ftab';
+      button.dataset.type = type;
+      button.setAttribute('aria-pressed', 'false');
+      button.textContent = type;
+      hiddenTypeHost.appendChild(button);
+      button.addEventListener('click', () => { setTypeFilter(type); renderProducts(); });
+    }
+    ['mobileTypeSelect', 'dfbarType'].forEach(id => {
+      const select = document.getElementById(id);
+      if (select && ![...select.options].some(option => option.value === type)) {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        select.appendChild(option);
+      }
+    });
+  });
+
+  const names = document.querySelector('.coll-names');
+  if (names && collectionNames.length) names.textContent = collectionNames.join(' • ');
+}
+
+async function loadPublishedProductsFromSupabase() {
+  const config = window.ZARIAH_SUPABASE_CONFIG;
+  if (!config || !window.supabase || typeof window.supabase.createClient !== 'function') return;
+
+  try {
+    const client = window.supabase.createClient(config.url, config.publishableKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+    const { data, error } = await client.rpc('get_storefront_catalogue');
+    if (error) throw error;
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('[ZARIAH] Published catalogue is empty; keeping the embedded fallback catalogue.');
+      return;
+    }
+
+    const fallbackBySku = new Map(FALLBACK_PRODUCTS.map(product => [product.id.toLowerCase(), product]));
+    PRODUCTS = data.map(row => {
+      const fallback = fallbackBySku.get(String(row.sku || '').toLowerCase());
+      const remoteImages = {};
+      const extraImages = [];
+      (Array.isArray(row.images) ? row.images : []).forEach(image => {
+        if (!image || !image.url) return;
+        const role = String(image.role || 'gallery').toLowerCase();
+        if (['front', 'side', 'back', 'detail', 'lifestyle', 'inside'].includes(role) && !remoteImages[role]) {
+          remoteImages[role] = image.url;
+        } else {
+          extraImages.push(image.url);
+        }
+      });
+      const galleryOrder = ['front', 'side', 'back', 'detail', 'lifestyle', 'inside'];
+      extraImages.forEach(url => {
+        const missingRole = galleryOrder.find(role => !remoteImages[role]);
+        if (missingRole) remoteImages[missingRole] = url;
+      });
+
+      return {
+        id: row.slug || row.sku,
+        sku: row.sku,
+        assetFolder: String(row.sku || '').toLowerCase(),
+        name: row.name,
+        collection: row.collection_name,
+        type: row.product_type || 'Shoulder Bag',
+        color: row.color || '',
+        desc: row.description || '',
+        size: row.size_text || '',
+        price: '৳' + new Intl.NumberFormat('en-BD', { maximumFractionDigits: 0 }).format(Number(row.price_bdt || 0)),
+        badge: row.badge || null,
+        badgeClass: row.badge_style || '',
+        soldOut: row.stock_counted ? Boolean(row.is_sold_out) : Boolean(fallback?.soldOut),
+        remoteImages
+      };
+    });
+
+    syncDynamicStorefrontFilters();
+    renderProducts();
+    console.info('[ZARIAH] Published catalogue loaded from Supabase:', PRODUCTS.length);
+  } catch (error) {
+    console.warn('[ZARIAH] Could not load Supabase catalogue; using embedded products.', error);
+  }
+}
+
+loadPublishedProductsFromSupabase();
 
 /* ═══════════════════════════════════════
    TASK 7 — STICKY DESKTOP FILTER BAR
