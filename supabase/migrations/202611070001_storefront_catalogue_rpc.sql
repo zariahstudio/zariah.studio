@@ -10,6 +10,7 @@ alter table public.inventory
 create or replace function public.get_storefront_catalogue()
 returns table (
   sku text,
+  slug text,
   name text,
   collection_name text,
   product_type text,
@@ -34,6 +35,7 @@ set search_path = ''
 as $$
   select
     p.sku,
+    p.slug,
     p.name,
     c.name as collection_name,
     p.product_type,
