@@ -6772,7 +6772,8 @@ zRenderRecentlyViewed();
 function renderProductDetailsPage(id){
  const p=PRODUCTS.find(item=>String(item.id)===String(id)||String(item.sku)===String(id));
  const host=document.getElementById('zProductPage');if(!host)return;
- if(!p){host.hidden=true;document.body.classList.remove('z-product-route');return;}
+ if(!p){host.hidden=true;document.body.classList.remove('z-product-route');zRenderRecentlyViewed();return;}
+ zTrackRecentlyViewed(p);
  const imgs=getGalleryImages(p).filter(Boolean);
  const unique=[...new Set(imgs)];
   const gallery='<div class="z-gallery-stage"><img id="zGalleryImage" src="'+zEscape(unique[0]||'')+'" alt="'+zEscape(p.name)+' — Front view" loading="eager"></div>'+(unique.length>1?'<button class="z-gallery-arrow prev" id="zGalleryPrev" type="button" aria-label="Previous product image">‹</button><button class="z-gallery-arrow next" id="zGalleryNext" type="button" aria-label="Next product image">›</button><span class="z-gallery-count" id="zGalleryCount">1 / '+unique.length+'</span><div class="z-gallery-dots" id="zGalleryDots" aria-label="Choose product image">'+unique.map((_,i)=>'<button type="button" class="z-gallery-dot'+(i===0?' active':'')+'" data-gallery-index="'+i+'" aria-label="Show image '+(i+1)+'"></button>').join('')+'</div>':'');
@@ -6804,7 +6805,7 @@ function renderProductDetailsPage(id){
  document.title=p.name+' | ZARIAH Studio';
 }
 function navigateToProduct(id){history.pushState({zProduct:id},'',location.pathname+'?product='+encodeURIComponent(id));renderProductDetailsPage(id);}
-function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Quiet Luxury Handbags Bangladesh';}}
+function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Quiet Luxury Handbags Bangladesh';zRenderRecentlyViewed();}}
 window.addEventListener('popstate',syncProductRoute);
 
 syncProductRoute();
