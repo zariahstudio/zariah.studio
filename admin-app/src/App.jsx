@@ -272,7 +272,7 @@ function PaymentEntryModal({order,onClose,onSave,saving}) {
  </section></div>;
 }
 
-function CustomersPanel({customers,onSave,saving}) {
+function CustomersPanel({customers,orders,onSave,saving}) {
  const [query,setQuery]=useState('');const [selected,setSelected]=useState(null);
  const [form,setForm]=useState({full_name:'',phone:'',email:'',address:'',district:'',city:'',notes:''});
  const start=c=>{setSelected(c?.id||null);setForm(c?{full_name:c.full_name||'',phone:c.phone||'',email:c.email||'',address:c.address||'',district:c.district||'',city:c.city||'',notes:c.notes||''}:{full_name:'',phone:'',email:'',address:'',district:'',city:'',notes:''});};
@@ -281,7 +281,7 @@ function CustomersPanel({customers,onSave,saving}) {
  return <><section className="panel"><div className="panel-head split"><div><p className="eyebrow">CUSTOMER RELATIONSHIP</p><h2>Customers <span className="count">{customers.length}</span></h2><p className="muted">Customer profiles and loyalty status from verified payments.</p></div><button className="primary" onClick={()=>start(null)}><Plus size={16}/> Add customer</button></div>
  <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search name, phone or email"/></div></div>
  <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>District</th><th>Orders</th><th>Lifetime spend</th><th>Points</th><th>Tier</th><th></th></tr></thead><tbody>
- {visible.map(c=>{const loyalty=Array.isArray(c.customer_loyalty_accounts)?c.customer_loyalty_accounts[0]:c.customer_loyalty_accounts;return <tr key={c.id}><td><strong>{c.full_name}</strong><small style={{display:'block',color:'var(--muted)',marginTop:4}}>{c.email||'No email'}</small></td><td>{c.phone}</td><td>{c.district||c.city||'—'}</td><td>{c.order_count||0}</td><td>{money(loyalty?.lifetime_spend_bdt||0)}</td><td>{loyalty?.points_balance||0}</td><td><span className="status live">{loyalty?.tier||'bronze'}</span></td><td><button className="secondary small" onClick={()=>start(c)}>Edit</button></td></tr>})}
+ {visible.map(c=>{const loyalty=Array.isArray(c.customer_loyalty_accounts)?c.customer_loyalty_accounts[0]:c.customer_loyalty_accounts;return <tr key={c.id}><td><strong>{c.full_name}</strong><small style={{display:'block',color:'var(--muted)',marginTop:4}}>{c.email||'No email'}</small></td><td>{c.phone}</td><td>{c.district||c.city||'—'}</td><td>{orders.filter(o=>o.customer_id===c.id).length}</td><td>{money(loyalty?.lifetime_spend_bdt||0)}</td><td>{loyalty?.points_balance||0}</td><td><span className="status live">{loyalty?.tier||'bronze'}</span></td><td><button className="secondary small" onClick={()=>start(c)}>Edit</button></td></tr>})}
  </tbody></table>{visible.length===0&&<div className="empty">No customers found.</div>}</div></section>
  {form&&<section className="panel"><div className="panel-head"><p className="eyebrow">CUSTOMER PROFILE</p><h2>{selected?'Edit customer':'Add customer'}</h2></div><form className="form-grid" onSubmit={submit}>
  <label>Full name *<input required value={form.full_name} onChange={e=>setForm(v=>({...v,full_name:e.target.value}))}/></label><label>Phone *<input required value={form.phone} onChange={e=>setForm(v=>({...v,phone:e.target.value}))}/></label>
@@ -559,7 +559,7 @@ function App() {
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
         {section === 'orders' && <OrdersPanel orders={orders} products={products} onCreateSale={createPosSale} onUpdateStatus={updateOrderStatus} onRecordPayment={recordOrderPayment} saving={saving}/>}
-        {section === 'customers' && <CustomersPanel customers={customers} onSave={saveCustomer} saving={saving}/>}
+        {section === 'customers' && <CustomersPanel customers={customers} orders={orders} onSave={saveCustomer} saving={saving}/>}
         {section === 'payments' && <PaymentsPanel payments={payments} orders={orders}/>}
         {section === 'finance' && <FinancePanel products={products} costs={costs} orders={orders} expenses={expenses} investments={investments} onSaveCost={saveProductCost} onAddExpense={addExpense} onAddInvestment={addInvestment} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const stock = p.inventory?.[0]; const qty = stock?.on_hand ?? 0; const counted = Boolean(stock?.stock_counted); const threshold = stock?.low_stock_threshold ?? 2; const label = !counted ? 'Not counted' : qty > threshold ? 'In stock' : 'Low stock'; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{counted ? qty : '—'}</td><td><span className={`status ${!counted ? '' : qty > threshold ? 'live' : 'warning'}`}>{label}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
