@@ -4390,9 +4390,15 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
 .z-detail-top{max-width:1320px;margin:0 auto 22px;display:flex;justify-content:space-between;align-items:center}
 .z-detail-back{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding:10px 0}
 .z-detail-grid{max-width:1320px;margin:auto;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.85fr);gap:clamp(28px,6vw,84px)}
-.z-detail-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-content:start}
-.z-detail-gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--cream-deep)}
-.z-detail-gallery img:first-child{grid-column:1/-1;aspect-ratio:4/3}
+.z-detail-gallery{position:relative;display:block;width:100%;overflow:hidden;background:var(--cream-deep)}
+.z-detail-gallery .z-gallery-stage{position:relative;width:100%;overflow:hidden}
+.z-detail-gallery .z-gallery-stage img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--cream-deep)}
+.z-gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(250,247,242,.88);color:#28231f;font-size:25px;line-height:1;box-shadow:0 2px 12px rgba(0,0,0,.10)}
+.z-gallery-arrow.prev{left:14px}.z-gallery-arrow.next{right:14px}
+.z-gallery-count{position:absolute;right:14px;bottom:14px;padding:6px 10px;background:rgba(250,247,242,.88);font-size:10px;letter-spacing:.12em;color:#28231f}
+.z-gallery-dots{display:flex;justify-content:center;gap:8px;padding:13px 0}
+.z-gallery-dot{width:6px;height:6px;border-radius:50%;background:#c9c0b5;padding:0}
+.z-gallery-dot.active{background:var(--ash);transform:scale(1.25)}
 .z-detail-info{position:sticky;top:24px;align-self:start;padding:22px 0}
 .z-detail-collection{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold)}
 .z-detail-name{font:300 clamp(34px,4vw,54px)/1.08 'Cormorant Garamond',serif;margin:14px 0}
@@ -4404,7 +4410,7 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
 .z-detail-related h2{font:300 32px 'Cormorant Garamond',serif;margin-bottom:22px}
 .z-related-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
 .z-related-item{cursor:pointer}.z-related-item img{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--cream-deep)}.z-related-item p{font-size:12px;margin-top:9px}.z-related-item small{font-size:11px;color:var(--muted)}
-@media(max-width:768px){.z-product-page{padding:16px 16px 50px}.z-detail-grid{grid-template-columns:1fr;gap:12px}.z-detail-gallery{gap:7px}.z-detail-gallery img:first-child{aspect-ratio:3/4}.z-detail-info{position:static;padding:12px 0}.z-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+@media(max-width:768px){.z-product-page{padding:16px 16px 50px}.z-detail-grid{grid-template-columns:1fr;gap:12px}.z-detail-gallery .z-gallery-stage img{aspect-ratio:3/4}.z-gallery-arrow{width:36px;height:36px;font-size:22px}.z-gallery-arrow.prev{left:10px}.z-gallery-arrow.next{right:10px}.z-detail-info{position:static;padding:12px 0}.z-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
 
 
 /* ZARIAH HERO CAROUSEL */
@@ -6645,12 +6651,22 @@ function renderProductDetailsPage(id){
  if(!p){host.hidden=true;document.body.classList.remove('z-product-route');return;}
  const imgs=getGalleryImages(p).filter(Boolean);
  const unique=[...new Set(imgs)];
- const gallery=unique.map((src,i)=>'<img src="'+zEscape(src)+'" alt="'+zEscape(p.name)+' — '+(i===0?'Front':'Gallery')+' view" loading="'+(i===0?'eager':'lazy')+'" onerror="this.style.display=\'none\'">').join('');
+  const gallery='<div class="z-gallery-stage"><img id="zGalleryImage" src="'+zEscape(unique[0]||'')+'" alt="'+zEscape(p.name)+' — Front view" loading="eager"></div>'+(unique.length>1?'<button class="z-gallery-arrow prev" id="zGalleryPrev" type="button" aria-label="Previous product image">‹</button><button class="z-gallery-arrow next" id="zGalleryNext" type="button" aria-label="Next product image">›</button><span class="z-gallery-count" id="zGalleryCount">1 / '+unique.length+'</span><div class="z-gallery-dots" id="zGalleryDots" aria-label="Choose product image">'+unique.map((_,i)=>'<button type="button" class="z-gallery-dot'+(i===0?' active':'')+'" data-gallery-index="'+i+'" aria-label="Show image '+(i+1)+'"></button>').join('')+'</div>':'');
  const related=PRODUCTS.filter(item=>item.collection===p.collection&&item.id!==p.id).slice(0,4);
  host.innerHTML='<div class="z-detail-top"><button class="z-detail-back" type="button" id="zDetailBack">← Back to collection</button><span class="z-detail-collection">ZARIAH Studio</span></div><div class="z-detail-grid"><div class="z-detail-gallery">'+gallery+'</div><section class="z-detail-info"><span class="z-detail-collection">'+zEscape(p.collection)+' Collection</span><h1 class="z-detail-name">'+zEscape(p.name)+'</h1><p class="z-detail-sku">'+zEscape(p.sku||p.id)+'</p><p class="z-detail-price">'+zEscape(p.price)+'</p><p class="z-detail-desc">'+zEscape(p.desc||'')+'</p><p class="z-detail-desc" style="margin-top:16px">'+zEscape([p.type,p.size,p.color].filter(Boolean).join(' · '))+'</p><button class="z-detail-reserve" id="zDetailReserve" type="button">Reserve Your Bag</button></section></div>'+(related.length?'<section class="z-detail-related"><h2>Complete the Collection</h2><div class="z-related-grid">'+related.map(item=>'<article class="z-related-item" data-related="'+zEscape(item.id)+'"><img src="'+zEscape(item.remoteImages?.front||'images/products/'+String(item.assetFolder||item.id).toLowerCase()+'/front.webp')+'" alt="'+zEscape(item.name)+'" loading="lazy"><p>'+zEscape(item.name)+'</p><small>'+zEscape(item.price)+'</small></article>').join('')+'</div></section>':'');
  host.hidden=false;document.body.classList.add('z-product-route');window.scrollTo(0,0);
  document.getElementById('zDetailBack').addEventListener('click',()=>{if(location.search.includes('product=')){history.pushState({},'',location.pathname+location.hash);renderProductDetailsPage(null);}else{renderProductDetailsPage(null);}});
- document.getElementById('zDetailReserve').addEventListener('click',()=>openOModal(p.id));
+ if(unique.length>1){
+   let galleryIndex=0;const galleryImg=document.getElementById('zGalleryImage');
+   const showGalleryImage=(next)=>{galleryIndex=(next+unique.length)%unique.length;galleryImg.src=unique[galleryIndex];galleryImg.alt=p.name+' — '+(galleryIndex===0?'Front':'Gallery')+' view';document.getElementById('zGalleryCount').textContent=(galleryIndex+1)+' / '+unique.length;host.querySelectorAll('.z-gallery-dot').forEach((dot,i)=>dot.classList.toggle('active',i===galleryIndex));};
+   document.getElementById('zGalleryPrev').addEventListener('click',()=>showGalleryImage(galleryIndex-1));
+   document.getElementById('zGalleryNext').addEventListener('click',()=>showGalleryImage(galleryIndex+1));
+   host.querySelectorAll('[data-gallery-index]').forEach(dot=>dot.addEventListener('click',()=>showGalleryImage(Number(dot.dataset.galleryIndex))));
+   const stage=host.querySelector('.z-gallery-stage');let touchStartX=0;
+   stage.addEventListener('touchstart',e=>{touchStartX=e.changedTouches[0].clientX;},{passive:true});
+   stage.addEventListener('touchend',e=>{const delta=e.changedTouches[0].clientX-touchStartX;if(Math.abs(delta)>40)showGalleryImage(galleryIndex+(delta<0?1:-1));},{passive:true});
+  }
+  document.getElementById('zDetailReserve').addEventListener('click',()=>openOModal(p.id));
  host.querySelectorAll('[data-related]').forEach(el=>el.addEventListener('click',()=>navigateToProduct(el.dataset.related)));
  if(typeof fbq!=='undefined')fbq('track','ViewContent',{content_ids:[p.id],content_name:p.name,content_type:'product',value:parsePrice(p.price),currency:'BDT'});
  if(typeof gtag!=='undefined')gtag('event','view_item',{currency:'BDT',value:parsePrice(p.price),items:[{item_id:p.id,item_name:p.name,item_category:p.collection,price:parsePrice(p.price)}]});
