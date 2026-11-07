@@ -6767,6 +6767,7 @@ function zTrackRecentlyViewed(product){
   zSaveRecentlyViewed();
   zRenderRecentlyViewed();
 }
+zRenderRecentlyViewed();
 
 function renderProductDetailsPage(id){
  const p=PRODUCTS.find(item=>String(item.id)===String(id)||String(item.sku)===String(id));
@@ -6971,6 +6972,7 @@ async function loadPublishedProductsFromSupabase() {
 
     syncDynamicStorefrontFilters();
     renderProducts();
+    zRenderRecentlyViewed();
     syncProductRoute();
     console.info('[ZARIAH] Published catalogue loaded from Supabase:', PRODUCTS.length);
   } catch (error) {
