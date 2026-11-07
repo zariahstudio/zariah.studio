@@ -4485,6 +4485,24 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
   }
 }
 
+
+/* RECENTLY VIEWED — restrained storefront module */
+.z-recently-viewed { padding: 34px 0 58px; background: #fff; }
+.z-recently-head { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:20px; }
+.z-recently-head h2 { font-family:'Cormorant Garamond',Georgia,serif; font-size:clamp(25px,3vw,34px); font-weight:400; color:#292522; }
+.z-recently-head p { color:#81776f; font-size:10px; letter-spacing:.12em; text-transform:uppercase; }
+.z-recently-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; }
+.z-recently-card { min-width:0; cursor:pointer; text-align:left; color:#292522; }
+.z-recently-card img { width:100%; aspect-ratio:1/1; object-fit:contain; background:#f6f1ed; padding:7%; display:block; }
+.z-recently-card strong { display:block; margin-top:10px; font-size:12px; font-weight:500; }
+.z-recently-card span { display:block; margin-top:5px; font-size:12px; font-weight:600; }
+.z-recently-card:focus-visible { outline:2px solid #a98245; outline-offset:4px; }
+@media(max-width:768px) {
+  .z-recently-viewed { padding:26px 0 38px; }
+  .z-recently-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 10px; }
+  .z-recently-card strong,.z-recently-card span { font-size:11px; }
+}
+
 </style>
 </head>
 <body>
@@ -4739,6 +4757,15 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
       <div class="ptb-item"><span class="ptb-ico" aria-hidden="true">✓</span><span>7-Day Easy Exchange</span></div>
       <div class="ptb-item"><span class="ptb-ico" aria-hidden="true">✓</span><span>Quality Checked Before Dispatch</span></div>
     </div>
+  </div>
+</section>
+
+<section class="z-recently-viewed" id="zRecentlyViewed" hidden aria-labelledby="zRecentlyViewedTitle">
+  <div class="container">
+    <div class="z-recently-head">
+      <div><h2 id="zRecentlyViewedTitle">Recently Viewed</h2><p>Your recently explored pieces</p></div>
+    </div>
+    <div class="z-recently-grid" id="zRecentlyViewedGrid"></div>
   </div>
 </section>
 
@@ -6718,6 +6745,29 @@ renderFAQ();
 /* Product detail route: query-based URLs preserve static-host compatibility. */
 function zEscape(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function zColourHex(name){const n=String(name).toLowerCase();const map={black:'#282725',noir:'#282725',camel:'#b58b62',tan:'#b98e68',cognac:'#89563a',olive:'#74745a',green:'#52624e',forest:'#344b3c',burgundy:'#632c3c',plum:'#56374f',ivory:'#eee5d4',cream:'#e9ddc9',beige:'#d8c4a8',rose:'#bd8d91',mauve:'#9b7b88',blue:'#344c68',navy:'#252e46',wine:'#642c3b'};return Object.entries(map).find(([k])=>n.includes(k))?.[1]||'#c9b9a5';}
+const Z_RECENTLY_VIEWED_KEY='zariah_recently_viewed_v1';
+let zRecentlyViewed=[];
+try { const stored=JSON.parse(localStorage.getItem(Z_RECENTLY_VIEWED_KEY)||'[]'); zRecentlyViewed=Array.isArray(stored)?stored.filter(x=>typeof x==='string').slice(0,6):[]; } catch(e) {}
+function zSaveRecentlyViewed(){try{localStorage.setItem(Z_RECENTLY_VIEWED_KEY,JSON.stringify(zRecentlyViewed));}catch(e){console.warn('[ZARIAH] Recently viewed storage unavailable',e);}}
+function zRenderRecentlyViewed(){
+  const section=document.getElementById('zRecentlyViewed'),grid=document.getElementById('zRecentlyViewedGrid');
+  if(!section||!grid)return;
+  const items=zRecentlyViewed.map(id=>PRODUCTS.find(p=>String(p.id)===id||String(p.sku)===id)).filter(Boolean).slice(0,4);
+  section.hidden=items.length===0;
+  grid.innerHTML=items.map(p=>{
+    const folder=String(p.assetFolder||p.id).toLowerCase();
+    const image=p.remoteImages?.front||'images/products/'+folder+'/front.webp';
+    return '<button class="z-recently-card" type="button" data-recent-product="'+zEscape(p.id)+'"><img src="'+zEscape(image)+'" alt="'+zEscape(p.name)+'" loading="lazy"><strong>'+zEscape(p.name)+'</strong><span>'+zEscape(p.price)+'</span></button>';
+  }).join('');
+  grid.querySelectorAll('[data-recent-product]').forEach(button=>button.addEventListener('click',()=>navigateToProduct(button.dataset.recentProduct)));
+}
+function zTrackRecentlyViewed(product){
+  const id=String(product.id);
+  zRecentlyViewed=[id,...zRecentlyViewed.filter(x=>x!==id)].slice(0,6);
+  zSaveRecentlyViewed();
+  zRenderRecentlyViewed();
+}
+
 function renderProductDetailsPage(id){
  const p=PRODUCTS.find(item=>String(item.id)===String(id)||String(item.sku)===String(id));
  const host=document.getElementById('zProductPage');if(!host)return;
