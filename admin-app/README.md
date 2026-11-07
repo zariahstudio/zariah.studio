@@ -28,9 +28,14 @@ The legacy local script remains for controlled re-runs only. Do not run it unles
 - Operating expense entry and history.
 - Capital / one-time investment and refundable advance tracking, kept separate from operating expenses and per-unit product costs.
 - Finance overview for order value, amount recorded as paid, expenses and cash after expenses.
+- POS order creation with transactional item and counted-stock handling.
+- Order fulfilment status updates, courier details and customer-facing tracking events.
+- Verified payment recording with receipt references and synchronised paid/due balances.
+- Customer profile management with order counts and loyalty tier / points visibility.
+- Payment ledger with verified collection summaries.
 - Responsive neutral taupe/cream/champagne admin styling.
 
-Order creation/management, payment verification, customers, memberships and full profit reporting remain in the next implementation phase. The current finance overview only summarizes order rows already recorded in the database; it does not create orders or calculate final net profit. Order creation, inventory reservation, payment verification and membership discounts must be server-validated, not authoritative browser calculations.
+The order, payment, stock and loyalty write paths are enforced by database functions and RLS rather than browser-side authoritative calculations. Final net profit reporting, returns/refunds workflow, multi-item POS cart and physical stock count remain follow-up work.
 
 ## Deployment safety
 
