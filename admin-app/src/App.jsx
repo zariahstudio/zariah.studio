@@ -216,6 +216,92 @@ function FinancePanel({ products, costs, orders, expenses, investments, onSaveCo
   </>;
 }
 
+
+function OrdersPanel({ orders, products, onCreateSale, onUpdateStatus, onRecordPayment, saving }) {
+  const [form,setForm]=useState({full_name:'',phone:'',sku:'',quantity:1,paid:0,method:'cash',reference:'',notes:''});
+  const [editing,setEditing]=useState(null);
+  const [payment,setPayment]=useState(null);
+  const [query,setQuery]=useState('');
+  const update=(key,value)=>setForm(old=>({...old,[key]:value}));
+  const visible=orders.filter(o=>[o.order_number,o.customer_name,o.customer_phone,o.order_status].join(' ').toLowerCase().includes(query.toLowerCase()));
+  const submit=async e=>{e.preventDefault();if(!form.sku)return;const ok=await onCreateSale({full_name:form.full_name,phone:form.phone},[{sku:form.sku,quantity:Number(form.quantity)}],Number(form.paid||0),form.method,form.reference,form.notes);if(ok)setForm({full_name:'',phone:'',sku:'',quantity:1,paid:0,method:'cash',reference:'',notes:''});};
+  return <>
+    <section className="panel">
+      <div className="panel-head"><div><p className="eyebrow">IN-STORE SALES</p><h2>Record a sale</h2><p className="muted">Create a POS order, record collection and update counted stock in one transaction.</p></div></div>
+      <form className="form-grid" onSubmit={submit}>
+        <label>Customer name *<input required value={form.full_name} onChange={e=>update('full_name',e.target.value)} placeholder="Customer name"/></label>
+        <label>Mobile number *<input required value={form.phone} onChange={e=>update('phone',e.target.value)} placeholder="01XXXXXXXXX"/></label>
+        <label>Product *<select required value={form.sku} onChange={e=>update('sku',e.target.value)}><option value="">Select product</option>{products.filter(p=>p.is_published).map(p=><option key={p.id} value={p.sku}>{p.sku} · {p.name} · {money(p.price_bdt)}</option>)}</select></label>
+        <label>Quantity<input required type="number" min="1" max="20" value={form.quantity} onChange={e=>update('quantity',e.target.value)}/></label>
+        <label>Amount received (BDT)<input type="number" min="0" step="1" value={form.paid} onChange={e=>update('paid',e.target.value)}/></label>
+        <label>Payment method<select value={form.method} onChange={e=>update('method',e.target.value)}><option value="cash">Cash</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="bank_transfer">Bank transfer</option><option value="card">Card</option><option value="other">Other</option></select></label>
+        <label>Transaction reference<input value={form.reference} onChange={e=>update('reference',e.target.value)} placeholder="Optional"/></label>
+        <label>Notes<input value={form.notes} onChange={e=>update('notes',e.target.value)} placeholder="Optional"/></label>
+        <div className="span-2"><button className="primary" disabled={saving||!form.sku}><Plus size={16}/> Create POS sale</button></div>
+      </form>
+    </section>
+    <section className="panel">
+      <div className="panel-head split"><div><p className="eyebrow">ORDER MANAGEMENT</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Review orders, update fulfilment and record additional payments.</p></div><div className="searchbox"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search order / customer"/></div></div>
+      <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Paid</th><th>Due</th><th>Payment</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      {visible.map(o=><tr key={o.id}>
+        <td><strong>{o.order_number}</strong><small style={{display:'block',color:'var(--muted)',marginTop:4}}>{o.receipt_number||'Receipt pending'}</small></td>
+        <td>{o.customer_name}<small style={{display:'block',color:'var(--muted)',marginTop:4}}>{o.customer_phone}</small></td>
+        <td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_amount)}</td><td>{money(o.amount_paid)}</td><td>{money(Math.max(0,Number(o.total_amount||0)-Number(o.amount_paid||0)))}</td>
+        <td><span className="status">{o.payment_status}</span></td>
+        <td><select aria-label={'Status for '+o.order_number} value={o.order_status} onChange={e=>setEditing({id:o.id,status:e.target.value,courier:o.courier_name||'',tracking:o.courier_tracking_number||''})}>{['pending','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned'].map(s=><option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}</select></td>
+        <td><div className="row-actions"><button className="secondary small" disabled={!editing||editing.id!==o.id||saving} onClick={()=>onUpdateStatus(o.id,editing.status,editing.courier,editing.tracking).then(ok=>ok&&setEditing(null))}>Save</button><button className="secondary small" disabled={['cancelled','returned'].includes(o.order_status)||Number(o.total_amount)<=Number(o.amount_paid)} onClick={()=>setPayment(o)}>Payment</button></div></td>
+      </tr>)}
+      </tbody></table>{visible.length===0&&<div className="empty">No matching orders.</div>}</div>
+      {editing&&<div className="form-grid" style={{marginTop:18}}><label>Courier name<input value={editing.courier} onChange={e=>setEditing(v=>({...v,courier:e.target.value}))} placeholder="Courier / delivery partner"/></label><label>Tracking number<input value={editing.tracking} onChange={e=>setEditing(v=>({...v,tracking:e.target.value}))} placeholder="Tracking ID"/></label></div>}
+    </section>
+    {payment&&<PaymentEntryModal order={payment} onClose={()=>setPayment(null)} onSave={async payload=>{const ok=await onRecordPayment(payment.id,payload);if(ok)setPayment(null);}} saving={saving}/>}
+  </>;
+}
+
+function PaymentEntryModal({order,onClose,onSave,saving}) {
+ const [amount,setAmount]=useState(String(Math.max(0,Number(order.total_amount||0)-Number(order.amount_paid||0))));
+ const [method,setMethod]=useState('cash');const [reference,setReference]=useState('');const [notes,setNotes]=useState('');
+ return <div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><section className="modal" role="dialog" aria-modal="true">
+  <header className="modal-head"><div><p className="eyebrow">PAYMENT COLLECTION</p><h2>Record payment</h2><p className="muted">{order.order_number} · Due {money(Number(order.total_amount||0)-Number(order.amount_paid||0))}</p></div><button className="icon-btn" onClick={onClose}><X/></button></header>
+  <form onSubmit={e=>{e.preventDefault();onSave({amount_bdt:Number(amount),method,reference,notes});}}>
+   <div className="form-grid"><label>Amount (BDT) *<input required type="number" min="1" max={Math.max(0,Number(order.total_amount||0)-Number(order.amount_paid||0))} step="1" value={amount} onChange={e=>setAmount(e.target.value)}/></label>
+   <label>Method<select value={method} onChange={e=>setMethod(e.target.value)}><option value="cash">Cash</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="bank_transfer">Bank transfer</option><option value="card">Card</option><option value="other">Other</option></select></label>
+   <label>Reference<input value={reference} onChange={e=>setReference(e.target.value)} placeholder="Transaction ID (optional)"/></label><label>Notes<input value={notes} onChange={e=>setNotes(e.target.value)}/></label></div>
+   <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving||Number(amount)<=0}>Verify & record payment</button></footer>
+  </form>
+ </section></div>;
+}
+
+function CustomersPanel({customers,onSave,saving}) {
+ const [query,setQuery]=useState('');const [selected,setSelected]=useState(null);
+ const [form,setForm]=useState({full_name:'',phone:'',email:'',address:'',district:'',city:'',notes:''});
+ const start=c=>{setSelected(c?.id||null);setForm(c?{full_name:c.full_name||'',phone:c.phone||'',email:c.email||'',address:c.address||'',district:c.district||'',city:c.city||'',notes:c.notes||''}:{full_name:'',phone:'',email:'',address:'',district:'',city:'',notes:''});};
+ const visible=customers.filter(c=>[c.full_name,c.phone,c.email,c.district].join(' ').toLowerCase().includes(query.toLowerCase()));
+ const submit=async e=>{e.preventDefault();const ok=await onSave(selected,form);if(ok)start(null);};
+ return <><section className="panel"><div className="panel-head split"><div><p className="eyebrow">CUSTOMER RELATIONSHIP</p><h2>Customers <span className="count">{customers.length}</span></h2><p className="muted">Customer profiles and loyalty status from verified payments.</p></div><button className="primary" onClick={()=>start(null)}><Plus size={16}/> Add customer</button></div>
+ <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search name, phone or email"/></div></div>
+ <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>District</th><th>Orders</th><th>Lifetime spend</th><th>Points</th><th>Tier</th><th></th></tr></thead><tbody>
+ {visible.map(c=><tr key={c.id}><td><strong>{c.full_name}</strong><small style={{display:'block',color:'var(--muted)',marginTop:4}}>{c.email||'No email'}</small></td><td>{c.phone}</td><td>{c.district||c.city||'—'}</td><td>{c.order_count||0}</td><td>{money(c.customer_loyalty_accounts?.[0]?.lifetime_spend_bdt||0)}</td><td>{c.customer_loyalty_accounts?.[0]?.points_balance||0}</td><td><span className="status live">{c.customer_loyalty_accounts?.[0]?.tier||'bronze'}</span></td><td><button className="secondary small" onClick={()=>start(c)}>Edit</button></td></tr>)}
+ </tbody></table>{visible.length===0&&<div className="empty">No customers found.</div>}</div></section>
+ {form&&<section className="panel"><div className="panel-head"><p className="eyebrow">CUSTOMER PROFILE</p><h2>{selected?'Edit customer':'Add customer'}</h2></div><form className="form-grid" onSubmit={submit}>
+ <label>Full name *<input required value={form.full_name} onChange={e=>setForm(v=>({...v,full_name:e.target.value}))}/></label><label>Phone *<input required value={form.phone} onChange={e=>setForm(v=>({...v,phone:e.target.value}))}/></label>
+ <label>Email<input type="email" value={form.email} onChange={e=>setForm(v=>({...v,email:e.target.value}))}/></label><label>District<input value={form.district} onChange={e=>setForm(v=>({...v,district:e.target.value}))}/></label>
+ <label>City<input value={form.city} onChange={e=>setForm(v=>({...v,city:e.target.value}))}/></label><label>Address<input value={form.address} onChange={e=>setForm(v=>({...v,address:e.target.value}))}/></label>
+ <label className="span-2">Notes<textarea rows="2" value={form.notes} onChange={e=>setForm(v=>({...v,notes:e.target.value}))}/></label>
+ <div className="span-2"><button className="primary" disabled={saving}>Save customer</button>{selected&&<button type="button" className="secondary" style={{marginLeft:8}} onClick={()=>start(null)}>Cancel edit</button>}</div>
+ </form></section>}</>;
+}
+
+function PaymentsPanel({payments,orders}) {
+ const total=payments.filter(p=>p.status==='verified').reduce((s,p)=>s+Number(p.amount_bdt||0),0);
+ return <section className="panel"><div className="panel-head"><p className="eyebrow">PAYMENT LEDGER</p><h2>Payments <span className="count">{payments.length}</span></h2><p className="muted">Verified payment records. New collections are recorded from the Orders module.</p></div>
+ <div className="stat-grid"><Stat icon={CreditCard} label="Verified collections" value={money(total)}/><Stat icon={ShoppingBag} label="Payment entries" value={payments.length}/><Stat icon={AlertCircle} label="Pending verification" value={payments.filter(p=>p.status==='pending').length}/><Stat icon={Wallet} label="Orders with balance" value={orders.filter(o=>Number(o.total_amount||0)>Number(o.amount_paid||0)&&!['cancelled','returned'].includes(o.order_status)).length}/></div>
+ <div className="table-wrap"><table><thead><tr><th>Date</th><th>Order</th><th>Customer</th><th>Method</th><th>Reference</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+ {payments.map(p=><tr key={p.id}><td>{new Date(p.received_at||p.created_at).toLocaleString('en-GB')}</td><td>{p.orders?.order_number||p.order_id}</td><td>{p.orders?.customer_name||'—'}<small style={{display:'block',color:'var(--muted)',marginTop:4}}>{p.orders?.customer_phone||''}</small></td><td>{p.method||p.payment_method}</td><td>{p.reference||p.transaction_reference||'—'}</td><td><strong>{money(p.amount_bdt||p.amount)}</strong></td><td><span className={'status '+(p.status==='verified'?'live':'warning')}>{p.status}</span></td></tr>)}
+ </tbody></table>{payments.length===0&&<div className="empty">No payments recorded yet.</div>}</div>
+ </section>;
+}
+
 function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -230,6 +316,8 @@ function App() {
   const [costs, setCosts] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [investments, setInvestments] = useState([]);
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
@@ -240,12 +328,14 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c, costRows, expenseRows, orderRows, investmentRows] = await Promise.all([
+    const [p, c, costRows, expenseRows, orderRows, customerRows, paymentRows, investmentRows] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order', { foreignTable: 'product_images' }).order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('product_costs').select('*'),
       supabase.from('expenses').select('*').order('expense_date', { ascending: false }).order('created_at', { ascending: false }),
-      supabase.from('orders').select('id,order_number,order_status,payment_status,total_amount,amount_paid,created_at').order('created_at', { ascending: false }).limit(100),
+      supabase.from('orders').select('*, order_items(*)').order('created_at', { ascending: false }).limit(200),
+      supabase.from('customers').select('*, customer_loyalty_accounts(points_balance,lifetime_spend_bdt,tier)').order('created_at', { ascending: false }).limit(500),
+      supabase.from('payments').select('*, orders(order_number,customer_name,customer_phone)').order('received_at', { ascending: false }).limit(500),
       supabase.from('business_investments').select('*').order('transaction_date', { ascending: false }).order('created_at', { ascending: false })
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
@@ -253,6 +343,8 @@ function App() {
     if (costRows.error) notify('error', costRows.error.message); else setCosts(costRows.data || []);
     if (expenseRows.error) notify('error', expenseRows.error.message); else setExpenses(expenseRows.data || []);
     if (orderRows.error) notify('error', orderRows.error.message); else setOrders(orderRows.data || []);
+    if (customerRows.error) notify('error', customerRows.error.message); else setCustomers(customerRows.data || []);
+    if (paymentRows.error) notify('error', paymentRows.error.message); else setPayments(paymentRows.data || []);
     if (investmentRows.error) notify('error', investmentRows.error.message); else setInvestments(investmentRows.data || []);
     setDataLoading(false);
   }, [session]);
@@ -351,6 +443,62 @@ function App() {
     } finally { setSaving(false); }
   };
 
+
+  const createPosSale = async (customer, items, paid, method, reference, notes) => {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.rpc('create_pos_sale', {
+        p_customer: customer, p_items: items, p_payment_amount_bdt: paid,
+        p_payment_method: method, p_payment_reference: reference || null, p_notes: notes || null
+      });
+      if (error) throw error;
+      await loadData();
+      notify('success', `Sale recorded: ${data.order_number} · Receipt ${data.receipt_number}`);
+      return true;
+    } catch (err) { notify('error', err.message || 'Could not create sale.'); return false; }
+    finally { setSaving(false); }
+  };
+
+  const updateOrderStatus = async (orderId, status, courier, tracking) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc('update_order_fulfilment', {
+        p_order_id: orderId, p_status: status, p_courier_name: courier || null,
+        p_tracking_number: tracking || null, p_message: null
+      });
+      if (error) throw error;
+      await loadData(); notify('success', 'Order status updated.'); return true;
+    } catch (err) { notify('error', err.message || 'Could not update order.'); return false; }
+    finally { setSaving(false); }
+  };
+
+  const recordOrderPayment = async (orderId, payload) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc('record_order_payment', {
+        p_order_id: orderId, p_amount_bdt: payload.amount_bdt, p_method: payload.method,
+        p_reference: payload.reference || null, p_notes: payload.notes || null
+      });
+      if (error) throw error;
+      await loadData(); notify('success', 'Payment verified and recorded.'); return true;
+    } catch (err) { notify('error', err.message || 'Could not record payment.'); return false; }
+    finally { setSaving(false); }
+  };
+
+  const saveCustomer = async (customerId, payload) => {
+    setSaving(true);
+    try {
+      const clean = Object.fromEntries(Object.entries(payload).map(([k,v])=>[k,typeof v==='string'?(v.trim()||null):v]));
+      if (!clean.full_name || !clean.phone) throw new Error('Customer name and phone are required.');
+      const result = customerId
+        ? await supabase.from('customers').update(clean).eq('id',customerId)
+        : await supabase.from('customers').insert(clean);
+      if (result.error) throw result.error;
+      await loadData(); notify('success',customerId?'Customer updated.':'Customer created.'); return true;
+    } catch (err) { notify('error',err.message||'Could not save customer.'); return false; }
+    finally { setSaving(false); }
+  };
+
   const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
     const { error } = await supabase.from('products').update({ is_published: false }).eq('id', product.id);
@@ -410,9 +558,11 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.stock_counted ? p.inventory[0].on_hand : '—'}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'orders' && <OrdersPanel orders={orders} products={products} onCreateSale={createPosSale} onUpdateStatus={updateOrderStatus} onRecordPayment={recordOrderPayment} saving={saving}/>}
+        {section === 'customers' && <CustomersPanel customers={customers} onSave={saveCustomer} saving={saving}/>}
+        {section === 'payments' && <PaymentsPanel payments={payments} orders={orders}/>}
         {section === 'finance' && <FinancePanel products={products} costs={costs} orders={orders} expenses={expenses} investments={investments} onSaveCost={saveProductCost} onAddExpense={addExpense} onAddInvestment={addInvestment} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const stock = p.inventory?.[0]; const qty = stock?.on_hand ?? 0; const counted = Boolean(stock?.stock_counted); const threshold = stock?.low_stock_threshold ?? 2; const label = !counted ? 'Not counted' : qty > threshold ? 'In stock' : 'Low stock'; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{counted ? qty : '—'}</td><td><span className={`status ${!counted ? '' : qty > threshold ? 'live' : 'warning'}`}>{label}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
-        {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
       </div>
     </main>
     {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
