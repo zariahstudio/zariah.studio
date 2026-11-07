@@ -299,13 +299,19 @@ function App() {
   const saveProductCost = async (productId, values) => {
     const payload = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, Number(value || 0)]));
     if (Object.values(payload).some(value => !Number.isFinite(value) || value < 0)) return notify('error', 'Costs must be valid non-negative amounts.');
-    const { error } = await supabase.from('product_costs').upsert({ product_id: productId, ...payload }, { onConflict: 'product_id' });
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Product costing saved.'); }
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('product_costs').upsert({ product_id: productId, ...payload }, { onConflict: 'product_id' });
+      if (error) notify('error', error.message); else { await loadData(); notify('success', 'Product costing saved.'); }
+    } finally { setSaving(false); }
   };
 
   const addExpense = async (payload) => {
-    const { error } = await supabase.from('expenses').insert({ ...payload, created_by: session.user.id });
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Expense recorded.'); }
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('expenses').insert({ ...payload, created_by: session.user.id });
+      if (error) notify('error', error.message); else { await loadData(); notify('success', 'Expense recorded.'); }
+    } finally { setSaving(false); }
   };
 
   const archiveProduct = async (product) => {
