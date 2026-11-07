@@ -141,18 +141,28 @@ function CostRow({ product, cost, onSave, saving }) {
   </tr>;
 }
 
-function FinancePanel({ products, costs, orders, expenses, onSaveCost, onAddExpense, saving }) {
+function FinancePanel({ products, costs, orders, expenses, investments, onSaveCost, onAddExpense, onAddInvestment, saving }) {
   const [expense, setExpense] = useState({ expense_date: new Date().toISOString().slice(0,10), category: '', description: '', amount: '', payment_method: 'cash', notes: '' });
+  const [investment, setInvestment] = useState({ transaction_date: '', category: 'other', description: '', amount: '', is_refundable: false, notes: '' });
   const activeOrders = orders.filter(order => !['cancelled','returned'].includes(order.order_status));
   const orderValue = activeOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
   const collected = activeOrders.reduce((sum, order) => sum + Number(order.amount_paid || 0), 0);
   const expenseTotal = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const investmentTotal = investments.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const investmentLabels = { shop_advance: 'Shop advance', website_development: 'Website development', store_decoration: 'Store decoration', inventory_purchase: 'Inventory purchase', equipment: 'Equipment', other: 'Other' };
   const updateExpense = (key, value) => setExpense(old => ({ ...old, [key]: value }));
+  const updateInvestment = (key, value) => setInvestment(old => ({ ...old, [key]: value }));
   const submitExpense = async (e) => {
     e.preventDefault();
     if (!expense.category.trim() || !expense.description.trim() || Number(expense.amount) <= 0) return;
     await onAddExpense({ ...expense, amount: Number(expense.amount) });
     setExpense(old => ({ ...old, category: '', description: '', amount: '', notes: '' }));
+  };
+  const submitInvestment = async (e) => {
+    e.preventDefault();
+    if (!investment.description.trim() || Number(investment.amount) <= 0) return;
+    await onAddInvestment({ ...investment, transaction_date: investment.transaction_date || null, amount: Number(investment.amount) });
+    setInvestment(old => ({ ...old, transaction_date: '', description: '', amount: '', notes: '' }));
   };
   const costByProduct = new Map(costs.map(item => [item.product_id, item]));
   return <>
@@ -162,6 +172,20 @@ function FinancePanel({ products, costs, orders, expenses, onSaveCost, onAddExpe
       <Stat icon={Wallet} label="Recorded expenses" value={money(expenseTotal)} />
       <Stat icon={Wallet} label="Cash after expenses" value={money(collected - expenseTotal)} />
     </div>
+    <section className="panel"><div className="panel-head"><div><p className="eyebrow">CAPITAL & ADVANCES</p><h2>Recorded investment <span className="count">{money(investmentTotal)}</span></h2><p className="muted">One-time setup, inventory purchases and refundable advances are tracked separately from operating expenses and per-unit product costs.</p></div></div>
+      <form className="form-grid" onSubmit={submitInvestment}>
+        <label>Type<select value={investment.category} onChange={e => updateInvestment('category',e.target.value)}><option value="shop_advance">Shop advance</option><option value="website_development">Website development</option><option value="store_decoration">Store decoration</option><option value="inventory_purchase">Inventory purchase</option><option value="equipment">Equipment</option><option value="other">Other</option></select></label>
+        <label>Amount (BDT)<input required type="number" min="0.01" step="0.01" value={investment.amount} onChange={e => updateInvestment('amount',e.target.value)} /></label>
+        <label>Description<input required value={investment.description} onChange={e => updateInvestment('description',e.target.value)} placeholder="Investment description" /></label>
+        <label>Payment date (optional)<input type="date" value={investment.transaction_date} onChange={e => updateInvestment('transaction_date',e.target.value)} /></label>
+        <label className="check"><input type="checkbox" checked={investment.is_refundable} onChange={e => updateInvestment('is_refundable',e.target.checked)} /> Refundable advance / deposit</label>
+        <label>Notes<input value={investment.notes} onChange={e => updateInvestment('notes',e.target.value)} placeholder="Optional note" /></label>
+        <div className="span-2"><button className="primary" disabled={saving || !investment.amount}>Record investment</button></div>
+      </form>
+      <div className="table-wrap" style={{marginTop:22}}><table><thead><tr><th>Type</th><th>Description</th><th>Payment date</th><th>Classification</th><th>Amount</th></tr></thead><tbody>
+        {investments.map(item => <tr key={item.id}><td>{investmentLabels[item.category] || item.category}</td><td>{item.description}<small style={{display:'block',color:'var(--muted)',marginTop:4}}>{item.notes || ''}</small></td><td>{item.transaction_date || 'Not recorded'}</td><td>{item.is_refundable ? 'Refundable advance' : 'Capital / one-time'}</td><td><strong>{money(item.amount)}</strong></td></tr>)}
+      </tbody></table>{investments.length===0 && <div className="empty">No investments recorded yet.</div>}</div>
+    </section>
     <section className="panel">
       <div className="panel-head"><div><p className="eyebrow">UNIT ECONOMICS</p><h2>Product costing</h2><p className="muted">Record purchase, packaging, inbound shipping and other per-unit costs. Margin shown here excludes marketing and operating expenses.</p></div></div>
       <div className="table-wrap"><table><thead><tr><th>Product</th><th>Retail price</th><th>Purchase</th><th>Packaging</th><th>Inbound shipping</th><th>Other</th><th>Total unit cost</th><th>Est. unit margin</th><th></th></tr></thead><tbody>
@@ -206,6 +230,7 @@ function App() {
   const [costs, setCosts] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [investments, setInvestments] = useState([]);
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -215,18 +240,20 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c, costRows, expenseRows, orderRows] = await Promise.all([
+    const [p, c, costRows, expenseRows, orderRows, investmentRows] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order', { foreignTable: 'product_images' }).order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('product_costs').select('*'),
       supabase.from('expenses').select('*').order('expense_date', { ascending: false }).order('created_at', { ascending: false }),
-      supabase.from('orders').select('id,order_number,order_status,payment_status,total_amount,amount_paid,created_at').order('created_at', { ascending: false }).limit(100)
+      supabase.from('orders').select('id,order_number,order_status,payment_status,total_amount,amount_paid,created_at').order('created_at', { ascending: false }).limit(100),
+      supabase.from('business_investments').select('*').order('transaction_date', { ascending: false }).order('created_at', { ascending: false })
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
     if (costRows.error) notify('error', costRows.error.message); else setCosts(costRows.data || []);
     if (expenseRows.error) notify('error', expenseRows.error.message); else setExpenses(expenseRows.data || []);
     if (orderRows.error) notify('error', orderRows.error.message); else setOrders(orderRows.data || []);
+    if (investmentRows.error) notify('error', investmentRows.error.message); else setInvestments(investmentRows.data || []);
     setDataLoading(false);
   }, [session]);
 
@@ -314,6 +341,14 @@ function App() {
     } finally { setSaving(false); }
   };
 
+  const addInvestment = async (payload) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('business_investments').insert({ ...payload, created_by: session.user.id });
+      if (error) notify('error', error.message); else { await loadData(); notify('success', 'Investment recorded.'); }
+    } finally { setSaving(false); }
+  };
+
   const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
     const { error } = await supabase.from('products').update({ is_published: false }).eq('id', product.id);
@@ -373,7 +408,7 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.stock_counted ? p.inventory[0].on_hand : '—'}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
-        {section === 'finance' && <FinancePanel products={products} costs={costs} orders={orders} expenses={expenses} onSaveCost={saveProductCost} onAddExpense={addExpense} saving={saving}/>}
+        {section === 'finance' && <FinancePanel products={products} costs={costs} orders={orders} expenses={expenses} investments={investments} onSaveCost={saveProductCost} onAddExpense={addExpense} onAddInvestment={addInvestment} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const stock = p.inventory?.[0]; const qty = stock?.on_hand ?? 0; const counted = Boolean(stock?.stock_counted); const threshold = stock?.low_stock_threshold ?? 2; const label = !counted ? 'Not counted' : qty > threshold ? 'In stock' : 'Low stock'; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{counted ? qty : '—'}</td><td><span className={`status ${!counted ? '' : qty > threshold ? 'live' : 'warning'}`}>{label}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
       </div>
