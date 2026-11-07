@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutDashboard, Package, Layers3, Warehouse, ShoppingBag, Users,
-  CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus,
+  CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus, Wallet,
   RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
@@ -112,6 +112,86 @@ function CollectionPanel({ collections, onCreate, onToggle, saving }) {
   </section>;
 }
 
+function CostRow({ product, cost, onSave, saving }) {
+  const [values, setValues] = useState(() => ({
+    purchase_cost: cost?.purchase_cost ?? 0,
+    packaging_cost: cost?.packaging_cost ?? 0,
+    inbound_shipping_cost: cost?.inbound_shipping_cost ?? 0,
+    other_cost: cost?.other_cost ?? 0
+  }));
+  useEffect(() => setValues({
+    purchase_cost: cost?.purchase_cost ?? 0,
+    packaging_cost: cost?.packaging_cost ?? 0,
+    inbound_shipping_cost: cost?.inbound_shipping_cost ?? 0,
+    other_cost: cost?.other_cost ?? 0
+  }), [cost]);
+  const total = Object.values(values).reduce((sum, value) => sum + Number(value || 0), 0);
+  const margin = Number(product.price_bdt || 0) - total;
+  const change = (key, value) => setValues(old => ({ ...old, [key]: value }));
+  return <tr>
+    <td><strong>{product.name}</strong><small style={{display:'block',color:'var(--muted)',marginTop:4}}>{product.sku}</small></td>
+    <td>{money(product.price_bdt)}</td>
+    <td><input aria-label={`${product.name} purchase cost`} type="number" min="0" step="0.01" value={values.purchase_cost} onChange={e => change('purchase_cost', e.target.value)} /></td>
+    <td><input aria-label={`${product.name} packaging cost`} type="number" min="0" step="0.01" value={values.packaging_cost} onChange={e => change('packaging_cost', e.target.value)} /></td>
+    <td><input aria-label={`${product.name} inbound shipping cost`} type="number" min="0" step="0.01" value={values.inbound_shipping_cost} onChange={e => change('inbound_shipping_cost', e.target.value)} /></td>
+    <td><input aria-label={`${product.name} other cost`} type="number" min="0" step="0.01" value={values.other_cost} onChange={e => change('other_cost', e.target.value)} /></td>
+    <td><strong>{money(total)}</strong></td>
+    <td><span className={`status ${margin >= 0 ? 'live' : 'warning'}`}>{money(margin)}</span></td>
+    <td><button className="secondary small" disabled={saving} onClick={() => onSave(product.id, values)}>Save</button></td>
+  </tr>;
+}
+
+function FinancePanel({ products, costs, orders, expenses, onSaveCost, onAddExpense, saving }) {
+  const [expense, setExpense] = useState({ expense_date: new Date().toISOString().slice(0,10), category: '', description: '', amount: '', payment_method: 'cash', notes: '' });
+  const activeOrders = orders.filter(order => !['cancelled','returned'].includes(order.order_status));
+  const orderValue = activeOrders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
+  const collected = activeOrders.reduce((sum, order) => sum + Number(order.amount_paid || 0), 0);
+  const expenseTotal = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  const updateExpense = (key, value) => setExpense(old => ({ ...old, [key]: value }));
+  const submitExpense = async (e) => {
+    e.preventDefault();
+    if (!expense.category.trim() || !expense.description.trim() || Number(expense.amount) <= 0) return;
+    await onAddExpense({ ...expense, amount: Number(expense.amount) });
+    setExpense(old => ({ ...old, category: '', description: '', amount: '', notes: '' }));
+  };
+  const costByProduct = new Map(costs.map(item => [item.product_id, item]));
+  return <>
+    <div className="stat-grid">
+      <Stat icon={ShoppingBag} label="Order value" value={money(orderValue)} />
+      <Stat icon={CreditCard} label="Collected" value={money(collected)} />
+      <Stat icon={Wallet} label="Recorded expenses" value={money(expenseTotal)} />
+      <Stat icon={Wallet} label="Cash after expenses" value={money(collected - expenseTotal)} />
+    </div>
+    <section className="panel">
+      <div className="panel-head"><div><p className="eyebrow">UNIT ECONOMICS</p><h2>Product costing</h2><p className="muted">Record purchase, packaging, inbound shipping and other per-unit costs. Margin shown here excludes marketing and operating expenses.</p></div></div>
+      <div className="table-wrap"><table><thead><tr><th>Product</th><th>Retail price</th><th>Purchase</th><th>Packaging</th><th>Inbound shipping</th><th>Other</th><th>Total unit cost</th><th>Est. unit margin</th><th></th></tr></thead><tbody>
+        {products.map(product => <CostRow key={product.id} product={product} cost={costByProduct.get(product.id)} onSave={onSaveCost} saving={saving} />)}
+      </tbody></table></div>
+    </section>
+    <section className="panel">
+      <div className="panel-head"><div><p className="eyebrow">OPERATING COSTS</p><h2>Expenses</h2><p className="muted">Record shop rent, decoration, marketing, delivery and other business expenses.</p></div></div>
+      <form className="form-grid" onSubmit={submitExpense}>
+        <label>Date<input type="date" required value={expense.expense_date} onChange={e => updateExpense('expense_date',e.target.value)} /></label>
+        <label>Category<input required value={expense.category} onChange={e => updateExpense('category',e.target.value)} placeholder="Rent / Marketing / Decoration" /></label>
+        <label className="span-2">Description<input required value={expense.description} onChange={e => updateExpense('description',e.target.value)} placeholder="Describe the expense" /></label>
+        <label>Amount (BDT)<input required type="number" min="0.01" step="0.01" value={expense.amount} onChange={e => updateExpense('amount',e.target.value)} placeholder="0" /></label>
+        <label>Payment method<select value={expense.payment_method} onChange={e => updateExpense('payment_method',e.target.value)}><option value="cash">Cash</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="rocket">Rocket</option><option value="bank_transfer">Bank transfer</option><option value="other">Other</option></select></label>
+        <label className="span-2">Notes (optional)<input value={expense.notes} onChange={e => updateExpense('notes',e.target.value)} placeholder="Reference or additional details" /></label>
+        <div className="span-2"><button className="primary" disabled={saving || !expense.amount}>Record expense</button></div>
+      </form>
+      <div className="table-wrap" style={{marginTop:22}}><table><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Method</th><th>Amount</th></tr></thead><tbody>
+        {expenses.map(item => <tr key={item.id}><td>{item.expense_date}</td><td>{item.category}</td><td>{item.description}</td><td>{item.payment_method || '—'}</td><td><strong>{money(item.amount)}</strong></td></tr>)}
+      </tbody></table>{expenses.length===0 && <div className="empty">No expenses recorded yet.</div>}</div>
+    </section>
+    <section className="panel">
+      <div className="panel-head"><div><p className="eyebrow">SALES SUMMARY</p><h2>Recent orders</h2><p className="muted">Order value and collection totals are based on recorded orders. Cancelled and returned orders are excluded.</p></div></div>
+      <div className="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Payment</th><th>Order value</th><th>Collected</th></tr></thead><tbody>
+        {orders.slice(0,20).map(order => <tr key={order.id}><td>{order.order_number}</td><td>{new Date(order.created_at).toLocaleDateString('en-GB')}</td><td>{order.order_status}</td><td>{order.payment_status}</td><td>{money(order.total_amount)}</td><td>{money(order.amount_paid)}</td></tr>)}
+      </tbody></table>{orders.length===0 && <div className="empty">No orders recorded yet. Sales will appear here when orders are connected.</div>}</div>
+    </section>
+  </>;
+}
+
 function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -123,6 +203,9 @@ function App() {
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [costs, setCosts] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -132,12 +215,18 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c] = await Promise.all([
+    const [p, c, costRows, expenseRows, orderRows] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order', { foreignTable: 'product_images' }).order('display_order').order('created_at', { ascending: false }),
-      supabase.from('collections').select('*').order('display_order').order('name')
+      supabase.from('collections').select('*').order('display_order').order('name'),
+      supabase.from('product_costs').select('*'),
+      supabase.from('expenses').select('*').order('expense_date', { ascending: false }).order('created_at', { ascending: false }),
+      supabase.from('orders').select('id,order_number,order_status,payment_status,total_amount,amount_paid,created_at').order('created_at', { ascending: false }).limit(100)
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
+    if (costRows.error) notify('error', costRows.error.message); else setCosts(costRows.data || []);
+    if (expenseRows.error) notify('error', expenseRows.error.message); else setExpenses(expenseRows.data || []);
+    if (orderRows.error) notify('error', orderRows.error.message); else setOrders(orderRows.data || []);
     setDataLoading(false);
   }, [session]);
 
@@ -207,6 +296,18 @@ function App() {
     } finally { setSaving(false); }
   };
 
+  const saveProductCost = async (productId, values) => {
+    const payload = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, Number(value || 0)]));
+    if (Object.values(payload).some(value => !Number.isFinite(value) || value < 0)) return notify('error', 'Costs must be valid non-negative amounts.');
+    const { error } = await supabase.from('product_costs').upsert({ product_id: productId, ...payload }, { onConflict: 'product_id' });
+    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Product costing saved.'); }
+  };
+
+  const addExpense = async (payload) => {
+    const { error } = await supabase.from('expenses').insert({ ...payload, created_by: session.user.id });
+    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Expense recorded.'); }
+  };
+
   const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
     const { error } = await supabase.from('products').update({ is_published: false }).eq('id', product.id);
@@ -243,7 +344,7 @@ function App() {
 
   const nav = [
     ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['inventory','Inventory',Warehouse],
-    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['payments','Payments',CreditCard]
+    ['finance','Costs & Expenses',Wallet],['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
 
@@ -266,6 +367,7 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.stock_counted ? p.inventory[0].on_hand : '—'}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'finance' && <FinancePanel products={products} costs={costs} orders={orders} expenses={expenses} onSaveCost={saveProductCost} onAddExpense={addExpense} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const stock = p.inventory?.[0]; const qty = stock?.on_hand ?? 0; const counted = Boolean(stock?.stock_counted); const threshold = stock?.low_stock_threshold ?? 2; const label = !counted ? 'Not counted' : qty > threshold ? 'In stock' : 'Low stock'; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{counted ? qty : '—'}</td><td><span className={`status ${!counted ? '' : qty > threshold ? 'live' : 'warning'}`}>{label}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
       </div>
