@@ -4439,6 +4439,52 @@ html{scroll-behavior:smooth}body{background:#fff;color:var(--ink);font-family:In
 /* Availability labels */
 .z-preorder-stamp{position:absolute;z-index:6;top:50%;left:50%;transform:translate(-50%,-50%);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--cream);border:1px solid rgba(245,237,216,.55);padding:7px 13px;background:rgba(67,54,42,.72);white-space:nowrap;pointer-events:none}
 .z-detail-availability.preorder:before{background:#c39a5b}.z-detail-availability.preorder{color:#8b6b3e}
+
+/* MOBILE NAV CONTRAST FIX — isolated to the mobile menu; desktop remains unchanged */
+@media (max-width: 768px) {
+  #mnav {
+    background: #fbf9f7 !important;
+    color: #292522 !important;
+  }
+  #mnav .mnav-close {
+    color: #292522 !important;
+    border-color: #d8cec4 !important;
+    background: #fff !important;
+  }
+  #mnav .mnav-links a {
+    color: #292522 !important;
+  }
+  #mnav .mnav-links a:hover,
+  #mnav .mnav-links a:focus-visible {
+    color: #8f6d3e !important;
+  }
+  #mnav .mnav-links li {
+    border-bottom-color: #e5ddd5 !important;
+  }
+  #mnav .mnav-social-lbl {
+    color: #76634d !important;
+    opacity: 1 !important;
+  }
+  #mnav .btn-wa-mobile:not(.mnav-fb-btn):not(.mnav-ig-btn):not(.mnav-email-btn) {
+    background: #b08a4f !important;
+    color: #211c17 !important;
+    border: 1px solid #b08a4f !important;
+    font-weight: 600 !important;
+  }
+  #mnav .mnav-fb-btn,
+  #mnav .mnav-ig-btn,
+  #mnav .mnav-email-btn {
+    background: #fff !important;
+    color: #39332e !important;
+    border-color: #d8cec4 !important;
+  }
+  #mnav .mnav-fb-btn svg,
+  #mnav .mnav-ig-btn svg,
+  #mnav .mnav-email-btn svg {
+    color: #76634d !important;
+  }
+}
+
 </style>
 </head>
 <body>
