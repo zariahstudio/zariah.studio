@@ -2299,6 +2299,57 @@ body.mnav-open .hamburger {
 }
 .ptrust-item::before { content: '✓'; color: var(--gold); font-size: 11px; }
 
+/* DELIVERY & RETURN INFORMATION — scoped to product detail modal */
+.pmodal-policy {
+  margin: 0 0 26px;
+  border-top: 1px solid rgba(98,93,89,.16);
+  border-bottom: 1px solid rgba(98,93,89,.16);
+}
+.pmodal-policy-heading {
+  margin: 18px 0 8px;
+  color: var(--ash-deep);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.policy-item { border-top: 1px solid rgba(98,93,89,.12); }
+.policy-item summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 2px;
+  color: var(--charcoal);
+  cursor: pointer;
+  list-style: none;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.policy-item summary::-webkit-details-marker { display: none; }
+.policy-plus {
+  color: var(--gold);
+  font-size: 19px;
+  line-height: 1;
+  transition: transform .2s ease;
+}
+.policy-item[open] .policy-plus { transform: rotate(45deg); }
+.policy-copy {
+  padding: 0 22px 15px 2px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+.policy-copy p + p { margin-top: 8px; }
+.policy-copy strong { color: var(--ash-deep); font-weight: 500; }
+@media (max-width: 600px) {
+  .pmodal-policy { margin-bottom: 22px; }
+  .policy-item summary { min-height: 46px; font-size: 10px; }
+  .policy-copy { font-size: 11px; }
+}
+
 /* ═══════════════════════════════════════
    ORDER FORM MODAL
 ═══════════════════════════════════════ */
@@ -4771,6 +4822,32 @@ input, textarea {
       <div class="pmodal-divider" aria-hidden="true"></div>
       <p class="pmodal-desc" id="pmodalDesc"></p>
       <div class="pmodal-size" id="pmodalSize"></div>
+
+      <!-- DELIVERY & RETURNS — customer trust details -->
+      <section class="pmodal-policy" aria-label="Delivery and return information">
+        <h3 class="pmodal-policy-heading">Delivery &amp; Care</h3>
+        <details class="policy-item">
+          <summary><span>Delivery timeline &amp; charges</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>Orders are dispatched within 24–48 hours. Dhaka deliveries typically arrive in 1–2 business days; Chattogram and other cities usually take 2–4 business days.</p>
+            <p><strong>Complimentary delivery</strong> on orders above ৳2,000. For orders below ৳2,000, please confirm the delivery charge with us on WhatsApp.</p>
+            <p>Cash on Delivery is available. Pay when your bag arrives.</p>
+          </div>
+        </details>
+        <details class="policy-item">
+          <summary><span>7-day exchange policy</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>If your bag arrives with a quality issue or defect, contact us on WhatsApp within 7 days of receiving it. The item must be unused and in its original packaging.</p>
+          </div>
+        </details>
+        <details class="policy-item">
+          <summary><span>Return &amp; refund enquiries</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>For return or refund enquiries, please contact our team on WhatsApp before dispatch. Our team will confirm the applicable terms for your order.</p>
+          </div>
+        </details>
+      </section>
+
       <div class="pmodal-features" id="pmodalFeatures">
         <span class="pfeat">Premium vegan leather</span>
         <span class="pfeat">Gold-tone hardware</span>
