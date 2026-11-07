@@ -8,7 +8,7 @@ import { supabase, supabaseConfigured } from './supabase';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, display_order: 0, stock: 0 };
+const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
 
 function Notice({ notice, clear }) {
   if (!notice) return null;
@@ -61,6 +61,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       is_featured: Boolean(form.is_featured),
       is_bestseller: Boolean(form.is_bestseller),
       is_published: Boolean(form.is_published),
+      availability_mode: form.availability_mode === 'pre_order' ? 'pre_order' : 'auto',
       display_order: Number(form.display_order || 0)
     };
     try { await onSave(payload, Number(form.stock || 0), images, stockTouched); }
@@ -78,6 +79,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
+          <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
           <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
           <label className="span-2">Product description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the bag..."/></label>
           <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
