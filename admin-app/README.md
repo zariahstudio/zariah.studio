@@ -11,17 +11,11 @@ An isolated React/Vite admin application. It does not modify the existing storef
 
 Never put a Supabase `service_role` key in this browser application. The app uses only the Publishable key and relies on database RLS.
 
-## Import legacy product images
+## Product image migration
 
-The script `scripts/migrate-product-images.mjs` reads existing product images from the public GitHub repository's `main` branch and uploads them to the `product-images` Supabase Storage bucket, then registers them in `product_images`.
+Completed against the Singapore Supabase project on 2026-11-08: 43 source images were uploaded and registered for all 18 products. Every product has one front image; some source folders contain only a front image, and no missing angles were fabricated. The original 49 Storage objects were retained; the new product-linked objects are separate.
 
-Run locally from this directory:
-
-```bash
-npm run migrate:images
-```
-
-The script signs in using the Admin email/password in the local `.env.local`; credentials are not committed. It is safe to re-run: storage uploads use the same product/file paths and image rows are upserted. Review the final uploaded/skipped/failed counts. Some products in the current repository have only a front image; the script does not fabricate missing angles.
+The legacy local script remains for controlled re-runs only. Do not run it unless you intend to refresh the same repository assets in Supabase Storage. It requires local Admin credentials in `.env.local`; never commit those credentials.
 
 ## Current scope
 
@@ -29,10 +23,14 @@ The script signs in using the Admin email/password in the local `.env.local`; cr
 - Profile role check before rendering admin tools.
 - Product create/edit/archive, multiple image uploads, publish state.
 - Collection create/edit/activate/deactivate.
-- Inventory quantity updates.
+- Inventory quantity updates, counted/not-counted status and stock movement audit.
+- Per-product purchase, packaging, inbound shipping and other direct-cost tracking.
+- Operating expense entry and history.
+- Capital / one-time investment and refundable advance tracking, kept separate from operating expenses and per-unit product costs.
+- Finance overview for order value, amount recorded as paid, expenses and cash after expenses.
 - Responsive neutral taupe/cream/champagne admin styling.
 
-Orders, payments, customers, memberships, reporting and activity history are reserved for the next implementation phase. They must be implemented with server-validated order creation and payment/discount logic; do not implement authoritative financial rules only in the browser.
+Order creation/management, payment verification, customers, memberships and full profit reporting remain in the next implementation phase. The current finance overview only summarizes order rows already recorded in the database; it does not create orders or calculate final net profit. Order creation, inventory reservation, payment verification and membership discounts must be server-validated, not authoritative browser calculations.
 
 ## Deployment safety
 
