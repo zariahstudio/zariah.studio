@@ -155,20 +155,20 @@ function FinancePanel({ products, costs, orders, expenses, investments, onSaveCo
   const submitExpense = async (e) => {
     e.preventDefault();
     if (!expense.category.trim() || !expense.description.trim() || Number(expense.amount) <= 0) return;
-    await onAddExpense({ ...expense, amount: Number(expense.amount) });
-    setExpense(old => ({ ...old, category: '', description: '', amount: '', notes: '' }));
+    const saved = await onAddExpense({ ...expense, amount: Number(expense.amount) });
+    if (saved) setExpense(old => ({ ...old, category: '', description: '', amount: '', notes: '' }));
   };
   const submitInvestment = async (e) => {
     e.preventDefault();
     if (!investment.description.trim() || Number(investment.amount) <= 0) return;
-    await onAddInvestment({ ...investment, transaction_date: investment.transaction_date || null, amount: Number(investment.amount) });
-    setInvestment(old => ({ ...old, transaction_date: '', description: '', amount: '', notes: '' }));
+    const saved = await onAddInvestment({ ...investment, transaction_date: investment.transaction_date || null, amount: Number(investment.amount) });
+    if (saved) setInvestment(old => ({ ...old, transaction_date: '', description: '', amount: '', notes: '' }));
   };
   const costByProduct = new Map(costs.map(item => [item.product_id, item]));
   return <>
     <div className="stat-grid">
       <Stat icon={ShoppingBag} label="Order value" value={money(orderValue)} />
-      <Stat icon={CreditCard} label="Collected" value={money(collected)} />
+      <Stat icon={CreditCard} label="Recorded as paid" value={money(collected)} />
       <Stat icon={Wallet} label="Recorded expenses" value={money(expenseTotal)} />
       <Stat icon={Wallet} label="Cash after expenses" value={money(collected - expenseTotal)} />
     </div>
@@ -337,7 +337,8 @@ function App() {
     setSaving(true);
     try {
       const { error } = await supabase.from('expenses').insert({ ...payload, created_by: session.user.id });
-      if (error) notify('error', error.message); else { await loadData(); notify('success', 'Expense recorded.'); }
+      if (error) { notify('error', error.message); return false; }
+      await loadData(); notify('success', 'Expense recorded.'); return true;
     } finally { setSaving(false); }
   };
 
@@ -345,7 +346,8 @@ function App() {
     setSaving(true);
     try {
       const { error } = await supabase.from('business_investments').insert({ ...payload, created_by: session.user.id });
-      if (error) notify('error', error.message); else { await loadData(); notify('success', 'Investment recorded.'); }
+      if (error) { notify('error', error.message); return false; }
+      await loadData(); notify('success', 'Investment recorded.'); return true;
     } finally { setSaving(false); }
   };
 
