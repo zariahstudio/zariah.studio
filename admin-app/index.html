@@ -10,5 +10,21 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-  </body>
+  
+<a class="z-floating-bag" href="/pages/cart/" aria-label="Open shopping bag">
+  <span class="z-floating-bag-icon" aria-hidden="true">♧</span>
+  <span>YOUR BAG</span>
+  <span class="z-floating-bag-count" data-cart-count>0</span>
+</a>
+<style>
+.z-floating-bag{position:fixed!important;right:18px!important;bottom:20px!important;z-index:99999!important;display:flex!important;align-items:center!important;gap:9px!important;padding:13px 17px!important;background:#292522!important;color:#fff!important;border:1px solid #c5a06a!important;box-shadow:0 5px 22px #0002!important;text-decoration:none!important;font:500 9px/1 Inter,Arial,sans-serif!important;letter-spacing:.14em!important}
+.z-floating-bag-icon{font-size:16px!important;line-height:1!important;color:#e4c99f!important}
+.z-floating-bag-count{display:inline-grid!important;place-items:center!important;min-width:19px!important;height:19px!important;padding:0 5px!important;border-radius:50%!important;background:#c5a06a!important;color:#fff!important;font-size:9px!important;letter-spacing:0!important}
+@media(max-width:600px){.z-floating-bag{right:12px!important;bottom:14px!important;padding:12px 14px!important}}
+</style>
+<script>
+(function(){try{var cart=JSON.parse(localStorage.getItem('zariah_cart_v1')||'[]');var qty=cart.reduce(function(total,item){return total+(Number(item.qty)||0)},0);document.querySelectorAll('[data-cart-count]').forEach(function(el){el.textContent=qty})}catch(e){}})();
+</script>
+
+</body>
 </html>

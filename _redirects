@@ -1,3 +1,6 @@
 /admin   https://meek-rolypoly-90a8a1.netlify.app/   200
 /admin/  https://meek-rolypoly-90a8a1.netlify.app/   200
 /admin/* https://meek-rolypoly-90a8a1.netlify.app/:splat 200
+/pages/cart/* /pages/cart/index.html 200
+/pages/checkout/* /pages/checkout/index.html 200
+/pages/search/* /pages/search/index.html 200

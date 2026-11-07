@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Search Bags | ZARIAH Studio</title>
+<meta name="description" content="Discover handbags from ZARIAH Studio. Search by name or collection.">
+<base href="/">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#fbf7f1;--ink:#292522;--muted:#81776f;--gold:#c5a06a;--line:#e8e0d7;--panel:#f4eee6}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;font-weight:300}a{color:inherit;text-decoration:none}
+.announcement{background:#77716d;color:#f0d6aa;text-align:center;padding:10px 12px;font-size:9px;letter-spacing:.16em}
+header{height:82px;padding:0 clamp(18px,5vw,70px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{font:500 30px 'Cormorant Garamond',serif;letter-spacing:.13em;text-align:center}.brand small{display:block;font:9px Inter,sans-serif;letter-spacing:.35em;text-align:center}
+nav{display:flex;gap:25px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;align-items:center}
+main{max-width:1240px;margin:auto;padding:43px 28px 90px}.crumb{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+h1{font:400 clamp(42px,6vw,62px)/1 'Cormorant Garamond',serif;margin:18px 0 9px}.intro{font-size:12px;color:var(--muted);margin:0 0 30px}
+.searchbar{display:flex;border:1px solid #dcd2c7;background:#fffdfa;max-width:760px;margin:0 0 22px}
+.searchbar input{flex:1;min-width:0;border:0;background:transparent;padding:17px 18px;font:300 12px Inter;outline:none;color:var(--ink)}
+.searchbar button{border:0;background:var(--ink);color:white;padding:0 25px;font:400 9px Inter;letter-spacing:.15em;text-transform:uppercase;cursor:pointer}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:0 0 17px;margin-bottom:25px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}.filter{border:1px solid var(--line);background:transparent;padding:9px 13px;font:9px Inter;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer}.filter.active{background:var(--ink);border-color:var(--ink);color:white}
+.sort{border:1px solid var(--line);background:#fffdfa;padding:9px 12px;font:10px Inter;color:var(--ink)}
+.result-count{font-size:10px;color:var(--muted);margin:0 0 17px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 18px}
+.card{min-width:0}.image-wrap{position:relative;background:#eee8e1;overflow:hidden;aspect-ratio:3/4}.image-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}.card:hover .image-wrap img{transform:scale(1.035)}
+.tag{position:absolute;top:12px;left:12px;background:#fbf7f1e8;padding:7px 9px;font-size:8px;letter-spacing:.12em;text-transform:uppercase}
+.card-info{padding:12px 2px}.card-name{font:400 23px/1.05 'Cormorant Garamond',serif}.card-meta{font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:6px}.card-price{font-size:11px;margin-top:9px}
+.empty{border:1px solid var(--line);padding:55px 20px;text-align:center;grid-column:1/-1}.empty h2{font:400 34px 'Cormorant Garamond',serif;margin:0 0 10px}.empty p{font-size:11px;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size:10px;color:var(--muted)}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:25px 14px}}
+@media(max-width:600px){header{height:auto;padding:16px;display:block;text-align:center}.brand{font-size:27px}nav{justify-content:center;flex-wrap:wrap;gap:12px 17px;margin-top:14px;font-size:9px}main{padding:30px 15px 60px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 11px}.card-name{font-size:20px}.searchbar input{padding:15px 12px}.searchbar button{padding:0 15px}.controls{align-items:flex-start}.sort{max-width:100%}}
+</style></head><body>
+<div class="announcement">ZARIAH STUDIO · QUIET LUXURY, BEAUTIFULLY CARRIED</div>
+<header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/collections/">Collections</a><a href="/pages/cart/">Your Bag <span data-cart-count>0</span></a></nav></header>
+<main><div class="crumb"><a href="/">Home</a> / Search</div><h1>Find Your Piece</h1><p class="intro">Search the ZARIAH Studio collection by style, name or collection.</p>
+<form class="searchbar" id="searchForm"><input id="query" type="search" placeholder="Search bags, collections, styles..." aria-label="Search products" autocomplete="off"><button type="submit">Search</button></form>
+<div class="controls"><div class="filters" id="filters"><button class="filter active" data-filter="all">All Pieces</button><button class="filter" data-filter="essence">Essence</button><button class="filter" data-filter="signature">Signature</button><button class="filter" data-filter="noir">Noir</button></div><select class="sort" id="sort" aria-label="Sort results"><option value="featured">Sort: Featured</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="name">Name: A to Z</option></select></div>
+<p class="result-count" id="resultCount" aria-live="polite"></p><section class="grid" id="results"></section>
+</main><footer>© ZARIAH Studio — A brand of InsightBridge · Proudly Made in Bangladesh</footer>
+<script>
+const PRODUCTS=[{"id": "essence01", "name": "Crescent Shoulder Bag", "price": 3800, "image": "/images/products/essence01/front.webp", "description": "Modern everyday luxury with a soft curved silhouette. Perfect for office mornings and weekend outings.", "available": true}, {"id": "essence02", "name": "Slim Flap Crossbody", "price": 2900, "image": "/images/products/essence02/front.webp", "description": "Minimal and feminine crossbody for daily essentials. Adjustable strap, elegant closure.", "available": true}, {"id": "essence03", "name": "Structured Mini Tote", "price": 3400, "image": "/images/products/essence03/front.webp", "description": "Elegant mini tote that keeps you organized in style. Interior zip pocket and card slots.", "available": false}, {"id": "essence04", "name": "East-West Bag", "price": 3200, "image": "/images/products/essence04/front.webp", "description": "Minimal east-west design for a chic, modern look. Long strap converts to hand carry.", "available": true}, {"id": "essence05", "name": "Rounded Top Handle", "price": 3600, "image": "/images/products/essence05/front.webp", "description": "Softly structured top handle for feminine sophistication. Bamboo-style handle detail.", "available": true}, {"id": "essence06", "name": "Soft Bucket Bag", "price": 3500, "image": "/images/products/essence06/front.webp", "description": "Relaxed bucket bag that blends comfort with elegance. Drawstring closure, inner pocket.", "available": true}, {"id": "noir01", "name": "Statement Shoulder Bag", "price": 4000, "image": "/images/products/noir01/front.webp", "description": "Bold shoulder bag that commands attention. Rich texture, oversized gold hardware.", "available": true}, {"id": "noir02", "name": "Sculptural Top Handle", "price": 3800, "image": "/images/products/noir02/front.webp", "description": "Artful silhouette that turns every moment iconic. Sculptural handle, architectural shape.", "available": false}, {"id": "noir03", "name": "Chain Accent Flap Bag", "price": 3500, "image": "/images/products/noir03/front.webp", "description": "Luxury chain detail meets timeless feminine power. Interlocking chain strap, flap closure.", "available": true}, {"id": "noir04", "name": "Sharp East-West Bag", "price": 3600, "image": "/images/products/noir04/front.webp", "description": "Sharp lines for a modern, fashion-forward edge. Minimal seaming, sleek finish.", "available": true}, {"id": "noir05", "name": "Structured Underarm Bag", "price": 3200, "image": "/images/products/noir05/front.webp", "description": "Sleek underarm bag for an effortlessly cool attitude. Rigid frame, push-lock closure.", "available": true}, {"id": "noir06", "name": "Mini Statement Tote", "price": 3400, "image": "/images/products/noir06/front.webp", "description": "Mini tote with major attitude. Pure noir elegance. Statement handles, minimal detailing.", "available": true}, {"id": "signature01", "name": "Structured Top Handle", "price": 4500, "image": "/images/products/signature01/front.webp", "description": "Iconic structured silhouette that defines our signature identity. Heavy-gauge hardware, clean lines.", "available": true}, {"id": "signature02", "name": "Elegant Satchel", "price": 4800, "image": "/images/products/signature02/front.webp", "description": "Timeless satchel for work, meetings and everything in between. Top zip, front pocket.", "available": true}, {"id": "signature03", "name": "Premium Flap Bag", "price": 3900, "image": "/images/products/signature03/front.webp", "description": "Classic flap bag that elevates every occasion. Magnetic clasp, chain and leather strap.", "available": true}, {"id": "signature04", "name": "Boxy Shoulder Bag", "price": 4200, "image": "/images/products/signature04/front.webp", "description": "Modern boxy shape for a refined and powerful presence. Wide strap, subtle logo detail.", "available": true}, {"id": "signature05", "name": "Structured Crossbody", "price": 3600, "image": "/images/products/signature05/front.webp", "description": "Smart, practical and elegant crossbody for everyday confidence. Adjustable chain strap.", "available": true}, {"id": "signature06", "name": "Top-Zip Bowling Bag", "price": 4600, "image": "/images/products/signature06/front.webp", "description": "Soft curves with a top zip for sophisticated everyday luxury. Dual handles + long strap.", "available": true}];
+(function(){
+const root=document.getElementById('results'),input=document.getElementById('query'),count=document.getElementById('resultCount'),sort=document.getElementById('sort');
+let active='all';
+const money=n=>'৳'+Number(n||0).toLocaleString('en-BD');
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+ const q=input.value.trim().toLowerCase();
+ let list=PRODUCTS.filter(p=>(active==='all'||p.id.startsWith(active))&&(!q||[p.name,p.id,p.description,p.id.replace(/\d+/,'')].join(' ').toLowerCase().includes(q)));
+ if(sort.value==='price-low')list.sort((a,b)=>a.price-b.price);
+ if(sort.value==='price-high')list.sort((a,b)=>b.price-a.price);
+ if(sort.value==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
+ count.textContent=`${list.length} ${list.length===1?'piece':'pieces'} found`;
+ if(!list.length){root.innerHTML='<div class="empty"><h2>No pieces found</h2><p>Try another search term or explore all collections.</p></div>';return}
+ root.innerHTML=list.map(p=>`<a class="card" href="/products/${encodeURIComponent(p.id)}/"><div class="image-wrap"><img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}" decoding="async"><span class="tag">${esc(p.id.replace(/\d+/,'').toUpperCase())}</span></div><div class="card-info"><div class="card-name">${esc(p.name)}</div><div class="card-meta">${esc(p.id.toUpperCase())}${p.available?'':' · Currently Unavailable'}</div><div class="card-price">${money(p.price)}</div></div></a>`).join('');
+}
+document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();render()});
+input.addEventListener('input',render);sort.addEventListener('change',render);
+document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;active=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()});
+
+const params=new URLSearchParams(location.search);if(params.has('q'))input.value=params.get('q');render();
+})();
+</script>
+<a class="z-floating-bag" href="/pages/cart/" aria-label="Open shopping bag">
+  <span class="z-floating-bag-icon" aria-hidden="true">♧</span>
+  <span>YOUR BAG</span>
+  <span class="z-floating-bag-count" data-cart-count>0</span>
+</a>
+<style>
+.z-floating-bag{position:fixed!important;right:18px!important;bottom:20px!important;z-index:99999!important;display:flex!important;align-items:center!important;gap:9px!important;padding:13px 17px!important;background:#292522!important;color:#fff!important;border:1px solid #c5a06a!important;box-shadow:0 5px 22px #0002!important;text-decoration:none!important;font:500 9px/1 Inter,Arial,sans-serif!important;letter-spacing:.14em!important}
+.z-floating-bag-icon{font-size:16px!important;line-height:1!important;color:#e4c99f!important}
+.z-floating-bag-count{display:inline-grid!important;place-items:center!important;min-width:19px!important;height:19px!important;padding:0 5px!important;border-radius:50%!important;background:#c5a06a!important;color:#fff!important;font-size:9px!important;letter-spacing:0!important}
+@media(max-width:600px){.z-floating-bag{right:12px!important;bottom:14px!important;padding:12px 14px!important}}
+</style>
+
+
+
+<script src="/zariah-cart.js" defer></script>
+</body></html>

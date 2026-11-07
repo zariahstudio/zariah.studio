@@ -2,13 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutDashboard, Package, Layers3, Warehouse, ShoppingBag, Users,
   CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus,
-  RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload
+  RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload, Receipt,
+  Printer, MessageCircle, Award, TrendingUp
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, display_order: 0, stock: 0 };
+const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', cost_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
 
 function Notice({ notice, clear }) {
   if (!notice) return null;
@@ -36,7 +37,8 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
     ...emptyProduct, ...product,
     stock: product.inventory?.[0]?.on_hand ?? 0,
     size: product.specifications?.size || '',
-    compare_at_price_bdt: product.compare_at_price_bdt ?? ''
+    compare_at_price_bdt: product.compare_at_price_bdt ?? '',
+    cost_bdt: product.cost_bdt ?? ''
   } : emptyProduct);
   const [images, setImages] = useState([]);
   const [stockTouched, setStockTouched] = useState(false);
@@ -56,11 +58,13 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       description: (form.description ?? '').trim() || null,
       specifications: { size: (form.size ?? '').trim() },
       price_bdt: Number(form.price_bdt),
+      cost_bdt: form.cost_bdt === '' ? null : Number(form.cost_bdt),
       compare_at_price_bdt: form.compare_at_price_bdt === '' ? null : Number(form.compare_at_price_bdt),
       badge: (form.badge ?? '').trim() || null,
       is_featured: Boolean(form.is_featured),
       is_bestseller: Boolean(form.is_bestseller),
       is_published: Boolean(form.is_published),
+      availability_mode: form.availability_mode === 'pre_order' ? 'pre_order' : 'auto',
       display_order: Number(form.display_order || 0)
     };
     try { await onSave(payload, Number(form.stock || 0), images, stockTouched); }
@@ -76,8 +80,10 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
           <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
+          <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="For internal margin reporting only"/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
+          <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
           <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
           <label className="span-2">Product description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the bag..."/></label>
           <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
@@ -112,6 +118,24 @@ function CollectionPanel({ collections, onCreate, onToggle, saving }) {
   </section>;
 }
 
+
+const MEDIA_SLOTS = [
+  {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
+  {key:'hero.mobile',label:'Hero — Mobile',group:'Hero'},
+  {key:'collection.essence.cover',label:'Essence Collection Cover',group:'Collections'},
+  {key:'collection.signature.cover',label:'Signature Collection Cover',group:'Collections'},
+  {key:'collection.noir.cover',label:'Noir Collection Cover',group:'Collections'},
+  {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
+  {key:'lookbook.main',label:'Lookbook Editorial Image',group:'Editorial'},
+  {key:'about.main',label:'About Us Image',group:'Editorial'},
+  {key:'brand.footer',label:'Footer Brand Visual',group:'Brand'}
+];
+function MediaPanel({assets,onUpload,onToggle,saving}) {
+ const [files,setFiles]=useState({}); const [alts,setAlts]=useState({});
+ return <section className="panel"><div className="panel-head"><div><p className="eyebrow">WEBSITE CONTENT</p><h2>Media Library</h2><p className="muted">Replace website images without editing code. Existing images remain as fallback until a replacement is published.</p></div></div>
+ <div className="media-grid">{MEDIA_SLOTS.map(slot=>{const asset=assets.find(a=>a.slot_key===slot.key);return <article className="media-card" key={slot.key}><div className="media-preview">{asset?.public_url?<img src={asset.public_url} alt={asset.alt_text||slot.label}/>:<div className="thumb-placeholder"><ImagePlus size={24}/><span>Current website image</span></div>}</div><div className="media-meta"><small>{slot.group}</small><strong>{slot.label}</strong><span className={asset?.is_published?'status live':'status'}>{asset?.is_published?'Published':'Using website default'}</span></div><label className="field-label">Alt text<input value={alts[slot.key]??asset?.alt_text??''} onChange={e=>setAlts(v=>({...v,[slot.key]:e.target.value}))} placeholder="Describe this image"/></label><label className="upload-box"><Upload size={17}/><span><strong>{asset?'Replace image':'Upload image'}</strong><small>JPG, PNG or WebP · max 10 MB</small></span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setFiles(v=>({...v,[slot.key]:e.target.files?.[0]||null}))}/></label>{files[slot.key]&&<><small className="muted">{files[slot.key].name}</small><button className="primary full" disabled={saving} onClick={()=>onUpload(slot,files[slot.key],alts[slot.key]??asset?.alt_text??'')}>Upload & publish</button></>}{asset&&<button className="secondary small" onClick={()=>onToggle(asset)}>{asset.is_published?'Unpublish':'Publish'}</button>}</article>})}</div></section>;
+}
+
 function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -123,6 +147,24 @@ function App() {
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [mediaAssets, setMediaAssets] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [customersLoading, setCustomersLoading] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerEditor, setCustomerEditor] = useState(null);
+  const [analyticsOrders, setAnalyticsOrders] = useState([]);
+  const [stockMovements, setStockMovements] = useState([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [orderSearch, setOrderSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [receiptOrder, setReceiptOrder] = useState(null);
+  const [paymentOrder, setPaymentOrder] = useState(null);
+  const [posOpen, setPosOpen] = useState(false);
+  const [orderStatus, setOrderStatus] = useState('new');
+  const [courierName, setCourierName] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingMessage, setTrackingMessage] = useState('');
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -132,14 +174,128 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c] = await Promise.all([
-      supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted)').order('display_order').order('created_at', { ascending: false }),
-      supabase.from('collections').select('*').order('display_order').order('name')
+    const [p, c, m, costs] = await Promise.all([
+      supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order').order('created_at', { ascending: false }),
+      supabase.from('collections').select('*').order('display_order').order('name'),
+      supabase.from('site_media').select('*').order('slot_key'),
+      supabase.from('product_costs').select('product_id,cost_bdt')
     ]);
-    if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
+    if (p.error) notify('error', p.error.message);
+    else {
+      if (costs.error) notify('error', 'Product costs: ' + costs.error.message);
+      const costByProduct = new Map((costs.data || []).map(row => [row.product_id, row.cost_bdt]));
+      setProducts((p.data || []).map(product => ({ ...product, cost_bdt: costByProduct.get(product.id) ?? '' })));
+    }
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
+    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
     setDataLoading(false);
   }, [session]);
+
+  const loadOrders = useCallback(async () => {
+    if (!supabase || !session) return;
+    setDataLoading(true);
+    const { data, error } = await supabase.from('orders')
+      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,updated_at,courier_name,courier_tracking_number,shipped_at,delivered_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at,verified_at),order_tracking_events(id,status,message,event_time)')
+      .order('created_at', { ascending: false });
+    if (error) notify('error', 'Orders: ' + error.message);
+    else setOrders(data || []);
+    setDataLoading(false);
+  }, [session]);
+
+  const loadAnalytics = useCallback(async () => {
+    if (!supabase || !session) return;
+    setAnalyticsLoading(true);
+    const [orderResult, movementResult] = await Promise.all([
+      supabase.from('orders')
+        .select('id,status,created_at,source,total_bdt,order_items(product_id,sku_snapshot,name_snapshot,quantity,line_total_bdt)')
+        .order('created_at', { ascending: false }).limit(5000),
+      supabase.from('inventory_movements')
+        .select('id,product_id,quantity_delta,reason,reference,created_at,products(name,sku)')
+        .order('created_at', { ascending: false }).limit(100)
+    ]);
+    if (orderResult.error) notify('error', 'Sales analytics: ' + orderResult.error.message);
+    else setAnalyticsOrders(orderResult.data || []);
+    if (movementResult.error) notify('error', 'Inventory movements: ' + movementResult.error.message);
+    else setStockMovements(movementResult.data || []);
+    setAnalyticsLoading(false);
+  }, [session]);
+
+  const loadCustomers = useCallback(async () => {
+    if (!supabase || !session) return;
+    setCustomersLoading(true);
+    const { data, error } = await supabase.from('customers')
+      .select('id,full_name,phone,email,address,district,created_at,loyalty:customer_loyalty_accounts(points_balance,lifetime_points,lifetime_spend_bdt,tier,updated_at),loyalty_transactions(points_delta,spend_delta_bdt,status,created_at,payment_id),orders(id,order_number,receipt_number,source,status,total_bdt,payment_status,created_at,payments(amount_bdt,status))')
+      .order('created_at', { ascending: false });
+    if (error) notify('error', 'Customers: ' + error.message);
+    else setCustomers(data || []);
+    setCustomersLoading(false);
+  }, [session]);
+
+  const fetchReceiptOrder = async (orderId) => {
+    const { data, error } = await supabase.from('orders')
+      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at,verified_at)')
+      .eq('id', orderId).single();
+    if (error) throw error;
+    setReceiptOrder(data);
+  };
+
+  const recordPayment = async (order, payment) => {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.rpc('record_order_payment', {
+        p_order_id: order.id, p_amount_bdt: Number(payment.amount), p_method: payment.method,
+        p_reference: payment.reference || null, p_notes: payment.notes || null
+      });
+      if (error) throw error;
+      setPaymentOrder(null);
+      await Promise.all([loadOrders(), loadCustomers()]);
+      await fetchReceiptOrder(order.id);
+      notify('success', `Payment recorded. Remaining due: ${money(data.due_bdt)}.`);
+    } catch (e) { notify('error', e.message || 'Could not record payment.'); }
+    finally { setSaving(false); }
+  };
+
+  const createPosSale = async (sale) => {
+    setSaving(true);
+    try {
+      const { data, error } = await supabase.rpc('create_pos_sale', {
+        p_customer: { full_name: sale.name, phone: sale.phone, email: sale.email || null },
+        p_items: sale.items.map(item => ({ sku: item.sku, quantity: Number(item.quantity) })),
+        p_payment_amount_bdt: Number(sale.amount || 0), p_payment_method: sale.method,
+        p_payment_reference: sale.reference || null, p_notes: sale.notes || null
+      });
+      if (error) throw error;
+      setPosOpen(false);
+      await Promise.all([loadOrders(), loadData(), loadCustomers()]);
+      await fetchReceiptOrder(data.order_id);
+      notify('success', `Store sale saved. Receipt ${data.receipt_number} created.`);
+    } catch (e) { notify('error', e.message || 'Could not create store sale.'); }
+    finally { setSaving(false); }
+  };
+
+  const saveCustomer = async (customerId, payload) => {
+    setSaving(true);
+    try {
+      const clean = {
+        full_name: payload.full_name.trim(),
+        phone: payload.phone.trim(),
+        email: payload.email.trim() || null,
+        address: payload.address.trim() || null,
+        district: payload.district.trim() || null
+      };
+      if (!clean.full_name || !clean.phone) throw new Error('Customer name and mobile number are required.');
+      const { error } = await supabase.from('customers').update(clean).eq('id', customerId);
+      if (error) throw error;
+      await loadCustomers();
+      setCustomerEditor(null);
+      setSelectedCustomer(current => current ? { ...current, ...clean } : current);
+      notify('success', 'Customer details updated.');
+    } catch (e) {
+      notify('error', e.message || 'Could not update customer.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const verifySession = useCallback(async (current) => {
     if (!current || !supabase) { setSession(null); setProfile(null); setLoading(false); return; }
@@ -163,7 +319,9 @@ function App() {
     return () => listener.subscription.unsubscribe();
   }, [verifySession]);
 
-  useEffect(() => { if (session && profile) loadData(); }, [session, profile, loadData]);
+  useEffect(() => { if (session && profile) { loadData(); loadOrders(); loadCustomers(); } }, [session, profile, loadData, loadOrders, loadCustomers]);
+  useEffect(() => { if (session && profile && section === 'customers') loadCustomers(); }, [section, session, profile, loadCustomers]);
+  useEffect(() => { if (session && profile && section === 'intelligence') loadAnalytics(); }, [section, session, profile, loadAnalytics]);
 
   const signIn = async (email, password) => {
     setLoginBusy(true); setLoginError('');
@@ -176,19 +334,36 @@ function App() {
   const saveProduct = async (payload, stock, imageFiles, stockTouched) => {
     setSaving(true);
     try {
+      const { cost_bdt: productCostBdt, ...productPayload } = payload;
       let productId = editor?.id;
       if (productId) {
-        const { error } = await supabase.from('products').update(payload).eq('id', productId);
+        const { error } = await supabase.from('products').update(productPayload).eq('id', productId);
         if (error) throw error;
       } else {
-        const { data, error } = await supabase.from('products').insert(payload).select('id').single();
+        const { data, error } = await supabase.from('products').insert(productPayload).select('id').single();
         if (error) throw error;
         productId = data.id;
       }
-      const existingReserved = editor?.inventory?.[0]?.reserved ?? 0;
-      const stockCounted = stockTouched || !editor?.id ? Boolean(stockTouched) : Boolean(editor?.inventory?.[0]?.stock_counted);
-      const { error: stockError } = await supabase.from('inventory').upsert({ product_id: productId, on_hand: stock, reserved: existingReserved, low_stock_threshold: 2, stock_counted: stockCounted }, { onConflict: 'product_id' });
-      if (stockError) throw stockError;
+      if (productCostBdt === null || productCostBdt === undefined || productCostBdt === '') {
+        const { error: costDeleteError } = await supabase.from('product_costs').delete().eq('product_id', productId);
+        if (costDeleteError) throw costDeleteError;
+      } else {
+        const { error: costSaveError } = await supabase.from('product_costs').upsert({
+          product_id: productId, cost_bdt: Number(productCostBdt), updated_at: new Date().toISOString()
+        }, { onConflict: 'product_id' });
+        if (costSaveError) throw costSaveError;
+      }
+      if (stockTouched) {
+        const { error: stockError } = await supabase.rpc('adjust_inventory_stock', {
+          p_product_id: productId, p_new_on_hand: stock, p_reason: 'product_editor_adjustment'
+        });
+        if (stockError) throw stockError;
+      } else if (!editor?.id) {
+        const { error: stockError } = await supabase.from('inventory').upsert({
+          product_id: productId, on_hand: 0, reserved: 0, low_stock_threshold: 2, stock_counted: false
+        }, { onConflict: 'product_id' });
+        if (stockError) throw stockError;
+      }
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         const extension = file.name.split('.').pop().toLowerCase();
@@ -206,6 +381,18 @@ function App() {
       notify('success', editor ? 'Product updated.' : 'Product created.');
     } finally { setSaving(false); }
   };
+
+  const uploadMedia = async (slot,file,altText) => {
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
+    setSaving(true); try {
+      const ext=file.name.split('.').pop().toLowerCase(); const path='site-media/'+slot.key+'/'+crypto.randomUUID()+'.'+ext;
+      const {error:upErr}=await supabase.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false}); if(upErr) throw upErr;
+      const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);
+      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'}); if(error) throw error;
+      await loadData(); notify('success',slot.label+' published.');
+    } catch(e){notify('error',e.message||'Image upload failed.');} finally{setSaving(false);}
+  };
+  const toggleMedia = async (asset) => {const {error}=await supabase.from('site_media').update({is_published:!asset.is_published,updated_at:new Date().toISOString()}).eq('id',asset.id);if(error)notify('error',error.message);else{await loadData();notify('success','Image visibility updated.');}};
 
   const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
@@ -229,21 +416,28 @@ function App() {
   const adjustStock = async (product, nextValue) => {
     const quantity = Number(nextValue);
     if (!Number.isInteger(quantity) || quantity < 0) return notify('error', 'Stock must be a non-negative whole number.');
-    const { error } = await supabase.from('inventory').upsert({ product_id: product.id, on_hand: quantity, reserved: product.inventory?.[0]?.reserved || 0, low_stock_threshold: 2, stock_counted: true }, { onConflict: 'product_id' });
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Stock updated.'); }
+    setSaving(true);
+    const { error } = await supabase.rpc('adjust_inventory_stock', {
+      p_product_id: product.id,
+      p_new_on_hand: quantity,
+      p_reason: 'admin_stock_adjustment'
+    });
+    if (error) notify('error', error.message);
+    else { await Promise.all([loadData(), loadAnalytics()]); notify('success', 'Stock updated and movement recorded.'); }
+    setSaving(false);
   };
 
   const filtered = useMemo(() => products.filter(p => [p.name,p.sku,p.collections?.name].join(' ').toLowerCase().includes(search.toLowerCase())), [products, search]);
   const published = products.filter(p => p.is_published).length;
-  const lowStock = products.filter(p => (p.inventory?.[0]?.on_hand ?? 0) <= 2).length;
+  const lowStock = products.filter(p => { const i=p.inventory?.[0]; return i?.stock_counted && Number(i.on_hand||0)-Number(i.reserved||0) <= Number(i.low_stock_threshold ?? 2); }).length;
 
   if (!supabaseConfigured) return <main className="setup-wrap"><section className="setup-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Admin setup required</h1><p className="muted">The admin app is ready for configuration. Add the Supabase Project URL and anon/public key to <code>admin-app/.env.local</code> for local testing. Never use the service_role key in the browser.</p><p className="tiny muted">Project: zariah-studio-sg · Region: Singapore</p></section></main>;
   if (loading) return <main className="setup-wrap"><LoaderCircle className="spin" size={28}/><span className="muted">Checking secure admin session…</span></main>;
   if (!session || !profile) return <><Login onLogin={signIn} busy={loginBusy} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['inventory','Inventory',Warehouse],
-    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['payments','Payments',CreditCard]
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
+    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
 
@@ -256,7 +450,7 @@ function App() {
     </aside>
     {mobileNav && <button className="mobile-scrim" onClick={() => setMobileNav(false)} aria-label="Close menu"/>}
     <main className="main-area">
-      <header className="topbar"><button className="icon-btn menu-toggle" onClick={() => setMobileNav(true)}><Menu/></button><div><p className="eyebrow">ZARIAH STUDIO / ADMIN</p><h1>{title}</h1></div><button className="secondary refresh" onClick={loadData}><RefreshCw size={15}/> Refresh</button></header>
+      <header className="topbar"><button className="icon-btn menu-toggle" onClick={() => setMobileNav(true)}><Menu/></button><div><p className="eyebrow">ZARIAH STUDIO / ADMIN</p><h1>{title}</h1></div><button className="secondary refresh" onClick={() => { loadData(); loadOrders(); }}><RefreshCw size={15}/> Refresh</button></header>
       <div className="content"><Notice notice={notice} clear={() => setNotice(null)}/>
         {section === 'dashboard' && <><div className="welcome"><div><p className="eyebrow">STORE OVERVIEW</p><h2>Good to see you, {profile.display_name || 'Admin'}.</h2><p className="muted">Your store management workspace.</p></div><span className="live-pill"><CheckCircle2 size={14}/> Secure session active</span></div>
           <div className="stat-grid"><Stat icon={Package} label="Total products" value={products.length}/><Stat icon={CheckCircle2} label="Published" value={published}/><Stat icon={Layers3} label="Collections" value={collections.length}/><Stat icon={AlertCircle} label="Low stock" value={lowStock}/></div>
@@ -266,12 +460,389 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
-        {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const qty = p.inventory?.[0]?.on_hand ?? 0; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${qty > 2 ? 'live' : 'warning'}`}>{qty > 2 ? 'In stock' : 'Low stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
-        {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
+        {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
+        {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
+        {section === 'orders' && <section className="panel">
+          <div className="panel-head split"><div><p className="eyebrow">ORDER OPERATIONS</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Review customer orders and publish delivery updates to the tracking page.</p></div><button className="secondary" onClick={loadOrders}><RefreshCw size={15}/> Refresh orders</button></div>
+          <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div></div>
+          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase())).map(o => <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>Manage tracking</button></td></tr>)}</tbody></table>{orders.length === 0 && <div className="empty">No orders found yet.</div>}</div>}
+        </section>}
+        {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} /> }
+        {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
+        {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
+        {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
+
       </div>
     </main>
+    {paymentOrder && <PaymentEntry order={paymentOrder} saving={saving} onClose={() => setPaymentOrder(null)} onSubmit={payment => recordPayment(paymentOrder,payment)} />}
+    {posOpen && <PosSaleModal products={products.filter(p => p.is_published)} saving={saving} onClose={() => setPosOpen(false)} onSubmit={createPosSale} />}
+    {receiptOrder && <ReceiptModal order={receiptOrder} onClose={() => setReceiptOrder(null)} />}
+    {selectedCustomer && <CustomerDetailModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onEdit={() => setCustomerEditor(selectedCustomer)} onReceipt={orderId => fetchReceiptOrder(orderId).catch(e => notify('error', e.message))} />}
+    {customerEditor && <CustomerEditor customer={customerEditor} saving={saving} onClose={() => setCustomerEditor(null)} onSave={payload => saveCustomer(customerEditor.id, payload)} />}
+    {selectedOrder && <OrderManager order={selectedOrder} status={orderStatus} setStatus={setOrderStatus} courier={courierName} setCourier={setCourierName} tracking={trackingNumber} setTracking={setTrackingNumber} message={trackingMessage} setMessage={setTrackingMessage} saving={saving} onClose={() => setSelectedOrder(null)} onSave={async () => {
+      const nextStatus = orderStatus;
+      const now = new Date().toISOString();
+      setSaving(true);
+      try {
+        const patch = { status: nextStatus, courier_name: courierName.trim() || null, courier_tracking_number: trackingNumber.trim() || null };
+        if (nextStatus === 'shipped' && !selectedOrder.shipped_at) patch.shipped_at = now;
+        if (nextStatus === 'delivered' && !selectedOrder.delivered_at) patch.delivered_at = now;
+        const { error: updateError } = await supabase.from('orders').update(patch).eq('id', selectedOrder.id);
+        if (updateError) throw updateError;
+        const eventText = trackingMessage.trim() || `Order status updated to ${nextStatus}.`;
+        const { error: eventError } = await supabase.from('order_tracking_events').insert({ order_id: selectedOrder.id, status: nextStatus, message: eventText, created_by: session.user.id });
+        if (eventError) throw eventError;
+        await loadOrders(); setSelectedOrder(null); notify('success', `Tracking updated for ${selectedOrder.order_number}.`);
+      } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
+      finally { setSaving(false); }
+    }} />}
     {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
   </div>;
+}
+
+function SalesIntelligencePanel({ products, orders, movements, loading, onRefresh }) {
+  const [range, setRange] = useState('6');
+  const activeOrders = orders.filter(order => !['cancelled','returned'].includes(order.status));
+  const productById = new Map(products.map(product => [product.id, product]));
+  const productBySku = new Map(products.map(product => [product.sku, product]));
+  const salesLines = activeOrders.flatMap(order => (order.order_items || []).map(item => ({ ...item, order })));
+  const totalRevenue = salesLines.reduce((sum,line) => sum + Number(line.line_total_bdt || 0),0);
+  const totalUnits = salesLines.reduce((sum,line) => sum + Number(line.quantity || 0),0);
+  const knownCostLines = salesLines.filter(line => {
+    const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
+    return product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '';
+  });
+  const costCoverage = salesLines.length ? knownCostLines.length / salesLines.length : 0;
+  const knownRevenue = knownCostLines.reduce((sum,line) => sum + Number(line.line_total_bdt || 0),0);
+  const knownCost = knownCostLines.reduce((sum,line) => {
+    const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
+    return sum + Number(product.cost_bdt || 0) * Number(line.quantity || 0);
+  },0);
+  const grossProfit = knownRevenue - knownCost;
+  const grossMargin = knownRevenue > 0 ? grossProfit / knownRevenue * 100 : 0;
+
+  const now = new Date();
+  const monthRows = Array.from({length:Number(range)},(_,index) => {
+    const date = new Date(now.getFullYear(),now.getMonth()-(Number(range)-1-index),1);
+    return { key:`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`, label:date.toLocaleDateString('en-GB',{month:'short'}), revenue:0, units:0 };
+  });
+  const monthMap = new Map(monthRows.map(row => [row.key,row]));
+  for (const line of salesLines) {
+    const date = new Date(line.order.created_at);
+    const key = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+    const row = monthMap.get(key);
+    if (row) { row.revenue += Number(line.line_total_bdt || 0); row.units += Number(line.quantity || 0); }
+  }
+  const maxRevenue = Math.max(1,...monthRows.map(row => row.revenue));
+  const productMap = new Map();
+  for (const line of salesLines) {
+    const key = line.product_id || line.sku_snapshot;
+    const item = productMap.get(key) || { name:line.name_snapshot, sku:line.sku_snapshot, units:0, revenue:0 };
+    item.units += Number(line.quantity || 0);
+    item.revenue += Number(line.line_total_bdt || 0);
+    productMap.set(key,item);
+  }
+  const bestsellers = [...productMap.values()].sort((a,b) => b.units-a.units).slice(0,8);
+  const lowStock = products.filter(product => {
+    const inv=product.inventory?.[0];
+    return inv?.stock_counted && Number(inv.on_hand || 0)-Number(inv.reserved || 0) <= Number(inv.low_stock_threshold ?? 2);
+  }).sort((a,b) => {
+    const ai=a.inventory?.[0],bi=b.inventory?.[0];
+    return (Number(ai?.on_hand||0)-Number(ai?.reserved||0))-(Number(bi?.on_hand||0)-Number(bi?.reserved||0));
+  });
+  const movementReason = reason => String(reason || '').replaceAll('_',' ');
+  return <section className="panel">
+    <div className="panel-head split">
+      <div><p className="eyebrow">BUSINESS PERFORMANCE</p><h2>Sales Intelligence</h2><p className="muted">Product sales, estimated gross margin, stock health and inventory movement.</p></div>
+      <button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh data</button>
+    </div>
+    {loading ? <Loading/> : <>
+      <div className="intelligence-kpis">
+        <div><small>Product sales revenue</small><strong>{money(totalRevenue)}</strong><span>{activeOrders.length} non-cancelled orders</span></div>
+        <div><small>Units sold</small><strong>{totalUnits.toLocaleString('en-BD')}</strong><span>From recorded order items</span></div>
+        <div><small>Estimated gross profit</small><strong>{money(grossProfit)}</strong><span>{costCoverage ? `${(costCoverage*100).toFixed(0)}% line coverage` : 'Add product costs to calculate'}</span></div>
+        <div><small>Gross margin</small><strong>{costCoverage ? `${grossMargin.toFixed(1)}%` : '—'}</strong><span>Only products with cost entered</span></div>
+      </div>
+      {costCoverage < 1 && <div className="analytics-notice"><AlertCircle size={16}/><span>Profit and margin are partial estimates. Product cost is missing for {salesLines.length-knownCostLines.length} of {salesLines.length} sales lines. Add Product Cost (BDT) in Products to improve coverage.</span></div>}
+      <div className="intelligence-grid">
+        <section className="analytics-card">
+          <div className="analytics-card-head"><div><p className="eyebrow">SALES TREND</p><h3>Product revenue by month</h3></div><select value={range} onChange={e=>setRange(e.target.value)}><option value="6">Last 6 months</option><option value="12">Last 12 months</option></select></div>
+          <div className="revenue-bars">{monthRows.map(row=><div className="revenue-bar-col" key={row.key}><strong>{row.revenue ? money(row.revenue) : '—'}</strong><div className="revenue-bar-track"><div className="revenue-bar-fill" style={{height:`${Math.max(row.revenue ? 5 : 0,row.revenue/maxRevenue*100)}%`}}/></div><small>{row.label}</small></div>)}</div>
+        </section>
+        <section className="analytics-card">
+          <div className="analytics-card-head"><div><p className="eyebrow">PRODUCT PERFORMANCE</p><h3>Bestsellers by units</h3></div></div>
+          {bestsellers.length ? <div className="bestseller-list">{bestsellers.map((item,index)=><div className="bestseller-row" key={item.sku}><span className="bestseller-rank">{index+1}</span><div className="bestseller-info"><strong>{item.name}</strong><small>{item.sku} · {money(item.revenue)}</small></div><b>{item.units} units</b></div>)}</div> : <div className="empty">No order item sales found yet.</div>}
+        </section>
+      </div>
+      <section className="analytics-card stock-alert-card">
+        <div className="analytics-card-head"><div><p className="eyebrow">INVENTORY CONTROL</p><h3>Low-stock alerts <span className="count">{lowStock.length}</span></h3></div></div>
+        {lowStock.length ? <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Threshold</th></tr></thead><tbody>{lowStock.map(product=>{const inv=product.inventory?.[0]||{};const available=Number(inv.on_hand||0)-Number(inv.reserved||0);return <tr key={product.id}><td><strong>{product.name}</strong></td><td>{product.sku}</td><td>{inv.on_hand}</td><td>{inv.reserved}</td><td><span className="status warning">{available}</span></td><td>{inv.low_stock_threshold??2}</td></tr>})}</tbody></table></div> : <div className="empty">No stock-counted products are currently below their alert threshold.</div>}
+      </section>
+      <section className="analytics-card">
+        <div className="analytics-card-head"><div><p className="eyebrow">AUDIT TRAIL</p><h3>Recent inventory movements</h3></div></div>
+        {movements.length ? <div className="table-wrap"><table><thead><tr><th>Date</th><th>Product</th><th>Reason</th><th>Quantity change</th><th>Reference</th></tr></thead><tbody>{movements.slice(0,30).map(movement=><tr key={movement.id}><td>{new Date(movement.created_at).toLocaleString('en-GB')}</td><td><strong>{movement.products?.name || 'Product'}</strong><small className="muted" style={{display:'block'}}>{movement.products?.sku || ''}</small></td><td>{movementReason(movement.reason)}</td><td><span className={`status ${movement.quantity_delta>0?'live':'warning'}`}>{movement.quantity_delta>0?'+':''}{movement.quantity_delta}</span></td><td><small>{movement.reference || '—'}</small></td></tr>)}</tbody></table></div> : <div className="empty">No inventory movement records found.</div>}
+      </section>
+      <p className="tiny muted">Revenue is calculated from order-item line totals and excludes cancelled/returned orders. It excludes delivery fees and discounts at order level. Gross profit is an estimate based on current product cost, not historical cost at time of sale. For accounting-grade margins, cost must be snapshotted on each order item at checkout.</p>
+    </>}
+  </section>;
+}
+
+const LOYALTY_TIERS = [
+  { key: 'bronze', label: 'Bronze', min: 0, next: 10000, benefit: 'Entry membership' },
+  { key: 'silver', label: 'Silver', min: 10000, next: 25000, benefit: 'Silver membership' },
+  { key: 'gold', label: 'Gold', min: 25000, next: 50000, benefit: 'Gold membership' },
+  { key: 'platinum', label: 'Platinum', min: 50000, next: null, benefit: 'Top-tier membership' }
+];
+const tierLabel = tier => LOYALTY_TIERS.find(item => item.key === tier)?.label || 'Bronze';
+
+function LoyaltyPanel({ customers, loading, onRefresh, onSelect }) {
+  const [query, setQuery] = useState('');
+  const [tierFilter, setTierFilter] = useState('all');
+  const [sort, setSort] = useState('points');
+  const rows = useMemo(() => {
+    const filtered = customers.filter(customer => {
+      const tier = customer.loyalty?.tier || 'bronze';
+      const text = [customer.full_name, customer.phone, customer.email].join(' ').toLowerCase();
+      return text.includes(query.toLowerCase()) && (tierFilter === 'all' || tier === tierFilter);
+    });
+    return filtered.sort((a,b) => {
+      const av = a.loyalty || {}, bv = b.loyalty || {};
+      if (sort === 'spend') return Number(bv.lifetime_spend_bdt || 0) - Number(av.lifetime_spend_bdt || 0);
+      if (sort === 'tier') return LOYALTY_TIERS.findIndex(t => t.key === bv.tier) - LOYALTY_TIERS.findIndex(t => t.key === av.tier);
+      return Number(bv.points_balance || 0) - Number(av.points_balance || 0);
+    });
+  }, [customers, query, tierFilter, sort]);
+
+  const countByTier = key => customers.filter(c => (c.loyalty?.tier || 'bronze') === key).length;
+  const pointsOutstanding = customers.reduce((sum,c) => sum + Number(c.loyalty?.points_balance || 0),0);
+  const qualifyingSpend = customers.reduce((sum,c) => sum + Number(c.loyalty?.lifetime_spend_bdt || 0),0);
+
+  return <section className="panel">
+    <div className="panel-head split">
+      <div><p className="eyebrow">CUSTOMER RETENTION</p><h2>Loyalty & Membership</h2><p className="muted">Points are earned only from verified payments. Membership tier is based on cumulative verified spend.</p></div>
+      <button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh</button>
+    </div>
+    <div className="loyalty-summary-grid">
+      <div><small>Members enrolled</small><strong>{customers.length}</strong></div>
+      <div><small>Points outstanding</small><strong>{pointsOutstanding.toLocaleString('en-BD')}</strong></div>
+      <div><small>Qualifying spend</small><strong>{money(qualifyingSpend)}</strong></div>
+    </div>
+    <div className="loyalty-tier-grid">
+      {LOYALTY_TIERS.map(tier => <article className={`loyalty-tier-card tier-card-${tier.key}`} key={tier.key}>
+        <div><Award size={18}/><span>{tier.label}</span></div>
+        <strong>{countByTier(tier.key)}</strong>
+        <small>{tier.next ? `${money(tier.min)} – ${money(tier.next - 1)}` : `${money(tier.min)}+ qualifying spend`}</small>
+      </article>)}
+    </div>
+    <div className="loyalty-rules">
+      <strong>Current earning rules</strong>
+      <p>1 point for each complete ৳100 in an individual verified payment. Tier qualification uses cumulative verified payments, net of refunded or rejected payments.</p>
+      <small>Bronze: ৳0 · Silver: ৳10,000 · Gold: ৳25,000 · Platinum: ৳50,000</small>
+      <small>Points are tracked but cannot yet be redeemed for discounts or cash. Redemption rules must be approved before activation.</small>
+    </div>
+    <div className="toolbar customer-toolbar">
+      <div className="searchbox"><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search customer name or mobile"/></div>
+      <select aria-label="Filter membership tier" value={tierFilter} onChange={e => setTierFilter(e.target.value)}>
+        <option value="all">All tiers</option>{LOYALTY_TIERS.map(t => <option value={t.key} key={t.key}>{t.label}</option>)}
+      </select>
+      <select aria-label="Sort loyalty members" value={sort} onChange={e => setSort(e.target.value)}>
+        <option value="points">Most points</option><option value="spend">Highest spend</option><option value="tier">Highest tier</option>
+      </select>
+    </div>
+    {loading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Membership</th><th>Points balance</th><th>Lifetime points</th><th>Qualifying spend</th><th></th></tr></thead><tbody>
+      {rows.map(customer => {
+        const loyalty = customer.loyalty || {};
+        const tier = loyalty.tier || 'bronze';
+        return <tr key={customer.id}>
+          <td><strong>{customer.full_name}</strong><small className="muted" style={{display:'block',marginTop:4}}>{customer.phone}</small></td>
+          <td><span className={`tier-pill tier-${tier}`}>{tierLabel(tier)}</span></td>
+          <td><strong>{Number(loyalty.points_balance || 0).toLocaleString('en-BD')}</strong></td>
+          <td>{Number(loyalty.lifetime_points || 0).toLocaleString('en-BD')}</td>
+          <td>{money(loyalty.lifetime_spend_bdt || 0)}</td>
+          <td><button className="secondary small" onClick={() => onSelect(customer)}>View profile</button></td>
+        </tr>;
+      })}
+    </tbody></table>{rows.length === 0 && <div className="empty">No loyalty members match these filters.</div>}</div>}
+  </section>;
+}
+
+function customerOrderStats(customer) {
+  const orders = customer.orders || [];
+  const validOrders = orders.filter(order => !['cancelled', 'returned'].includes(order.status));
+  const spend = validOrders.reduce((sum, order) => sum + Number(order.total_bdt || 0), 0);
+  const paid = validOrders.reduce((sum, order) => sum + (order.payments || []).filter(p => p.status === 'verified').reduce((n, p) => n + Number(p.amount_bdt || 0), 0), 0);
+  const due = Math.max(spend - paid, 0);
+  const lastOrder = [...validOrders].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null;
+  return { orders: validOrders, spend, paid, due, lastOrder };
+}
+
+function CustomerPanel({ customers, loading, onRefresh, onSelect }) {
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState('recent');
+  const rows = useMemo(() => {
+    const filtered = customers.filter(customer =>
+      [customer.full_name, customer.phone, customer.email, customer.district].join(' ').toLowerCase().includes(query.toLowerCase())
+    );
+    return filtered.sort((a, b) => {
+      const A = customerOrderStats(a), B = customerOrderStats(b);
+      if (sort === 'spend') return B.spend - A.spend;
+      if (sort === 'orders') return B.orders.length - A.orders.length;
+      if (sort === 'due') return B.due - A.due;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }, [customers, query, sort]);
+  const repeatCount = customers.filter(c => customerOrderStats(c).orders.length > 1).length;
+  const totalSpend = customers.reduce((sum, c) => sum + customerOrderStats(c).spend, 0);
+  const totalDue = customers.reduce((sum, c) => sum + customerOrderStats(c).due, 0);
+  return <section className="panel">
+    <div className="panel-head split">
+      <div><p className="eyebrow">CUSTOMER RELATIONSHIP MANAGEMENT</p><h2>Customers <span className="count">{customers.length}</span></h2><p className="muted">Customer profiles, purchase history, lifetime spending and outstanding balances.</p></div>
+      <button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh customers</button>
+    </div>
+    <div className="customer-stat-grid">
+      <div><small>Total customers</small><strong>{customers.length}</strong></div>
+      <div><small>Repeat customers</small><strong>{repeatCount}</strong></div>
+      <div><small>Lifetime sales</small><strong>{money(totalSpend)}</strong></div>
+      <div><small>Outstanding due</small><strong>{money(totalDue)}</strong></div>
+    </div>
+    <div className="toolbar customer-toolbar">
+      <div className="searchbox"><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search name, mobile, email or district"/></div>
+      <select aria-label="Sort customers" value={sort} onChange={e => setSort(e.target.value)}>
+        <option value="recent">Recently added</option><option value="spend">Highest spending</option><option value="orders">Most orders</option><option value="due">Highest due</option>
+      </select>
+    </div>
+    {loading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Contact</th><th>Orders</th><th>Lifetime spend</th><th>Outstanding due</th><th>Last purchase</th><th></th></tr></thead><tbody>
+      {rows.map(customer => {
+        const stats = customerOrderStats(customer);
+        return <tr key={customer.id}>
+          <td><strong>{customer.full_name}</strong><small className="muted" style={{display:'block',marginTop:4}}>{customer.district || 'District not provided'}</small></td>
+          <td>{customer.phone}<small className="muted" style={{display:'block',marginTop:4}}>{customer.email || ''}</small></td>
+          <td>{stats.orders.length}</td><td><strong>{money(stats.spend)}</strong></td>
+          <td><span className={`status ${stats.due > 0 ? 'warning' : 'live'}`}>{money(stats.due)}</span></td>
+          <td>{stats.lastOrder ? new Date(stats.lastOrder.created_at).toLocaleDateString('en-GB') : '—'}</td>
+          <td><button className="secondary small" onClick={() => onSelect(customer)}>View profile</button></td>
+        </tr>;
+      })}
+    </tbody></table>{rows.length === 0 && <div className="empty">{customers.length ? 'No customers match your search.' : 'No customer records found yet.'}</div>}</div>}
+    <p className="tiny muted">Lifetime sales exclude cancelled and returned orders. Outstanding due is calculated from verified payments against non-cancelled, non-returned orders.</p>
+  </section>;
+}
+
+function CustomerDetailModal({ customer, onClose, onEdit, onReceipt }) {
+  const stats = customerOrderStats(customer);
+  const phone = (customer.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '880');
+  const whatsappUrl = phone ? `https://wa.me/${phone}` : null;
+  const orders = [...stats.orders].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+    <section className="modal customer-modal" role="dialog" aria-modal="true" aria-labelledby="customer-profile-title">
+      <header className="modal-head"><div><p className="eyebrow">CUSTOMER PROFILE</p><h2 id="customer-profile-title">{customer.full_name}</h2><p className="muted">{customer.phone} · {customer.email || 'No email'}</p></div><button className="icon-btn" onClick={onClose} aria-label="Close"><X/></button></header>
+      <div className="customer-profile-actions"><button className="secondary" onClick={onEdit}><Pencil size={14}/> Edit details</button>{whatsappUrl && <a className="secondary" href={whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={14}/> WhatsApp</a>}</div>
+      <div className="customer-stat-grid profile-stats">
+        <div><small>Orders</small><strong>{stats.orders.length}</strong></div><div><small>Lifetime spend</small><strong>{money(stats.spend)}</strong></div><div><small>Paid</small><strong>{money(stats.paid)}</strong></div><div><small>Outstanding due</small><strong>{money(stats.due)}</strong></div>
+      </div>
+      <div className="customer-address"><strong>Customer details</strong><p>{customer.address || 'Address not provided'}</p><p>{customer.district || 'District not provided'}</p><small>Customer since {new Date(customer.created_at).toLocaleDateString('en-GB')}</small></div>
+      <div className="customer-loyalty-card">
+        <div><p className="eyebrow">LOYALTY MEMBERSHIP</p><strong className={`tier-name tier-${customer.loyalty?.tier || 'bronze'}`}>{tierLabel(customer.loyalty?.tier)}</strong><small>{Number(customer.loyalty?.points_balance || 0).toLocaleString('en-BD')} available points</small></div>
+        <div className="loyalty-profile-numbers"><span><small>Lifetime points</small><b>{Number(customer.loyalty?.lifetime_points || 0).toLocaleString('en-BD')}</b></span><span><small>Qualifying spend</small><b>{money(customer.loyalty?.lifetime_spend_bdt || 0)}</b></span></div>
+      </div>
+      <div className="loyalty-activity">
+        <div className="panel-head"><div><p className="eyebrow">POINTS LEDGER</p><h3>Recent points activity</h3></div></div>
+        <div className="table-wrap"><table><thead><tr><th>Date</th><th>Payment</th><th>Qualifying spend</th><th>Points</th><th>Status</th></tr></thead><tbody>
+          {[...(customer.loyalty_transactions || [])].sort((a,b) => new Date(b.created_at)-new Date(a.created_at)).slice(0,10).map(tx => <tr key={tx.payment_id}><td>{new Date(tx.created_at).toLocaleDateString('en-GB')}</td><td><small>{tx.payment_id.slice(0,8).toUpperCase()}</small></td><td>{money(tx.spend_delta_bdt)}</td><td>{tx.status === 'earned' ? '+' : '−'}{Number(tx.points_delta || 0)}</td><td><span className={`status ${tx.status === 'earned' ? 'live' : 'warning'}`}>{tx.status}</span></td></tr>)}
+        </tbody></table>{!(customer.loyalty_transactions || []).length && <div className="empty">No points activity yet. Points are earned when payments are verified.</div>}</div>
+      </div>
+      <div className="panel-head"><p className="eyebrow">PURCHASE & RECEIPT HISTORY</p><h3>All orders</h3></div>
+      <div className="table-wrap"><table><thead><tr><th>Receipt / Order</th><th>Date</th><th>Channel</th><th>Total</th><th>Payment</th><th></th></tr></thead><tbody>
+        {orders.map(order => {
+          const paid = (order.payments || []).filter(p => p.status === 'verified').reduce((sum, p) => sum + Number(p.amount_bdt || 0), 0);
+          const due = Math.max(Number(order.total_bdt || 0) - paid, 0);
+          return <tr key={order.id}><td><strong>{order.receipt_number || order.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{order.order_number}</small></td><td>{new Date(order.created_at).toLocaleDateString('en-GB')}</td><td>{order.source === 'manual' ? 'In-store' : 'Online'}</td><td>{money(order.total_bdt)}</td><td><span className={`status ${due === 0 ? 'live' : 'warning'}`}>{due === 0 ? 'Paid' : paid > 0 ? 'Partial' : 'Due'}</span></td><td><button className="secondary small" onClick={() => onReceipt(order.id)}><Receipt size={13}/> Receipt</button></td></tr>;
+        })}
+      </tbody></table>{orders.length === 0 && <div className="empty">No purchases recorded for this customer.</div>}</div>
+      <footer className="modal-actions"><button className="secondary" onClick={onClose}>Close</button></footer>
+    </section>
+  </div>;
+}
+
+function CustomerEditor({ customer, saving, onClose, onSave }) {
+  const [form, setForm] = useState({ full_name: customer.full_name || '', phone: customer.phone || '', email: customer.email || '', address: customer.address || '', district: customer.district || '' });
+  const [error, setError] = useState('');
+  return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+    <section className="modal" role="dialog" aria-modal="true" aria-labelledby="customer-edit-title">
+      <header className="modal-head"><div><p className="eyebrow">CUSTOMER MANAGEMENT</p><h2 id="customer-edit-title">Edit customer</h2></div><button className="icon-btn" onClick={onClose}><X/></button></header>
+      <form onSubmit={e => { e.preventDefault(); if (!form.full_name.trim() || !form.phone.trim()) return setError('Customer name and mobile number are required.'); onSave(form); }}>
+        <div className="form-grid"><label>Full name *<input required maxLength="80" value={form.full_name} onChange={e => setForm(v => ({...v,full_name:e.target.value}))}/></label><label>Mobile number *<input required maxLength="20" value={form.phone} onChange={e => setForm(v => ({...v,phone:e.target.value}))}/></label><label>Email<input type="email" value={form.email} onChange={e => setForm(v => ({...v,email:e.target.value}))}/></label><label>District<input value={form.district} onChange={e => setForm(v => ({...v,district:e.target.value}))}/></label><label className="span-2">Address<textarea rows="3" value={form.address} onChange={e => setForm(v => ({...v,address:e.target.value}))}/></label></div>
+        {error && <p className="form-error">{error}</p>}
+        <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? 'Saving…' : 'Save customer'}</button></footer>
+      </form>
+    </section>
+  </div>;
+}
+
+function paidTotal(order) {
+  return (order.payments || []).filter(p => p.status === 'verified').reduce((sum, p) => sum + Number(p.amount_bdt || 0), 0);
+}
+
+function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt }) {
+  const [filter, setFilter] = useState('all');
+  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid'].includes(order.payment_status) : order.source === 'manual'));
+  return <section className="panel">
+    <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Record online payments, create in-store sales and share digital receipts.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
+    <div className="toolbar"><div className="filter-tabs"><button className={filter==='all'?'active':''} onClick={()=>setFilter('all')}>All sales</button><button className={filter==='due'?'active':''} onClick={()=>setFilter('due')}>Outstanding due</button><button className={filter==='store'?'active':''} onClick={()=>setFilter('store')}>Store sales</button></div></div>
+    <div className="table-wrap"><table><thead><tr><th>Receipt / Order</th><th>Customer</th><th>Channel</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      {rows.map(order => { const paid=paidTotal(order); const due=Math.max(Number(order.total_bdt||0)-paid,0); return <tr key={order.id}><td><strong>{order.receipt_number || order.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{order.order_number}</small></td><td>{order.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{order.customers?.phone || ''}</small></td><td><span className="status">{order.source==='manual'?'In-store':'Online'}</span></td><td>{money(order.total_bdt)}</td><td>{money(paid)}</td><td><strong>{money(due)}</strong></td><td><span className={`status ${due===0?'live':'warning'}`}>{due===0?'paid':paid>0?'partially paid':'due'}</span></td><td><div className="row-actions"><button className="secondary small" onClick={()=>onReceipt(order)}><Receipt size={13}/> Receipt</button>{due>0 && <button className="primary small" onClick={()=>onRecordPayment(order)}>Paid / Add payment</button>}</div></td></tr>; })}
+    </tbody></table>{rows.length===0&&<div className="empty">No matching receipts yet.</div>}</div>
+    <p className="tiny muted">WhatsApp sharing opens a prepared message for staff to send. Fully automatic WhatsApp delivery requires an approved WhatsApp Business API integration.</p>
+  </section>;
+}
+
+function PaymentEntry({ order, saving, onClose, onSubmit }) {
+  const paid=paidTotal(order); const due=Math.max(Number(order.total_bdt||0)-paid,0);
+  const [amount,setAmount]=useState(String(due)); const [method,setMethod]=useState('cash_on_delivery'); const [reference,setReference]=useState(''); const [notes,setNotes]=useState(''); const [error,setError]=useState('');
+  return <div className="modal-backdrop" role="presentation" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><section className="modal" role="dialog" aria-modal="true"><header className="modal-head"><div><p className="eyebrow">RECORD PAYMENT</p><h2>{order.receipt_number||order.order_number}</h2><p className="muted">Outstanding balance: {money(due)}</p></div><button className="icon-btn" onClick={onClose}><X/></button></header><form onSubmit={e=>{e.preventDefault();const n=Number(amount);if(!Number.isInteger(n)||n<=0||n>due)return setError('Enter an amount within the outstanding balance.');onSubmit({amount:n,method,reference,notes});}}><div className="form-grid"><label>Amount received (BDT)<input type="number" min="1" max={due} step="1" required value={amount} onChange={e=>setAmount(e.target.value)}/></label><label>Payment method<select value={method} onChange={e=>setMethod(e.target.value)}><option value="cash_on_delivery">Cash</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank_transfer">Bank transfer</option><option value="other">Other</option></select></label><label className="span-2">Transaction reference (optional)<input value={reference} onChange={e=>setReference(e.target.value)} placeholder="Transaction ID / reference"/></label><label className="span-2">Notes (optional)<textarea rows="2" value={notes} onChange={e=>setNotes(e.target.value)}/></label></div>{error&&<p className="form-error">{error}</p>}<footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving?'Saving…':'Confirm payment'}</button></footer></form></section></div>;
+}
+
+function PosSaleModal({ products, saving, onClose, onSubmit }) {
+  const [name,setName]=useState(''); const [phone,setPhone]=useState(''); const [email,setEmail]=useState('');
+  const [sku,setSku]=useState(products[0]?.sku||''); const [qty,setQty]=useState('1'); const [items,setItems]=useState([]);
+  const [amount,setAmount]=useState(''); const [method,setMethod]=useState('cash_on_delivery'); const [reference,setReference]=useState(''); const [notes,setNotes]=useState(''); const [error,setError]=useState('');
+  const selected=products.find(p=>p.sku===sku); const total=items.reduce((sum,item)=>sum+Number(item.price_bdt)*Number(item.quantity),0);
+  const addItem=()=>{const q=Number(qty);if(!selected||!Number.isInteger(q)||q<1||q>20)return setError('Choose a product and valid quantity.');setItems(old=>{const found=old.find(i=>i.sku===selected.sku);return found?old.map(i=>i.sku===selected.sku?{...i,quantity:i.quantity+q}:i):[...old,{sku:selected.sku,name:selected.name,price_bdt:selected.price_bdt,quantity:q}];});setError('');};
+  return <div className="modal-backdrop" role="presentation" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><section className="modal order-modal" role="dialog" aria-modal="true"><header className="modal-head"><div><p className="eyebrow">POINT OF SALE</p><h2>New Store Sale</h2><p className="muted">Create a customer receipt for an in-store purchase.</p></div><button className="icon-btn" onClick={onClose}><X/></button></header>
+    <form onSubmit={e=>{e.preventDefault();setError('');const paid=Number(amount||0);if(!name.trim()||!/^((\+?880)?1[3-9]\d{8}|01[3-9]\d{8})$/.test(phone.replace(/[\s-]/g,'')))return setError('Enter customer name and valid Bangladesh mobile number.');if(!items.length)return setError('Add at least one product.');if(!Number.isInteger(paid)||paid<0||paid>total)return setError('Payment must be between 0 and the sale total.');onSubmit({name,phone,email,items,amount:paid,method,reference,notes});}}>
+      <div className="form-grid"><label>Customer name *<input required value={name} onChange={e=>setName(e.target.value)}/></label><label>Mobile number *<input required value={phone} onChange={e=>setPhone(e.target.value)} placeholder="01XXXXXXXXX"/></label><label className="span-2">Email (optional)<input type="email" value={email} onChange={e=>setEmail(e.target.value)}/></label>
+      <label className="span-2">Product<select value={sku} onChange={e=>setSku(e.target.value)}>{products.map(p=><option key={p.id} value={p.sku}>{p.name} · {p.sku} · {money(p.price_bdt)}</option>)}</select></label><label>Quantity<input type="number" min="1" max="20" value={qty} onChange={e=>setQty(e.target.value)}/></label><div className="form-field-action"><button type="button" className="secondary" onClick={addItem}>Add product</button></div>
+      </div>
+      <div className="pos-lines">{items.map(item=><div key={item.sku}><span>{item.name} × {item.quantity}</span><strong>{money(item.price_bdt*item.quantity)}</strong><button type="button" className="icon-btn" onClick={()=>setItems(old=>old.filter(i=>i.sku!==item.sku))}><X size={14}/></button></div>)}{items.length===0&&<p className="muted tiny">No products added yet.</p>}</div>
+      <div className="pos-total"><span>Sale total</span><strong>{money(total)}</strong></div>
+      <div className="form-grid"><label>Amount received (BDT)<input type="number" min="0" max={total} step="1" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0 for full due"/></label><label>Payment method<select value={method} onChange={e=>setMethod(e.target.value)}><option value="cash_on_delivery">Cash</option><option value="bkash">bKash</option><option value="nagad">Nagad</option><option value="bank_transfer">Bank transfer</option><option value="other">Other</option></select></label><label className="span-2">Transaction reference (optional)<input value={reference} onChange={e=>setReference(e.target.value)}/></label><label className="span-2">Notes (optional)<textarea rows="2" value={notes} onChange={e=>setNotes(e.target.value)}/></label></div>
+      <p className="tiny muted">Prices are loaded from the published catalogue. Counted stock is checked and reduced automatically when the sale is saved.</p>{error&&<p className="form-error">{error}</p>}<footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving||!products.length}>{saving?'Saving sale…':'Create sale & receipt'}</button></footer>
+    </form></section></div>;
+}
+
+function ReceiptModal({ order, onClose }) {
+  const paid=paidTotal(order); const due=Math.max(Number(order.total_bdt||0)-paid,0);
+  const phone=(order.customers?.phone||'').replace(/[^0-9]/g,'').replace(/^0/,'880');
+  const message=`ZARIAH STUDIO\nDigital Money Receipt: ${order.receipt_number||order.order_number}\nOrder: ${order.order_number}\nCustomer: ${order.customers?.full_name||''}\nTotal: BDT ${order.total_bdt}\nPaid: BDT ${paid}\nDue: BDT ${due}\nThank you for shopping with ZARIAH Studio.`;
+  const whatsappUrl=phone?`https://wa.me/${phone}?text=${encodeURIComponent(message)}`:null;
+  return <div className="modal-backdrop receipt-backdrop" role="presentation" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><section className="modal receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><div className="receipt-actions no-print"><button className="secondary" onClick={()=>window.print()}><Printer size={15}/> Print / Save PDF</button>{whatsappUrl&&<a className="primary" href={whatsappUrl} target="_blank" rel="noreferrer"><MessageCircle size={15}/> Share on WhatsApp</a>}<button className="icon-btn" onClick={onClose}><X/></button></div>
+    <article className="receipt-sheet"><header><div className="receipt-monogram">Z</div><h2 id="receipt-title">ZARIAH STUDIO</h2><p>DIGITAL MONEY RECEIPT</p></header><div className="receipt-meta"><div><small>Receipt No.</small><strong>{order.receipt_number||'Pending migration'}</strong></div><div><small>Order No.</small><strong>{order.order_number}</strong></div><div><small>Date</small><strong>{new Date(order.created_at).toLocaleString('en-GB')}</strong></div><div><small>Sale channel</small><strong>{order.source==='manual'?'In-store':'Online order'}</strong></div></div><div className="receipt-customer"><strong>{order.customers?.full_name||'Customer'}</strong><span>{order.customers?.phone||''}</span>{order.customers?.address&&<span>{order.customers.address}</span>}</div><table><thead><tr><th>Item</th><th>Qty</th><th>Amount</th></tr></thead><tbody>{(order.order_items||[]).map((item,i)=><tr key={i}><td>{item.name_snapshot}<small>{item.sku_snapshot}</small></td><td>{item.quantity}</td><td>{money(item.line_total_bdt)}</td></tr>)}</tbody></table><div className="receipt-totals"><div><span>Subtotal</span><strong>{money(order.subtotal_bdt)}</strong></div>{Number(order.discount_bdt)>0&&<div><span>Discount</span><strong>-{money(order.discount_bdt)}</strong></div>}{Number(order.delivery_fee_bdt)>0&&<div><span>Delivery</span><strong>{money(order.delivery_fee_bdt)}</strong></div>}<div className="receipt-grand"><span>Total</span><strong>{money(order.total_bdt)}</strong></div><div><span>Amount paid</span><strong>{money(paid)}</strong></div><div className="receipt-due"><span>Due amount</span><strong>{money(due)}</strong></div></div><div className="receipt-payment-history"><strong>Payment history</strong>{(order.payments||[]).filter(p=>p.status==='verified').map(p=><div key={p.id}><span>{p.method.replace('_',' ')} · {new Date(p.created_at).toLocaleDateString('en-GB')}</span><strong>{money(p.amount_bdt)}</strong></div>)}{paid===0&&<p>No payment recorded yet.</p>}</div><footer>Thank you for choosing ZARIAH Studio.<br/><small>Keep this digital receipt for your records.</small></footer></article>
+  </section></div>;
+}
+
+function OrderManager({ order, status, setStatus, courier, setCourier, tracking, setTracking, message, setMessage, saving, onClose, onSave }) {
+  const [error, setError] = useState('');
+  const submit = async (e) => { e.preventDefault(); setError(''); if (status === 'shipped' && !courier.trim()) return setError('Add the courier name before marking this order as shipped.'); if (status === 'shipped' && !tracking.trim()) return setError('Add the courier tracking number before marking this order as shipped.'); await onSave(); };
+  return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}><section className="modal order-modal" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+    <header className="modal-head"><div><p className="eyebrow">ORDER MANAGEMENT</p><h2 id="order-modal-title">{order.order_number}</h2><p className="muted">{order.customers?.full_name || 'Customer'} · {order.customers?.phone || 'No phone'}</p></div><button className="icon-btn" onClick={onClose} aria-label="Close"><X/></button></header>
+    <div className="order-summary"><div><small>Order total</small><strong>{money(order.total_bdt)}</strong></div><div><small>Payment</small><strong>{order.payment_status?.replace('_',' ')}</strong></div><div><small>Placed</small><strong>{new Date(order.created_at).toLocaleDateString('en-GB')}</strong></div></div>
+    <div className="order-delivery-details"><strong>Delivery details</strong><p>{order.customers?.district || 'District not provided'}</p><p>{order.customers?.address || 'Address not provided'}</p>{order.customers?.email && <p>{order.customers.email}</p>}</div>
+    <div className="order-items"><strong>Items</strong>{(order.order_items || []).map((item,i) => <div key={i}><span>{item.name_snapshot} <small>({item.sku_snapshot}) × {item.quantity}</small></span><b>{money(item.line_total_bdt)}</b></div>)}</div>
+    <form onSubmit={submit}><div className="form-grid"><label>Order status<select value={status} onChange={e => setStatus(e.target.value)}>{['new','confirmed','processing','shipped','delivered','cancelled','returned'].map(v => <option key={v} value={v}>{v[0].toUpperCase()+v.slice(1)}</option>)}</select></label><label>Courier name<input value={courier} onChange={e => setCourier(e.target.value)} placeholder="e.g. Pathao / Steadfast"/></label><label className="span-2">Courier tracking number<input value={tracking} onChange={e => setTracking(e.target.value)} placeholder="Enter courier consignment / tracking ID"/></label><label className="span-2">Customer-visible update message<textarea rows="3" value={message} onChange={e => setMessage(e.target.value)} placeholder="e.g. Your parcel has been handed over to the courier."/></label></div>
+      {error && <p className="form-error">{error}</p>}<div className="tracking-history"><strong>Tracking history</strong>{(order.order_tracking_events || []).length ? order.order_tracking_events.map(ev => <div key={ev.id}><span className="status">{ev.status}</span><p>{ev.message}</p><small>{new Date(ev.event_time).toLocaleString('en-GB')}</small></div>) : <p className="muted tiny">No tracking updates recorded yet.</p>}</div>
+      <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? <LoaderCircle className="spin" size={16}/> : null} Save tracking update</button></footer>
+    </form>
+  </section></div>;
 }
 
 function Stat({ icon: Icon, label, value }) { return <article className="stat-card"><span className="stat-icon"><Icon size={19}/></span><div><small>{label}</small><strong>{value}</strong></div></article>; }
