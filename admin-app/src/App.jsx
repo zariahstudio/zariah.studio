@@ -8,7 +8,7 @@ import { supabase, supabaseConfigured } from './supabase';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, display_order: 0, stock: 0 };
+const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', product_type: '', color: '', description: '', size: '', price_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
 
 function Notice({ notice, clear }) {
   if (!notice) return null;
@@ -61,6 +61,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       is_featured: Boolean(form.is_featured),
       is_bestseller: Boolean(form.is_bestseller),
       is_published: Boolean(form.is_published),
+      availability_mode: form.availability_mode === 'pre_order' ? 'pre_order' : 'auto',
       display_order: Number(form.display_order || 0)
     };
     try { await onSave(payload, Number(form.stock || 0), images, stockTouched); }
@@ -78,6 +79,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
+          <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
           <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
           <label className="span-2">Product description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the bag..."/></label>
           <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
@@ -112,6 +114,24 @@ function CollectionPanel({ collections, onCreate, onToggle, saving }) {
   </section>;
 }
 
+
+const MEDIA_SLOTS = [
+  {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
+  {key:'hero.mobile',label:'Hero — Mobile',group:'Hero'},
+  {key:'collection.essence.cover',label:'Essence Collection Cover',group:'Collections'},
+  {key:'collection.signature.cover',label:'Signature Collection Cover',group:'Collections'},
+  {key:'collection.noir.cover',label:'Noir Collection Cover',group:'Collections'},
+  {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
+  {key:'lookbook.main',label:'Lookbook Editorial Image',group:'Editorial'},
+  {key:'about.main',label:'About Us Image',group:'Editorial'},
+  {key:'brand.footer',label:'Footer Brand Visual',group:'Brand'}
+];
+function MediaPanel({assets,onUpload,onToggle,saving}) {
+ const [files,setFiles]=useState({}); const [alts,setAlts]=useState({});
+ return <section className="panel"><div className="panel-head"><div><p className="eyebrow">WEBSITE CONTENT</p><h2>Media Library</h2><p className="muted">Replace website images without editing code. Existing images remain as fallback until a replacement is published.</p></div></div>
+ <div className="media-grid">{MEDIA_SLOTS.map(slot=>{const asset=assets.find(a=>a.slot_key===slot.key);return <article className="media-card" key={slot.key}><div className="media-preview">{asset?.public_url?<img src={asset.public_url} alt={asset.alt_text||slot.label}/>:<div className="thumb-placeholder"><ImagePlus size={24}/><span>Current website image</span></div>}</div><div className="media-meta"><small>{slot.group}</small><strong>{slot.label}</strong><span className={asset?.is_published?'status live':'status'}>{asset?.is_published?'Published':'Using website default'}</span></div><label className="field-label">Alt text<input value={alts[slot.key]??asset?.alt_text??''} onChange={e=>setAlts(v=>({...v,[slot.key]:e.target.value}))} placeholder="Describe this image"/></label><label className="upload-box"><Upload size={17}/><span><strong>{asset?'Replace image':'Upload image'}</strong><small>JPG, PNG or WebP · max 10 MB</small></span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setFiles(v=>({...v,[slot.key]:e.target.files?.[0]||null}))}/></label>{files[slot.key]&&<><small className="muted">{files[slot.key].name}</small><button className="primary full" disabled={saving} onClick={()=>onUpload(slot,files[slot.key],alts[slot.key]??asset?.alt_text??'')}>Upload & publish</button></>}{asset&&<button className="secondary small" onClick={()=>onToggle(asset)}>{asset.is_published?'Unpublish':'Publish'}</button>}</article>})}</div></section>;
+}
+
 function App() {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -123,6 +143,7 @@ function App() {
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [mediaAssets, setMediaAssets] = useState([]);
   const [search, setSearch] = useState('');
   const [editor, setEditor] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -132,12 +153,14 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c] = await Promise.all([
+    const [p, c, m] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted)').order('display_order').order('created_at', { ascending: false }),
-      supabase.from('collections').select('*').order('display_order').order('name')
+      supabase.from('collections').select('*').order('display_order').order('name'),
+      supabase.from('site_media').select('*').order('slot_key')
     ]);
     if (p.error) notify('error', p.error.message); else setProducts(p.data || []);
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
+    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
     setDataLoading(false);
   }, [session]);
 
@@ -207,6 +230,18 @@ function App() {
     } finally { setSaving(false); }
   };
 
+  const uploadMedia = async (slot,file,altText) => {
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
+    setSaving(true); try {
+      const ext=file.name.split('.').pop().toLowerCase(); const path='site-media/'+slot.key+'/'+crypto.randomUUID()+'.'+ext;
+      const {error:upErr}=await supabase.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false}); if(upErr) throw upErr;
+      const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);
+      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'}); if(error) throw error;
+      await loadData(); notify('success',slot.label+' published.');
+    } catch(e){notify('error',e.message||'Image upload failed.');} finally{setSaving(false);}
+  };
+  const toggleMedia = async (asset) => {const {error}=await supabase.from('site_media').update({is_published:!asset.is_published,updated_at:new Date().toISOString()}).eq('id',asset.id);if(error)notify('error',error.message);else{await loadData();notify('success','Image visibility updated.');}};
+
   const archiveProduct = async (product) => {
     if (!window.confirm(`Archive “${product.name}”? It will no longer appear on the storefront.`)) return;
     const { error } = await supabase.from('products').update({ is_published: false }).eq('id', product.id);
@@ -242,7 +277,7 @@ function App() {
   if (!session || !profile) return <><Login onLogin={signIn} busy={loginBusy} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['inventory','Inventory',Warehouse],
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
     ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
@@ -266,6 +301,7 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const qty = p.inventory?.[0]?.on_hand ?? 0; return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${qty > 2 ? 'live' : 'warning'}`}>{qty > 2 ? 'In stock' : 'Low stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {['orders','customers','payments'].includes(section) && <section className="panel coming"><div className="brand-mark">Z</div><p className="eyebrow">NEXT DEVELOPMENT MODULE</p><h2>{title}</h2><p className="muted">This module is reserved in the admin navigation. It will be enabled after secure order processing, customer records and payment verification workflows are implemented.</p></section>}
       </div>
