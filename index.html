@@ -6302,12 +6302,12 @@ function openPModal(id) {
   if (inquiryBtn) {
     inquiryBtn.onclick = () => {
       const message = encodeURIComponent(
-        `Hello ZARIAH Studio! 🌿\\n\\nI have a question about this bag:\\n\\n` +
-        `📦 Product: ${p.name}\\n` +
-        `🏷 Collection: ${p.collection}\\n` +
-        `🔖 Code: ${p.id}\\n` +
-        `🎨 Color: ${p.color || 'Please advise'}\\n` +
-        `💰 Price: ${p.price}\\n\\n` +
+        `Hello ZARIAH Studio! 🌿\n\nI have a question about this bag:\n\n` +
+        `📦 Product: ${p.name}\n` +
+        `🏷 Collection: ${p.collection}\n` +
+        `🔖 Code: ${p.id}\n` +
+        `🎨 Color: ${p.color || 'Please advise'}\n` +
+        `💰 Price: ${p.price}\n\n` +
         `Could you please share more details? Thank you!`
       );
       if (typeof fbq !== 'undefined') {
