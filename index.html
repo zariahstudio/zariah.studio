@@ -2299,6 +2299,138 @@ body.mnav-open .hamburger {
 }
 .ptrust-item::before { content: '✓'; color: var(--gold); font-size: 11px; }
 
+/* DELIVERY & RETURN INFORMATION — scoped to product detail modal */
+.pmodal-policy {
+  margin: 0 0 26px;
+  border-top: 1px solid rgba(98,93,89,.16);
+  border-bottom: 1px solid rgba(98,93,89,.16);
+}
+.pmodal-policy-heading {
+  margin: 18px 0 8px;
+  color: var(--ash-deep);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.policy-item { border-top: 1px solid rgba(98,93,89,.12); }
+.policy-item summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 2px;
+  color: var(--charcoal);
+  cursor: pointer;
+  list-style: none;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.policy-item summary::-webkit-details-marker { display: none; }
+.policy-plus {
+  color: var(--gold);
+  font-size: 19px;
+  line-height: 1;
+  transition: transform .2s ease;
+}
+.policy-item[open] .policy-plus { transform: rotate(45deg); }
+.policy-copy {
+  padding: 0 22px 15px 2px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.75;
+}
+.policy-copy p + p { margin-top: 8px; }
+.policy-copy strong { color: var(--ash-deep); font-weight: 500; }
+@media (max-width: 600px) {
+  .pmodal-policy { margin-bottom: 22px; }
+  .policy-item summary { min-height: 46px; font-size: 10px; }
+  .policy-copy { font-size: 11px; }
+}
+
+/* RECENTLY VIEWED — compact editorial product strip */
+.recently-viewed {
+  padding: clamp(30px, 4vw, 54px) 0 clamp(34px, 4vw, 58px);
+  background: var(--white);
+  border-bottom: 1px solid rgba(98,93,89,.10);
+}
+.recently-viewed[hidden] { display: none !important; }
+.recently-viewed-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.recently-viewed-kicker {
+  margin-bottom: 5px;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+}
+.recently-viewed-title {
+  color: var(--charcoal);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.recently-viewed-count {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .12em;
+  white-space: nowrap;
+}
+.recently-viewed-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.6vw, 20px);
+}
+.recent-card {
+  min-width: 0;
+  text-align: left;
+  color: var(--charcoal);
+  display: block;
+  width: 100%;
+}
+.recent-card-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: var(--cream-deep);
+  margin-bottom: 10px;
+}
+.recent-card-name {
+  display: block;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 1.5vw, 19px);
+  line-height: 1.2;
+  font-weight: 500;
+}
+.recent-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.recent-card-price { color: var(--ash-deep); white-space: nowrap; }
+.recent-card:hover .recent-card-image { opacity: .92; }
+.recent-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 600px) {
+  .recently-viewed { padding: 26px 0 32px; }
+  .recently-viewed-head { margin-bottom: 14px; }
+  .recently-viewed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; }
+  .recent-card-name { font-size: 15px; }
+  .recent-card-meta { font-size: 9px; }
+}
+
 /* ═══════════════════════════════════════
    ORDER FORM MODAL
 ═══════════════════════════════════════ */
@@ -4115,6 +4247,20 @@ input, textarea {
 
 </section>
 
+<!-- RECENTLY VIEWED — last four products, persisted on this device -->
+<section class="recently-viewed" id="recentlyViewedSection" aria-labelledby="recentlyViewedHeading" hidden>
+  <div class="container">
+    <div class="recently-viewed-head">
+      <div>
+        <p class="recently-viewed-kicker">YOUR SELECTION</p>
+        <h2 class="recently-viewed-title" id="recentlyViewedHeading">Recently Viewed</h2>
+      </div>
+      <span class="recently-viewed-count" id="recentlyViewedCount">0 / 4</span>
+    </div>
+    <div class="recently-viewed-grid" id="recentlyViewedGrid" aria-live="polite"></div>
+  </div>
+</section>
+
 <!-- TRUST RIBBON -->
 <div class="trust" aria-label="Store trust signals" role="region">
   <div class="trust-track" aria-hidden="true">
@@ -4771,6 +4917,32 @@ input, textarea {
       <div class="pmodal-divider" aria-hidden="true"></div>
       <p class="pmodal-desc" id="pmodalDesc"></p>
       <div class="pmodal-size" id="pmodalSize"></div>
+
+      <!-- DELIVERY & RETURNS — customer trust details -->
+      <section class="pmodal-policy" aria-label="Delivery and return information">
+        <h3 class="pmodal-policy-heading">Delivery &amp; Care</h3>
+        <details class="policy-item">
+          <summary><span>Delivery timeline &amp; charges</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>Orders are dispatched within 24–48 hours. Dhaka deliveries typically arrive in 1–2 business days; Chattogram and other cities usually take 2–4 business days.</p>
+            <p><strong>Complimentary delivery</strong> on orders above ৳2,000. For orders below ৳2,000, please confirm the delivery charge with us on WhatsApp.</p>
+            <p>Cash on Delivery is available. Pay when your bag arrives.</p>
+          </div>
+        </details>
+        <details class="policy-item">
+          <summary><span>7-day exchange policy</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>If your bag arrives with a quality issue or defect, contact us on WhatsApp within 7 days of receiving it. The item must be unused and in its original packaging.</p>
+          </div>
+        </details>
+        <details class="policy-item">
+          <summary><span>Return &amp; refund enquiries</span><span class="policy-plus" aria-hidden="true">+</span></summary>
+          <div class="policy-copy">
+            <p>For return or refund enquiries, please contact our team on WhatsApp before dispatch. Our team will confirm the applicable terms for your order.</p>
+          </div>
+        </details>
+      </section>
+
       <div class="pmodal-features" id="pmodalFeatures">
         <span class="pfeat">Premium vegan leather</span>
         <span class="pfeat">Gold-tone hardware</span>
@@ -5743,6 +5915,68 @@ function filterCollection(coll) {
 })();
 
 /* ═══════════════════════════════════════
+   RECENTLY VIEWED — local device history, maximum four products
+═══════════════════════════════════════ */
+const RECENTLY_VIEWED_KEY = 'zariah_recently_viewed_v1';
+function readRecentlyViewedIds() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]');
+    return Array.isArray(stored) ? stored.filter(id => typeof id === 'string').slice(0, 4) : [];
+  } catch (e) { return []; }
+}
+function renderRecentlyViewed() {
+  const section = document.getElementById('recentlyViewedSection');
+  const grid = document.getElementById('recentlyViewedGrid');
+  const count = document.getElementById('recentlyViewedCount');
+  if (!section || !grid) return;
+  const viewed = readRecentlyViewedIds()
+    .map(id => PRODUCTS.find(product => product.id === id))
+    .filter(Boolean)
+    .slice(0, 4);
+  grid.innerHTML = '';
+  if (!viewed.length) {
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+  if (count) count.textContent = viewed.length + ' / 4';
+  viewed.forEach(product => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'recent-card';
+    card.setAttribute('aria-label', 'View ' + product.name + ' details');
+    const images = getGalleryImages(product);
+    const image = document.createElement('img');
+    image.className = 'recent-card-image';
+    image.src = images[0] || getGalleryImagesFallback(product, 0);
+    image.alt = product.name + ' — front view';
+    image.loading = 'lazy';
+    image.onerror = function() { this.src = getGalleryImagesFallback(product, 0); this.onerror = null; };
+    const name = document.createElement('span');
+    name.className = 'recent-card-name';
+    name.textContent = product.name;
+    const meta = document.createElement('span');
+    meta.className = 'recent-card-meta';
+    const collection = document.createElement('span');
+    collection.textContent = product.collection;
+    const price = document.createElement('span');
+    price.className = 'recent-card-price';
+    price.textContent = product.price;
+    meta.append(collection, price);
+    card.append(image, name, meta);
+    card.addEventListener('click', () => openPModal(product.id));
+    grid.appendChild(card);
+  });
+}
+function rememberRecentlyViewed(product) {
+  if (!product || !product.id) return;
+  const ids = readRecentlyViewedIds().filter(id => id !== product.id);
+  ids.unshift(product.id);
+  try { localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(ids.slice(0, 4))); } catch (e) {}
+  renderRecentlyViewed();
+}
+
+/* ═══════════════════════════════════════
    PRODUCT MODAL
 ═══════════════════════════════════════ */
 function openPModal(id) {
@@ -5770,6 +6004,7 @@ function openPModal(id) {
 
   currentProductModal = p;
   currentGalleryIdx = 0;
+  rememberRecentlyViewed(p);
 
   const imgs = getGalleryImages(p);
   const labels = ['Front','Side','Back','Detail','Lifestyle','Inside'];
@@ -6283,6 +6518,7 @@ function parsePrice(priceStr) {
 
 renderProducts();
 renderFAQ();
+renderRecentlyViewed();
 
 
 // Load the published catalogue without changing the existing storefront components.
@@ -6418,6 +6654,7 @@ async function loadPublishedProductsFromSupabase() {
 
     syncDynamicStorefrontFilters();
     renderProducts();
+    renderRecentlyViewed();
     console.info('[ZARIAH] Published catalogue loaded from Supabase:', PRODUCTS.length);
   } catch (error) {
     console.warn('[ZARIAH] Could not load Supabase catalogue; using embedded products.', error);
