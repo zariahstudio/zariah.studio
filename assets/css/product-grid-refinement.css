@@ -1,0 +1,64 @@
+/* ZARIAH Studio — consistent, breathable product-grid rhythm.
+   Presentation only: no markup, catalogue, filtering or purchase logic changes. */
+.products .prod-grid,
+.catalogue .grid,
+.grid:not(.z-collection-feature-grid),
+.product-grid {
+  align-items: start;
+}
+.products .prod-grid { column-gap: 26px; row-gap: 42px; }
+.products .pcard { min-width: 0; }
+.products .pcard-img { aspect-ratio: 3 / 4; }
+.catalogue .grid { column-gap: 22px; row-gap: 38px; }
+.catalogue .card { min-width: 0; }
+.catalogue .visual { aspect-ratio: 3 / 4; }
+.catalogue .card-info { min-height: 76px; padding: 13px 2px 0; }
+.catalogue .name-price { align-items: flex-start; gap: 8px; }
+.catalogue .name { line-height: 1.18; }
+.catalogue .price { flex: 0 0 auto; }
+.grid:not(.z-collection-feature-grid) { column-gap: 22px; row-gap: 38px; }
+.grid:not(.z-collection-feature-grid) .card { min-width: 0; }
+.grid:not(.z-collection-feature-grid) .visual { aspect-ratio: 3 / 4; overflow: hidden; }
+.grid:not(.z-collection-feature-grid) .visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.grid:not(.z-collection-feature-grid) .info { padding-top: 12px; }
+.grid:not(.z-collection-feature-grid) .name-price { gap: 10px; align-items: flex-start; }
+.grid:not(.z-collection-feature-grid) .name-price h2 { line-height: 1.16; }
+.product-grid { column-gap: 24px; row-gap: 40px; }
+.product-grid .product-card { min-width: 0; }
+.product-grid .product-image { overflow: hidden; aspect-ratio: 3 / 4; }
+.product-grid .product-image img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; display: block; }
+.product-grid .product-info { align-items: flex-start; gap: 12px; padding: 14px 1px 7px; }
+.product-grid .product-info h3 { line-height: 1.18; }
+.product-grid .product-info strong { flex: 0 0 auto; white-space: nowrap; }
+
+@media (min-width: 769px) {
+  .products .pcard-info { min-height: 82px; }
+  .catalogue .card-info { min-height: 82px; }
+}
+@media (max-width: 900px) {
+  .catalogue .grid { column-gap: 18px; row-gap: 32px; }
+  .grid:not(.z-collection-feature-grid) { column-gap: 18px; row-gap: 32px; }
+  .product-grid { column-gap: 18px; row-gap: 34px; }
+}
+@media (max-width: 768px) {
+  .products .prod-grid { column-gap: 12px; row-gap: 26px; }
+  .products .pcard-info { padding: 11px 1px 0; }
+  .catalogue .grid { column-gap: 13px; row-gap: 27px; }
+  .catalogue .card-info { min-height: 76px; padding: 10px 1px 0; }
+  .catalogue .name-price { gap: 6px; }
+  .catalogue .name { font-size: 16px; line-height: 1.18; }
+  .catalogue .price { font-size: 10px; padding-top: 2px; }
+  .catalogue .type { margin-top: 6px; }
+  .grid:not(.z-collection-feature-grid) { column-gap: 13px; row-gap: 27px; padding-left: 16px; padding-right: 16px; }
+  .grid:not(.z-collection-feature-grid) .info { padding-top: 10px; }
+  .grid:not(.z-collection-feature-grid) .name-price { gap: 6px; }
+  .grid:not(.z-collection-feature-grid) .name-price h2 { font-size: 17px; line-height: 1.18; }
+  .grid:not(.z-collection-feature-grid) .name-price span { font-size: 10px; }
+  .product-grid { column-gap: 13px; row-gap: 28px; }
+  .product-grid .product-info { display: flex; gap: 6px; padding: 10px 1px 5px; }
+  .product-grid .product-info h3 { font-size: 17px; line-height: 1.18; }
+  .product-grid .product-info strong { display: block; margin-top: 2px; font-size: 10px; }
+}
+@media (max-width: 360px) {
+  .catalogue .grid, .grid:not(.z-collection-feature-grid), .product-grid { column-gap: 10px; row-gap: 23px; }
+}
