@@ -106,3 +106,39 @@
 .stock-alert-card{margin-top:2px}
 @media(max-width:900px){.intelligence-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.intelligence-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.analytics-card{padding:12px}.analytics-card-head{align-items:flex-start;flex-direction:column}.analytics-card-head select{width:100%}.revenue-bars{gap:4px}.revenue-bar-col>strong{font-size:8px}.intelligence-kpis strong{font-size:19px}}
+
+
+/* Minimal catalogue workspace — scoped to Products only */
+.products-page{background:transparent;border:0;padding:0;margin:0}
+.products-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:4px 0 22px;border-bottom:1px solid var(--line)}
+.products-heading h2{font:500 32px 'Cormorant Garamond',serif;margin:0 0 5px;color:var(--ink)}
+.products-heading .muted{margin:0;font-size:12px}
+.products-toolbar{display:flex;align-items:center;gap:10px;padding:18px 0 20px}
+.products-toolbar .searchbox{width:min(100%,430px);height:42px;background:#fff;border-color:#e9e4dc;border-radius:3px}
+.products-toolbar .searchbox input{font-size:12px}
+.products-total{margin-left:auto;color:var(--muted);font-size:10px;letter-spacing:.04em}
+.product-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.admin-product-card{min-width:0;background:var(--paper);border:1px solid var(--line);transition:border-color .18s ease,transform .18s ease}
+.admin-product-card:hover{border-color:#c9b99d;transform:translateY(-2px)}
+.admin-product-image{height:220px;position:relative;overflow:hidden;background:#f1eee9}
+.admin-product-image>img{width:100%;height:100%;object-fit:cover;display:block}
+.admin-product-image>.status{position:absolute;top:12px;left:12px;background:#fffdfa}
+.admin-product-image>.status.live{background:#edf2ec}
+.admin-product-image>.thumb-placeholder{width:100%;height:100%;display:grid;place-items:center}
+.admin-product-details{padding:15px 16px 14px}
+.admin-product-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.admin-product-title strong{display:block;font-size:12px;font-weight:600;line-height:1.45}
+.admin-product-title small{display:block;margin-top:4px;color:var(--muted);font-size:10px}
+.admin-product-sku{flex:0 0 auto;color:#9a8055;font-size:9px;letter-spacing:.06em;padding-top:2px}
+.admin-product-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px;padding-top:12px;border-top:1px solid #eee9e2}
+.admin-product-meta strong{font:500 19px 'Cormorant Garamond',serif}
+.admin-product-meta span{font-size:10px;color:var(--muted)}
+.admin-product-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px}
+.admin-product-actions .secondary{padding:8px 11px;font-size:10px}
+.admin-product-actions .icon-btn{width:32px;height:32px}
+.products-empty{display:flex;align-items:center;flex-direction:column;gap:8px;padding:64px 20px;border:1px dashed var(--line);color:var(--muted);text-align:center}
+.products-empty strong{font-size:13px;color:var(--ink)}
+.products-empty span{font-size:11px}
+@media(max-width:1100px){.product-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-product-image{height:205px}}
+@media(max-width:700px){.products-heading{align-items:flex-start;flex-direction:column;gap:14px}.products-heading .primary{width:100%}.products-toolbar{flex-wrap:wrap}.products-toolbar .searchbox{width:100%;max-width:none}.products-toolbar .secondary{flex:0 0 auto}.products-total{margin-left:auto}.product-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-product-image{height:clamp(135px,42vw,220px)}.admin-product-details{padding:11px}.admin-product-title{display:block}.admin-product-sku{display:block;margin-top:5px}.admin-product-meta{align-items:flex-start;flex-direction:column;gap:4px;margin-top:10px;padding-top:9px}.admin-product-meta strong{font-size:17px}.admin-product-actions .secondary{flex:1}.admin-product-actions .icon-btn{flex:0 0 32px}}
+@media(max-width:380px){.product-card-grid{grid-template-columns:1fr}.admin-product-image{height:220px}}
