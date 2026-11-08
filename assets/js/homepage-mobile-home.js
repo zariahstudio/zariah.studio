@@ -27,7 +27,9 @@
     if (!section || !grid) return;
 
     const matches = products.filter(function (product) {
-      return String(product.badge || '').trim().toLowerCase() === config.badge;
+      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]/g, '');
+      if (config.badge === 'bestseller') return product.isBestseller === true || badge === 'bestseller';
+      return badge === config.badge;
     }).slice(0, 4);
 
     section.hidden = matches.length === 0;
