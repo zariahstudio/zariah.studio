@@ -1672,6 +1672,7 @@ async function loadPublishedProductsFromSupabase() {
     renderProducts();
     zRenderRecentlyViewed();
     syncProductRoute();
+    window.dispatchEvent(new CustomEvent('zariah:catalogue-updated'));
     console.info('[ZARIAH] Published catalogue loaded from Supabase:', PRODUCTS.length);
   } catch (error) {
     console.warn('[ZARIAH] Could not load Supabase catalogue; using embedded products.', error);

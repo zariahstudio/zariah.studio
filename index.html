@@ -287,6 +287,7 @@
 
 <!-- Mobile performance tuning: preserve the existing layout while reducing GPU compositing cost. -->
 
+<link rel="stylesheet" href="/assets/css/homepage-mobile-home.css">
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
@@ -439,6 +440,29 @@
       <div><h2 id="zRecentlyViewedTitle">Recently Viewed</h2><p>Your recently explored pieces</p></div>
     </div>
     <div class="z-recently-grid" id="zRecentlyViewedGrid"></div>
+  </div>
+</section>
+
+<!-- MOBILE HOMEPAGE: merchandising modules; desktop remains unchanged -->
+<section class="z-mobile-home-section" id="zMobileNewCollection" hidden aria-labelledby="zMobileNewCollectionTitle">
+  <div class="z-mobile-home-inner">
+    <header class="z-mobile-home-heading">
+      <div><span class="z-mobile-home-kicker">Just Arrived</span><h2 class="z-mobile-home-title" id="zMobileNewCollectionTitle">New Collection</h2></div>
+      <a class="z-mobile-home-link" href="/collections/new-arrivals/">Explore All</a>
+    </header>
+    <div class="z-mobile-home-grid" id="zMobileNewCollectionGrid"></div>
+    <a class="z-mobile-home-all" href="/collections/new-arrivals/">Discover New Arrivals</a>
+  </div>
+</section>
+
+<section class="z-mobile-home-section" id="zMobileBestSellers" hidden aria-labelledby="zMobileBestSellersTitle">
+  <div class="z-mobile-home-inner">
+    <header class="z-mobile-home-heading">
+      <div><span class="z-mobile-home-kicker">Loved by Our Customers</span><h2 class="z-mobile-home-title" id="zMobileBestSellersTitle">Best Sellers</h2></div>
+      <a class="z-mobile-home-link" href="/collections/bestsellers/">Explore All</a>
+    </header>
+    <div class="z-mobile-home-grid" id="zMobileBestSellersGrid"></div>
+    <a class="z-mobile-home-all" href="/collections/bestsellers/">Shop Best Sellers</a>
   </div>
 </section>
 
@@ -1212,6 +1236,7 @@ const OverlayManager = (function() {
 
 <script src="assets/js/homepage-product-data.js"></script>
 <script src="assets/js/homepage-app.js"></script>
+<script src="assets/js/homepage-mobile-home.js"></script>
 
 
 

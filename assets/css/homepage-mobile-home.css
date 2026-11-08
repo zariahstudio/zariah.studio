@@ -1,0 +1,146 @@
+/* ZARIAH mobile homepage merchandising — isolated to small screens.
+   Desktop storefront styles and layout are intentionally untouched. */
+@media (max-width: 768px) {
+  body.z-homepage-route .products {
+    display: none !important;
+  }
+
+  .z-mobile-home-section {
+    display: block;
+    padding: 28px 0 34px;
+    background: #fff;
+    color: #292522;
+  }
+
+  .z-mobile-home-section[hidden] { display: none !important; }
+
+  .z-mobile-home-inner {
+    width: calc(100% - 36px);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .z-mobile-home-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px;
+  }
+
+  .z-mobile-home-kicker {
+    display: block;
+    margin-bottom: 5px;
+    color: #9b7847;
+    font: 500 9px/1.4 Inter, Arial, sans-serif;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+
+  .z-mobile-home-title {
+    margin: 0;
+    color: #292522;
+    font: 400 clamp(27px, 7vw, 34px)/1.05 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .z-mobile-home-link {
+    flex: 0 0 auto;
+    padding-bottom: 3px;
+    color: #80633e;
+    font: 500 9px/1.4 Inter, Arial, sans-serif;
+    letter-spacing: .08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .z-mobile-home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 11px;
+  }
+
+  .z-mobile-home-card {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #292522;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .z-mobile-home-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: #f3eee9;
+  }
+
+  .z-mobile-home-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .z-mobile-home-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1;
+    padding: 5px 7px;
+    background: rgba(255,255,255,.94);
+    color: #6d573a;
+    font: 500 8px/1 Inter, Arial, sans-serif;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .z-mobile-home-name {
+    display: block;
+    overflow: hidden;
+    margin-top: 9px;
+    color: #292522;
+    font: 500 12px/1.35 Inter, Arial, sans-serif;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .z-mobile-home-price {
+    display: block;
+    margin-top: 5px;
+    color: #514941;
+    font: 500 11px/1.3 Inter, Arial, sans-serif;
+  }
+
+  .z-mobile-home-card:focus-visible {
+    outline: 2px solid #a98245;
+    outline-offset: 4px;
+  }
+
+  .z-mobile-home-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 46px;
+    margin-top: 22px;
+    border: 1px solid #b99a6b;
+    color: #51412d;
+    font: 500 9px/1 Inter, Arial, sans-serif;
+    letter-spacing: .15em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .z-mobile-home-section + .z-mobile-home-section {
+    padding-top: 12px;
+  }
+}
+
+@media (min-width: 769px) {
+  .z-mobile-home-section { display: none !important; }
+}
