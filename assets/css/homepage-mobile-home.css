@@ -1,7 +1,7 @@
 /* ZARIAH mobile homepage merchandising — isolated to small screens.
    Desktop storefront styles and layout are intentionally untouched. */
 @media (max-width: 768px) {
-  body:not(.z-collections-route):not(.z-individual-collection-route):not(.z-product-route) .products {
+  body.z-homepage-route .products {
     display: none !important;
   }
 
