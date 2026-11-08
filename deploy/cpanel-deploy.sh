@@ -60,10 +60,19 @@ for dir in "${REQUIRED_DIRS[@]}"; do
   /bin/cp -Rp "${REPO_ROOT}/${dir}" "${DEPLOYPATH}/"
 done
 
+# Deploy the Admin only when a production build already exists in the repository.
+# Never copy the React source directory (admin-app) into the public web root.
+if [[ -s "${REPO_ROOT}/admin/index.html" ]]; then
+  mkdir -p "${DEPLOYPATH}/admin"
+  /bin/cp -Rp "${REPO_ROOT}/admin/." "${DEPLOYPATH}/admin/"
+  echo "SUCCESS: Prebuilt Admin application copied to ${DEPLOYPATH}/admin/"
+else
+  echo "INFO: No prebuilt admin/index.html found; Admin deployment skipped."
+fi
+
 if [[ ! -s "${DEPLOYPATH}/index.html" ]]; then
   echo "ERROR: Storefront index.html was not copied successfully."
   exit 1
 fi
 
 echo "SUCCESS: Storefront deployment completed."
-echo "NOTE: Admin app is intentionally excluded; it requires a separate production build and deployment configuration."
