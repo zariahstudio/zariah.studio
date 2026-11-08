@@ -16,7 +16,7 @@ function Notice({ notice, clear }) {
   return <div className={`notice ${notice.type}`} role="status"><span>{notice.message}</span><button onClick={clear} aria-label="Dismiss"><X size={16}/></button></div>;
 }
 
-function Login({ onLogin, busy, error }) {
+function Login({ onLogin, onReset, busy, resetBusy, error, resetMessage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   return <main className="login-wrap"><section className="login-card">
@@ -25,11 +25,19 @@ function Login({ onLogin, busy, error }) {
     <form onSubmit={(e) => { e.preventDefault(); onLogin(email.trim(), password); }}>
       <label>Email address<input type="email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@example.com"/></label>
       <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password"/></label>
-      {error && <p className="form-error">{error}</p>}
+      <div className="login-help"><button type="button" className="text-button" onClick={() => onReset(email.trim())} disabled={resetBusy || !email.trim()}>{resetBusy ? "Sending reset link…" : "Forgot password?"}</button></div>
+      {resetMessage && <p className="tiny muted" role="status">{resetMessage}</p>}
+      {error && <p className="form-error">{error}</p>
       <button className="primary full" disabled={busy}>{busy ? <LoaderCircle className="spin" size={17}/> : null} Sign in securely</button>
     </form>
     <p className="tiny muted">Access is restricted to approved staff accounts.</p>
   </section></main>;
+}
+
+function PasswordRecovery({ onSave, busy, error }) {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  return <main className="login-wrap"><section className="login-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Set new password</h1><p className="muted">Choose a new password for your admin account.</p><form onSubmit={e => { e.preventDefault(); if (password !== confirm) return; onSave(password); }}><label>New password<input type="password" autoComplete="new-password" minLength={8} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 8 characters"/></label><label>Confirm password<input type="password" autoComplete="new-password" minLength={8} required value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Re-enter new password"/></label>{confirm && password !== confirm && <p className="form-error">Passwords do not match.</p>}{error && <p className="form-error">{error}</p>}<button className="primary full" disabled={busy || password.length<8 || password!==confirm}>{busy ? 'Updating…' : 'Update password'}</button></form></section></main>;
 }
 
 function ProductEditor({ product, collections, onClose, onSave, saving }) {
@@ -142,6 +150,9 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [loginBusy, setLoginBusy] = useState(false);
   const [loginError, setLoginError] = useState('');
+  const [resetMode, setResetMode] = useState(() => new URLSearchParams(window.location.search).has('reset-password'));
+  const [resetBusy, setResetBusy] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
   const [notice, setNotice] = useState(null);
   const [section, setSection] = useState('dashboard');
   const [mobileNav, setMobileNav] = useState(false);
@@ -312,7 +323,8 @@ function App() {
   useEffect(() => {
     if (!supabaseConfigured) { setLoading(false); return; }
     supabase.auth.getSession().then(({ data }) => verifySession(data.session));
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, next) => {
+      if (event === 'PASSWORD_RECOVERY') setResetMode(true);
       if (next) { setSession(next); setTimeout(() => verifySession(next), 0); }
       else { setSession(null); setProfile(null); setLoading(false); }
     });
@@ -322,6 +334,23 @@ function App() {
   useEffect(() => { if (session && profile) { loadData(); loadOrders(); loadCustomers(); } }, [session, profile, loadData, loadOrders, loadCustomers]);
   useEffect(() => { if (session && profile && section === 'customers') loadCustomers(); }, [section, session, profile, loadCustomers]);
   useEffect(() => { if (session && profile && section === 'intelligence') loadAnalytics(); }, [section, session, profile, loadAnalytics]);
+
+  const requestPasswordReset = async (email) => {
+    if (!email || !supabase) return;
+    setResetBusy(true); setResetMessage(''); setLoginError('');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/admin/?reset-password=1' });
+    if (error) setLoginError(error.message);
+    else setResetMessage('If this email belongs to an approved account, a password reset link has been sent. Check your inbox and spam folder.');
+    setResetBusy(false);
+  };
+
+  const updateRecoveredPassword = async (password) => {
+    setResetBusy(true); setLoginError('');
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) setLoginError(error.message);
+    else { setResetMode(false); setLoginError(''); window.history.replaceState({}, document.title, window.location.origin + '/admin/'); setNotice({type:'success',message:'Password updated successfully. Your admin session is active.'}); }
+    setResetBusy(false);
+  };
 
   const signIn = async (email, password) => {
     setLoginBusy(true); setLoginError('');
@@ -433,7 +462,8 @@ function App() {
 
   if (!supabaseConfigured) return <main className="setup-wrap"><section className="setup-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Admin setup required</h1><p className="muted">The Admin app is deployed, but its Supabase public configuration is missing. Add VITE_SUPABASE_URL as a GitHub Actions variable and VITE_SUPABASE_ANON_KEY as a repository Actions secret, then rerun the Pages deployment. For local testing, use admin-app/.env.local. Never use the service_role key in the browser.</p><p className="tiny muted">Project: zariah-studio-sg · Region: Singapore</p></section></main>;
   if (loading) return <main className="setup-wrap"><LoaderCircle className="spin" size={28}/><span className="muted">Checking secure admin session…</span></main>;
-  if (!session || !profile) return <><Login onLogin={signIn} busy={loginBusy} error={loginError}/></>;
+  if (resetMode) return <PasswordRecovery onSave={updateRecoveredPassword} busy={resetBusy} error={loginError}/>;
+  if (!session || !profile) return <><Login onLogin={signIn} onReset={requestPasswordReset} busy={loginBusy} resetBusy={resetBusy} resetMessage={resetMessage} error={loginError}/></>;
 
   const nav = [
     ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
