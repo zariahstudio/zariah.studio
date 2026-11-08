@@ -38,7 +38,7 @@ Orders, payments, customers, memberships, reporting and activity history are res
 
 GitHub Actions builds this app with the Vite base path `/admin/` and publishes the generated static files to the repository-root `admin/` directory for cPanel deployment. The cPanel deploy script copies only that built directory to `public_html/admin/`; it must never copy this `admin-app/` source directory into the public web root.
 
-The build requires the GitHub Actions secret `VITE_SUPABASE_ANON_KEY`, containing the Supabase Publishable/anon key. Never use a Supabase `service_role` key in this browser app.
+The build reads the Supabase Publishable/anon key from the existing public `storefront-config.js`. The GitHub Actions secret `VITE_SUPABASE_ANON_KEY` may optionally override it. Never use a Supabase `service_role` key in this browser app.
 
 A successful static build does not mean the database is ready. Apply the required migrations, configure RLS, create an Auth user and assign the `admin` profile role before operational use. Test login, product access, inventory and each enabled workflow before using it for live orders or payments.
 ## Orders & tracking management (added 2026-11-07)
