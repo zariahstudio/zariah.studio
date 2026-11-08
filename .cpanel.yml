@@ -1,4 +1,4 @@
 ---
 deployment:
   tasks:
-    - /bin/bash deploy/cpanel-deploy.sh
+    - /bin/bash "$HOME/repositories/zariah.studio/deploy/cpanel-deploy.sh"
