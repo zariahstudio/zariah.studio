@@ -79,39 +79,54 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
     catch (err) { setError(err.message || 'Could not save product.'); }
   };
   return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
-    <section className="editor modal" role="dialog" aria-modal="true" aria-labelledby="editor-title">
-      <header className="modal-head"><div><p className="eyebrow">CATALOGUE</p><h2 id="editor-title">{product ? 'Edit product' : 'Add product'}</h2></div><button className="icon-btn" onClick={onClose} aria-label="Close"><X/></button></header>
-      <form onSubmit={submit}>
-        <div className="form-grid">
-          <label>Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
-          <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
-          <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-          <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
-          <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
-          <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="For internal margin reporting only"/></label>
-          <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
-          <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
-          <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
-          <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
-          <label className="span-2">Product description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the bag..."/></label>
-          <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
-          <label>Badge<input value={form.badge || ''} onChange={e => change('badge', e.target.value)} placeholder="New / Bestseller"/></label>
-          <label>Display order<input type="number" value={form.display_order} onChange={e => change('display_order', e.target.value)}/></label>
-          <label className="upload-box span-2"><Upload size={19}/><span><strong>Upload product images</strong><small>JPG, PNG or WebP · up to 10 MB each</small></span><input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e => setImages(Array.from(e.target.files || []))}/></label>
-          {images.length > 0 && <p className="span-2 tiny muted">{images.length} new image(s) selected: {images.map(f => f.name).join(', ')}</p>}
-          <div className="checks span-2">
-            <label className="check"><input type="checkbox" checked={form.is_featured} onChange={e => change('is_featured', e.target.checked)}/> Featured</label>
-            <label className="check"><input type="checkbox" checked={form.is_bestseller} onChange={e => change('is_bestseller', e.target.checked)}/> Bestseller</label>
-            <label className="check"><input type="checkbox" checked={form.is_published} onChange={e => change('is_published', e.target.checked)}/> Publish on website</label>
+    <section className="editor modal product-editor-modal" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+      <header className="product-editor-head"><div><p className="eyebrow">PRODUCT CATALOGUE</p><h2 id="editor-title">{product ? 'Edit product' : 'Add product'}</h2><p className="muted">Keep product information accurate and consistent across your store.</p></div><button className="icon-btn" onClick={onClose} aria-label="Close"><X/></button></header>
+      <form onSubmit={submit} className="product-editor-form">
+        <section className="editor-section"><div className="editor-section-heading"><span>01</span><div><strong>Basic information</strong><small>Name, SKU and collection</small></div></div>
+          <div className="form-grid">
+            <label className="span-2">Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
+            <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
+            <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+            <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
+            <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
           </div>
-        </div>
+        </section>
+        <section className="editor-section"><div className="editor-section-heading"><span>02</span><div><strong>Pricing & inventory</strong><small>Retail price, internal cost and availability</small></div></div>
+          <div className="form-grid">
+            <label>Selling price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
+            <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
+            <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="Internal only"/></label>
+            <label>Available stock<input type="number" min="0" step="1" value={form.stock} onChange={e => { change('stock', e.target.value); setStockTouched(true); }}/></label>
+            <label className="span-2">Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic — based on inventory</option><option value="pre_order">Pre-order available</option></select></label>
+          </div>
+        </section>
+        <section className="editor-section"><div className="editor-section-heading"><span>03</span><div><strong>Product details</strong><small>Description and specifications</small></div></div>
+          <div className="form-grid">
+            <label className="span-2">Description<textarea rows="3" value={form.description || ''} onChange={e => change('description', e.target.value)} placeholder="Describe the product, materials and details..."/></label>
+            <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
+          </div>
+        </section>
+        <section className="editor-section"><div className="editor-section-heading"><span>04</span><div><strong>Images & merchandising</strong><small>Product photography and storefront placement</small></div></div>
+          <div className="form-grid">
+            <label>Badge<input value={form.badge || ''} onChange={e => change('badge', e.target.value)} placeholder="New / Bestseller"/></label>
+            <label>Display order<input type="number" value={form.display_order} onChange={e => change('display_order', e.target.value)}/></label>
+            <label className="upload-box span-2"><Upload size={19}/><span><strong>Upload product images</strong><small>JPG, PNG or WebP · up to 10 MB each</small></span><input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e => setImages(Array.from(e.target.files || []))}/></label>
+            {images.length > 0 && <p className="span-2 tiny muted">{images.length} new image(s) selected: {images.map(f => f.name).join(', ')}</p>}
+          </div>
+        </section>
+        <section className="editor-section editor-publishing"><div className="editor-section-heading"><span>05</span><div><strong>Storefront visibility</strong><small>Choose how this product appears on your website</small></div></div>
+          <div className="editor-switches">
+            <label className="editor-switch"><input type="checkbox" checked={form.is_featured} onChange={e => change('is_featured', e.target.checked)}/><span><strong>Featured</strong><small>Highlight in featured placements</small></span></label>
+            <label className="editor-switch"><input type="checkbox" checked={form.is_bestseller} onChange={e => change('is_bestseller', e.target.checked)}/><span><strong>Bestseller</strong><small>Include in Best Sellers section</small></span></label>
+            <label className="editor-switch"><input type="checkbox" checked={form.is_published} onChange={e => change('is_published', e.target.checked)}/><span><strong>Publish on website</strong><small>Make this product visible to customers</small></span></label>
+          </div>
+        </section>
         {error && <p className="form-error">{error}</p>}
-        <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? <LoaderCircle className="spin" size={16}/> : null} Save product</button></footer>
+        <footer className="modal-actions product-editor-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? <LoaderCircle className="spin" size={16}/> : null} Save product</button></footer>
       </form>
     </section>
   </div>;
 }
-
 function CollectionPanel({ collections, onCreate, onToggle, saving }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -486,8 +501,23 @@ function App() {
           <div className="stat-grid"><Stat icon={Package} label="Total products" value={products.length}/><Stat icon={CheckCircle2} label="Published" value={published}/><Stat icon={Layers3} label="Collections" value={collections.length}/><Stat icon={AlertCircle} label="Low stock" value={lowStock}/></div>
           <section className="panel"><div className="panel-head"><div><p className="eyebrow">QUICK ACTIONS</p><h2>Manage your catalogue</h2></div></div><div className="quick-actions"><button className="quick-card" onClick={() => { setEditor({}); setSection('products'); }}><Plus/><strong>Add a product</strong><small>Publish a new bag without code changes</small></button><button className="quick-card" onClick={() => setSection('collections')}><Layers3/><strong>Manage collections</strong><small>Create and organise product ranges</small></button><button className="quick-card" onClick={() => setSection('inventory')}><Warehouse/><strong>Update inventory</strong><small>Adjust available stock</small></button></div></section>
         </>}
-        {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
-          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
+        {section === 'products' && <section className="products-page">
+          <div className="products-heading">
+            <div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">A clear view of your complete product catalogue.</p></div>
+            <button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button>
+          </div>
+          <div className="products-toolbar">
+            <div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products, SKU or collection"/></div>
+            <button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button>
+            <span className="products-total">{filtered.length} products shown</span>
+          </div>
+          {dataLoading ? <Loading/> : filtered.length === 0 ? <div className="products-empty"><Package size={24}/><strong>No products found</strong><span>Try another search or add a product to your catalogue.</span></div> : <div className="product-card-grid">{filtered.map(p => <article className="admin-product-card" key={p.id}>
+            <div className="admin-product-image">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt={p.name}/> : <div className="thumb-placeholder"><ImagePlus size={20}/></div>}<span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></div>
+            <div className="admin-product-details"><div className="admin-product-title"><div><strong>{p.name}</strong><small>{p.collections?.name || 'Unassigned collection'}</small></div><span className="admin-product-sku">{p.sku}</span></div>
+              <div className="admin-product-meta"><strong>{money(p.price_bdt)}</strong><span>{p.inventory?.[0]?.on_hand ?? 0} in stock</span></div>
+              <div className="admin-product-actions"><button className="secondary" onClick={() => setEditor(p)}><Pencil size={14}/> Edit product</button><button className="icon-btn" title="Archive product" aria-label={`Archive ${p.name}`} onClick={() => archiveProduct(p)}><Archive size={15}/></button></div>
+            </div>
+          </article>)}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
