@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/zariahstudiо/public_html/
+    - export DEPLOYPATH=$HOME/public_html/
     - /bin/cp index.html $DEPLOYPATH
     - /bin/cp _redirects php.ini storefront-config.js zariah-cart.js zariah-supabase-loader.js zariah-analytics-loader.js $DEPLOYPATH
     - /bin/cp -R assets collections home images pages products $DEPLOYPATH
