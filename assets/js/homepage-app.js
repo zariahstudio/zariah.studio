@@ -1662,6 +1662,8 @@ async function loadPublishedProductsFromSupabase() {
         price: '৳' + new Intl.NumberFormat('en-BD', { maximumFractionDigits: 0 }).format(Number(row.price_bdt || 0)),
         badge: row.badge || null,
         badgeClass: row.badge_style || '',
+        isBestseller: Boolean(row.is_bestseller),
+        isFeatured: Boolean(row.is_featured),
         preOrder: row.availability_mode === 'pre_order',
         soldOut: row.availability_mode === 'pre_order' ? false : (row.stock_counted ? Boolean(row.is_sold_out) : Boolean(fallback?.soldOut)),
         remoteImages
