@@ -65,9 +65,9 @@
   }
 
   function render() {
-    if (!Array.isArray(window.PRODUCTS)) return;
+    if (typeof PRODUCTS === 'undefined' || !Array.isArray(PRODUCTS)) return;
     sections.forEach(function (section) {
-      renderSection(section, window.PRODUCTS);
+      renderSection(section, PRODUCTS);
     });
   }
 
