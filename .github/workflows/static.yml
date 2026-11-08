@@ -44,10 +44,13 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
-            echo "ERROR: GitHub secret VITE_SUPABASE_ANON_KEY is missing."
-            echo "Add the Supabase Publishable/anon key in Settings > Secrets and variables > Actions."
+            VITE_SUPABASE_ANON_KEY="$(sed -n "s/.*publishableKey: '\\([^']*\\)'.*/\\1/p" ../storefront-config.js)"
+          fi
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "ERROR: No Supabase Publishable/anon key was found."
             exit 1
           fi
+          export VITE_SUPABASE_ANON_KEY
           npm run build
           rm -rf ../admin
           mkdir -p ../admin
