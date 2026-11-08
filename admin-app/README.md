@@ -7,7 +7,7 @@ An isolated React/Vite admin application. It does not modify the existing storef
 1. Copy `.env.example` to `.env.local`.
 2. Set `VITE_SUPABASE_URL` and the Supabase Publishable key from the Singapore `zariah-studio-sg` project.
 3. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` locally for the one-time image migration only.
-4. Run `npm install` and `npm run dev`.
+4. Run `npm ci` and `npm run dev` after the committed `package-lock.json` is available.
 
 Never put a Supabase `service_role` key in this browser application. The app uses only the Publishable key and relies on database RLS.
 
@@ -34,9 +34,13 @@ The script signs in using the Admin email/password in the local `.env.local`; cr
 
 Orders, payments, customers, memberships, reporting and activity history are reserved for the next implementation phase. They must be implemented with server-validated order creation and payment/discount logic; do not implement authoritative financial rules only in the browser.
 
-## Deployment safety
+## Production deployment
 
-Do not deploy this app to production until the Netlify site configuration, route handling, environment variables, security policies and regression tests are reviewed. Keep it on the feature branch.
+GitHub Actions builds this app with the Vite base path `/admin/` and publishes the generated static files to the repository-root `admin/` directory for cPanel deployment. The cPanel deploy script copies only that built directory to `public_html/admin/`; it must never copy this `admin-app/` source directory into the public web root.
+
+The build requires the GitHub Actions secret `VITE_SUPABASE_ANON_KEY`, containing the Supabase Publishable/anon key. Never use a Supabase `service_role` key in this browser app.
+
+A successful static build does not mean the database is ready. Apply the required migrations, configure RLS, create an Auth user and assign the `admin` profile role before operational use. Test login, product access, inventory and each enabled workflow before using it for live orders or payments.
 ## Orders & tracking management (added 2026-11-07)
 
 The Orders section now lists orders with customer name/phone, order date, total, payment state and fulfilment status. Open **Manage tracking** to update the order status, courier name, courier tracking number and customer-visible event message. Each save writes the order fields and a row in `order_tracking_events`; the storefront `/pages/track-order/` page reads those events through the customer-safe `lookup_order_tracking` RPC.
