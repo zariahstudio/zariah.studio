@@ -1,7 +1,4 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=$HOME/public_html/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp _redirects storefront-config.js zariah-cart.js zariah-supabase-loader.js zariah-analytics-loader.js $DEPLOYPATH
-    - /bin/cp -R assets collections home images pages products $DEPLOYPATH
+    - /bin/bash deploy/cpanel-deploy.sh
