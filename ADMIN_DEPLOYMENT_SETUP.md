@@ -1,79 +1,60 @@
-# ZARIAH Studio Admin — same-domain deployment
+# ZARIAH Studio — cPanel deployment
 
-The admin application is built into the repository's `/admin/` directory during the GitHub Pages deployment. The storefront source and existing root `index.html` are not redesigned or rewritten.
+This repository uses GitHub as the source of truth. The cPanel Git Version Control repository checks out `main`; its `.cpanel.yml` runs `deploy/cpanel-deploy.sh`.
 
-## 1. Configure the Supabase browser key in GitHub
+## 1. GitHub Actions configuration
 
-In GitHub, open **Settings → Secrets and variables → Actions**.
+In GitHub, open **Settings → Secrets and variables → Actions** and create:
 
-Create this repository secret:
+- `VITE_SUPABASE_ANON_KEY`: the Supabase Publishable key (or legacy anon/public key) for the ZARIAH Studio Singapore project.
 
-- `VITE_SUPABASE_ANON_KEY`: the Supabase **Publishable key** (or legacy anon/public key) for the `zariah-studio-sg` project.
+The workflow uses this project URL unless the repository variable `VITE_SUPABASE_URL` overrides it:
 
-Do not use the `service_role` / secret key in this setting. The Admin app runs in the browser and relies on Supabase Auth plus Row Level Security.
-
-The project URL is already set as a workflow fallback:
 `https://keuqvqnhxlpsglsjfopd.supabase.co`
 
-If the project URL changes, add or update the repository Actions variable `VITE_SUPABASE_URL`.
+Never use a Supabase `service_role` or secret key in the browser application.
 
-## 2. Apply database migrations
+## 2. What the workflow does
 
-In the Supabase SQL Editor, apply the migration files from `supabase/migrations/` in this order:
+On each push to `main`, `.github/workflows/static.yml`:
 
-1. `202611060001_initial_schema.sql`
-2. `202611060002_seed_existing_catalogue.sql`
-3. `202611070001_storefront_catalogue_rpc.sql`
-4. `202611070002_site_media.sql`
-5. `202611070003_preorder_availability.sql`
-6. `202611070004_order_tracking_lookup.sql`
-7. `202611070005_secure_website_checkout.sql`
-8. `202611080001_customer_loyalty_membership.sql`
-9. `202611080001_digital_receipts_pos_payments.sql`
-10. `202611080002_inventory_sales_intelligence.sql`
+1. Generates and commits `admin-app/package-lock.json` if it does not exist.
+2. Installs the locked Admin dependencies.
+3. Builds the React/Vite Admin app with the `/admin/` base path.
+4. Places the production build in the repository root at `admin/` and commits that generated output to `main`.
+5. Publishes the same build to GitHub Pages as a secondary deployment target.
 
-Do not skip the initial schema or seed migration. Review each SQL execution result before proceeding.
+The generated `admin/` folder is the production app. Do not copy the `admin-app/` source folder into the public web root.
 
-## 3. Create the first Admin user
+## 3. cPanel deployment
 
-1. In Supabase, open **Authentication → Users** and create the owner's email/password account.
-2. Copy the new Auth user's UUID.
-3. In the SQL Editor, run the following after replacing the email and display name:
+The cPanel Git repository must use:
 
-```sql
-insert into public.profiles (id, display_name, role)
-select id, 'ZARIAH Admin', 'admin'
-from auth.users
-where email = 'YOUR_ADMIN_EMAIL'
-on conflict (id) do update
-set display_name = excluded.display_name,
-    role = 'admin';
-```
+- Remote: `https://github.com/zariahstudio/zariah.studio`
+- Branch: `main`
+- Repository path: `$HOME/repositories/zariah.studio`
 
-3. Confirm exactly one row was inserted or updated. The user must exist in Auth first.
+The root `.cpanel.yml` runs `deploy/cpanel-deploy.sh`. The script validates all required storefront source files and folders before copying anything. It then copies the storefront to `$HOME/public_html/`. If a built `admin/index.html` exists in the repository, it also copies that production bundle to `$HOME/public_html/admin/`.
 
-## 4. Deploy
+The deployment script does not delete existing website files. It does not copy development source, Supabase migrations, Git metadata, or documentation into the public web root.
 
-Merge the reviewed deployment pull request into `main`. The GitHub Actions workflow will:
+Deployment sequence:
 
-- install the Admin app dependencies;
-- build Vite with the `/admin/` asset base path;
-- place the generated files in the repository's `admin/` directory;
-- deploy the storefront and Admin app together to GitHub Pages.
+1. Push changes to GitHub `main`.
+2. Wait for the GitHub Actions workflow to finish successfully. The workflow may create one additional commit containing the generated Admin build and dependency lockfile.
+3. In cPanel **Git Version Control → Pull or Deploy**, click **Update from Remote**.
+4. Confirm the latest commit includes the generated `admin/` directory.
+5. Click **Deploy HEAD Commit** once and wait for completion.
+6. If deployment fails, inspect the newest `$HOME/.cpanel/logs/*_git_deploy.log` file.
 
-The target URL is:
+## 4. Supabase production readiness
 
-`https://zariahstudio.com/admin/`
+A successful file deployment does not automatically apply database migrations or create an Admin account.
 
-The directory route should also resolve from `/admin` and canonicalize to the trailing-slash path.
+Before using Admin functions, review and apply the SQL migrations in `supabase/migrations/` in the intended dependency order, then create the first Auth user and assign its `profiles.role` as `admin`. Never expose a service-role key in the browser. Confirm Row Level Security policies and RPC permissions before enabling operational use.
 
-## 5. Verify before using
+The Admin app uses the Supabase Auth browser client and relies on RLS. A successful deployment alone is not proof that authentication, database schema, payment flows, or inventory operations are production-ready.
 
-- Confirm the GitHub Pages deployment workflow succeeds.
-- Open the Admin URL in a private browser window.
-- Confirm the login screen appears.
-- Sign in with the Auth user created above.
-- Confirm the profile role is `admin`.
-- Test dashboard data, product reads and one controlled inventory update before operational use.
+## 5. Domain and DNS
 
-If the Supabase key is missing, the Admin app will show its setup screen rather than load the dashboard. A successful static deployment alone does not mean the database migrations or Admin account are ready.
+Git deployment copies files to the hosting account; it does not change DNS. The domain must separately point to the BitAserver hosting account before the public domain serves these files. Keep the existing DNS configuration unchanged until the new hosting files and domain mapping have been verified.
