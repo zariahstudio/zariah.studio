@@ -142,3 +142,30 @@
 @media(max-width:1100px){.product-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-product-image{height:205px}}
 @media(max-width:700px){.products-heading{align-items:flex-start;flex-direction:column;gap:14px}.products-heading .primary{width:100%}.products-toolbar{flex-wrap:wrap}.products-toolbar .searchbox{width:100%;max-width:none}.products-toolbar .secondary{flex:0 0 auto}.products-total{margin-left:auto}.product-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.admin-product-image{height:clamp(135px,42vw,220px)}.admin-product-details{padding:11px}.admin-product-title{display:block}.admin-product-sku{display:block;margin-top:5px}.admin-product-meta{align-items:flex-start;flex-direction:column;gap:4px;margin-top:10px;padding-top:9px}.admin-product-meta strong{font-size:17px}.admin-product-actions .secondary{flex:1}.admin-product-actions .icon-btn{flex:0 0 32px}}
 @media(max-width:380px){.product-card-grid{grid-template-columns:1fr}.admin-product-image{height:220px}}
+
+/* Minimal guided Product Editor — existing fields and save behavior preserved */
+.product-editor-modal{width:min(100%,860px);padding:30px 34px;border-radius:8px}
+.product-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.product-editor-head h2{font:500 32px 'Cormorant Garamond',serif;margin:0 0 4px}
+.product-editor-head .muted{margin:0;font-size:11px}
+.product-editor-form{display:block}
+.editor-section{padding:22px 0;border-bottom:1px solid var(--line)}
+.editor-section-heading{display:flex;align-items:center;gap:12px;margin-bottom:17px}
+.editor-section-heading>span{font:500 17px 'Cormorant Garamond',serif;color:#a58c64}
+.editor-section-heading strong,.editor-section-heading small{display:block}
+.editor-section-heading strong{font-size:12px;font-weight:600;color:var(--ink)}
+.editor-section-heading small{font-size:10px;color:var(--muted);margin-top:3px}
+.product-editor-form .form-grid{gap:14px 18px}
+.product-editor-form label{font-size:11px;gap:7px}
+.product-editor-form input,.product-editor-form select,.product-editor-form textarea{background:#fff;border-color:#e7e1d8;border-radius:3px;padding:11px 12px;font-size:12px}
+.product-editor-form input:focus,.product-editor-form select:focus,.product-editor-form textarea:focus{border-color:var(--gold);box-shadow:0 0 0 2px #b69a6918}
+.product-editor-form .upload-box{min-height:72px;padding:14px 16px;background:#fbfaf8}
+.editor-publishing{border-bottom:0}
+.editor-switches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.editor-switch{display:flex;align-items:flex-start;gap:10px;padding:13px;border:1px solid var(--line);background:#fff;min-width:0}
+.editor-switch input{width:15px;height:15px;flex:0 0 15px;margin:1px 0 0;accent-color:#526b58}
+.editor-switch span strong,.editor-switch span small{display:block}
+.editor-switch span strong{font-size:10px;color:var(--ink)}
+.editor-switch span small{font-size:9px;line-height:1.45;color:var(--muted);margin-top:4px;font-weight:400}
+.product-editor-actions{position:sticky;bottom:-30px;background:var(--paper);margin:0 -34px -30px;padding:17px 34px 20px;border-top:1px solid var(--line);z-index:2}
+@media(max-width:700px){.product-editor-modal{padding:20px 17px}.product-editor-head h2{font-size:28px}.editor-section{padding:18px 0}.editor-switches{grid-template-columns:1fr}.editor-switch{padding:11px}.product-editor-actions{bottom:-20px;margin:0 -17px -20px;padding:14px 17px 16px}}
