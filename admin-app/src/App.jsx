@@ -27,7 +27,7 @@ function Login({ onLogin, onReset, busy, resetBusy, error, resetMessage }) {
       <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Your password"/></label>
       <div className="login-help"><button type="button" className="text-button" onClick={() => onReset(email.trim())} disabled={resetBusy || !email.trim()}>{resetBusy ? "Sending reset link…" : "Forgot password?"}</button></div>
       {resetMessage && <p className="tiny muted" role="status">{resetMessage}</p>}
-      {error && <p className="form-error">{error}</p>
+      {error && <p className="form-error">{error}</p>}
       <button className="primary full" disabled={busy}>{busy ? <LoaderCircle className="spin" size={17}/> : null} Sign in securely</button>
     </form>
     <p className="tiny muted">Access is restricted to approved staff accounts.</p>
