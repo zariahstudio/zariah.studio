@@ -65,6 +65,15 @@
   }
 
   function render() {
+    const isHome = window.location.pathname === '/' && !new URLSearchParams(window.location.search).has('product') && !document.body.classList.contains('z-product-route');
+    document.body.classList.toggle('z-homepage-route', isHome);
+    if (!isHome) {
+      sections.forEach(function (config) {
+        const section = document.getElementById(config.id);
+        if (section) section.hidden = true;
+      });
+      return;
+    }
     if (typeof PRODUCTS === 'undefined' || !Array.isArray(PRODUCTS)) return;
     sections.forEach(function (section) {
       renderSection(section, PRODUCTS);
