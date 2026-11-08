@@ -195,7 +195,7 @@ function App() {
     if (!supabase || !session) return;
     setDataLoading(true);
     const { data, error } = await supabase.from('orders')
-      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,updated_at,courier_name,courier_tracking_number,shipped_at,delivered_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at,verified_at),order_tracking_events(id,status,message,event_time)')
+      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,updated_at,courier_name,courier_tracking_number,shipped_at,delivered_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at:received_at,verified_at),order_tracking_events(id,status,message,event_time)')
       .order('created_at', { ascending: false });
     if (error) notify('error', 'Orders: ' + error.message);
     else setOrders(data || []);
@@ -233,7 +233,7 @@ function App() {
 
   const fetchReceiptOrder = async (orderId) => {
     const { data, error } = await supabase.from('orders')
-      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at,verified_at)')
+      .select('id,order_number,receipt_number,source,status,subtotal_bdt,discount_bdt,delivery_fee_bdt,total_bdt,payment_status,payment_method,payment_reference,notes,created_at,customers(full_name,phone,email,address,district),order_items(name_snapshot,sku_snapshot,quantity,unit_price_bdt,line_total_bdt),payments(id,method,amount_bdt,status,reference,created_at:received_at,verified_at)')
       .eq('id', orderId).single();
     if (error) throw error;
     setReceiptOrder(data);
