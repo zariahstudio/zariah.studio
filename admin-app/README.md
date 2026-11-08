@@ -32,7 +32,7 @@ The script signs in using the Admin email/password in the local `.env.local`; cr
 - Inventory quantity updates.
 - Responsive neutral taupe/cream/champagne admin styling.
 
-Orders, payments, customers, memberships, reporting and activity history are reserved for the next implementation phase. They must be implemented with server-validated order creation and payment/discount logic; do not implement authoritative financial rules only in the browser.
+Orders and tracking, digital receipts, partial/full payment recording, in-store POS, customer profiles, loyalty, sales intelligence and inventory movement reporting are implemented in the current Phase 16 Admin app. Financial writes are performed by database RPCs; never expose the Supabase service_role key in the browser.
 
 ## Deployment safety
 
@@ -46,3 +46,10 @@ Before enabling this in a live environment, apply `supabase/migrations/202611070
 ## Digital receipts, payments and POS (Phase 13)
 
 Before opening the Payments section in the deployed admin app, apply the SQL migration `supabase/migrations/202611080001_digital_receipts_pos_payments.sql` in the Supabase SQL Editor. It adds automatic receipt numbers and the authenticated `record_order_payment` and `create_pos_sale` RPCs. The Payments section supports due tracking, partial/full payment recording, in-store POS sales, print-to-PDF receipts and prefilled WhatsApp sharing. WhatsApp messages are not sent automatically; staff must tap Send unless a separate approved WhatsApp Business Platform integration is configured.
+
+
+## Live schema compatibility (2026-11-08)
+
+The live project was originally created from a legacy schema and retains compatibility columns alongside the current Phase 16 columns. Apply `supabase/migrations/202611080003_admin_ui_schema_compatibility.sql` after the Phase 13 and Phase 16 migrations. It keeps legacy and current partial-payment status values readable, synchronises paid balances from the payment ledger, supports the Admin UI's Cash-on-Delivery payment method, and adds the aggregate `cost_bdt` field used by Sales Intelligence. Existing component cost breakdown columns are preserved.
+
+A GitHub Actions workflow now runs `npm run build` inside `admin-app/` for Admin app changes. The Admin app must be deployed as a separate Netlify site with base directory `admin-app`, build command `npm run build`, and publish directory `dist`; do not change the existing storefront site's build settings.

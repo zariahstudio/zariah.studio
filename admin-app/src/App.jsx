@@ -785,7 +785,7 @@ function paidTotal(order) {
 
 function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt }) {
   const [filter, setFilter] = useState('all');
-  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid'].includes(order.payment_status) : order.source === 'manual'));
+  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partial','partially_paid'].includes(order.payment_status) : order.source === 'manual'));
   return <section className="panel">
     <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Record online payments, create in-store sales and share digital receipts.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
     <div className="toolbar"><div className="filter-tabs"><button className={filter==='all'?'active':''} onClick={()=>setFilter('all')}>All sales</button><button className={filter==='due'?'active':''} onClick={()=>setFilter('due')}>Outstanding due</button><button className={filter==='store'?'active':''} onClick={()=>setFilter('store')}>Store sales</button></div></div>
