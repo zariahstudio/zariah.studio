@@ -431,7 +431,7 @@ function App() {
   const published = products.filter(p => p.is_published).length;
   const lowStock = products.filter(p => { const i=p.inventory?.[0]; return i?.stock_counted && Number(i.on_hand||0)-Number(i.reserved||0) <= Number(i.low_stock_threshold ?? 2); }).length;
 
-  if (!supabaseConfigured) return <main className="setup-wrap"><section className="setup-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Admin setup required</h1><p className="muted">The admin app is ready for configuration. Add the Supabase Project URL and anon/public key to <code>admin-app/.env.local</code> for local testing. Never use the service_role key in the browser.</p><p className="tiny muted">Project: zariah-studio-sg · Region: Singapore</p></section></main>;
+  if (!supabaseConfigured) return <main className="setup-wrap"><section className="setup-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Admin setup required</h1><p className="muted">The Admin app is deployed, but its Supabase public configuration is missing. Add VITE_SUPABASE_URL as a GitHub Actions variable and VITE_SUPABASE_ANON_KEY as a repository Actions secret, then rerun the Pages deployment. For local testing, use admin-app/.env.local. Never use the service_role key in the browser.</p><p className="tiny muted">Project: zariah-studio-sg · Region: Singapore</p></section></main>;
   if (loading) return <main className="setup-wrap"><LoaderCircle className="spin" size={28}/><span className="muted">Checking secure admin session…</span></main>;
   if (!session || !profile) return <><Login onLogin={signIn} busy={loginBusy} error={loginError}/></>;
 
