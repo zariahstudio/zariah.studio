@@ -4,15 +4,13 @@ This repository uses GitHub as the source of truth. The cPanel Git Version Contr
 
 ## 1. GitHub Actions configuration
 
-In GitHub, open **Settings → Secrets and variables → Actions** and create:
+The workflow reads the Supabase Publishable key (or legacy anon/public key) from the existing public `storefront-config.js`. You may optionally add the same key as the GitHub Actions secret `VITE_SUPABASE_ANON_KEY` to override that fallback.
 
-- `VITE_SUPABASE_ANON_KEY`: the Supabase Publishable key (or legacy anon/public key) for the ZARIAH Studio Singapore project.
+Never use a Supabase `service_role` or secret key in the browser application.
 
 The workflow uses this project URL unless the repository variable `VITE_SUPABASE_URL` overrides it:
 
 `https://keuqvqnhxlpsglsjfopd.supabase.co`
-
-Never use a Supabase `service_role` or secret key in the browser application.
 
 ## 2. What the workflow does
 
