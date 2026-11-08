@@ -63,7 +63,7 @@ Merge the reviewed deployment pull request into `main`. The GitHub Actions workf
 
 The target URL is:
 
-`https://www.zariahstudio.com/admin/`
+`https://zariahstudio.com/admin/`
 
 The directory route should also resolve from `/admin` and canonicalize to the trailing-slash path.
 
