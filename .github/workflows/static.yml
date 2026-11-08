@@ -1,5 +1,5 @@
-# Build the storefront and the React admin app, then deploy both to GitHub Pages.
-name: Deploy static content to Pages
+# Build the storefront and React Admin app; publish the Admin build in the repo for cPanel Git deployment.
+name: Build and deploy ZARIAH Studio
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,11 +23,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: admin-app/package-lock.json
+
+      - name: Generate and install locked Admin dependencies
+        working-directory: admin-app
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          npm ci --no-audit --no-fund
 
       - name: Build ZARIAH Studio Admin
         working-directory: admin-app
@@ -35,13 +45,32 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://keuqvqnhxlpsglsjfopd.supabase.co' }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
-          npm install --no-audit --no-fund
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "ERROR: GitHub secret VITE_SUPABASE_ANON_KEY is missing."
+            echo "Add the Supabase Publishable/anon key in Settings > Secrets and variables > Actions."
+            exit 1
+          fi
           npm run build
           rm -rf ../admin
           mkdir -p ../admin
           cp -R dist/. ../admin/
           test -s ../admin/index.html
           grep -q '/admin/assets/' ../admin/index.html
+
+      - name: Publish generated Admin build to main for cPanel
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f admin admin-app/package-lock.json
+          if git diff --cached --quiet; then
+            echo "Admin build and dependency lockfile are already current."
+          else
+            git commit -m "Build Admin app for cPanel deployment [skip ci]"
+            git push origin HEAD:main
+          fi
 
       - name: Setup Pages
         if: github.event_name != 'pull_request'
