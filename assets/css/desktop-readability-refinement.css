@@ -106,7 +106,7 @@
     transition: transform .55s cubic-bezier(.2,.65,.25,1);
   }
   .products .pcard:hover .pcard-img-real { transform: scale(1.045); }
-  .products .pcard-info { padding: 14px 10px 12px; }
+  .products .pcard-info { padding: 14px 10px 12px !important; }
   .products .pcard-top { gap: 6px; }
   .products .pcard-name {
     font-family: 'Cormorant Garamond', Georgia, serif;
