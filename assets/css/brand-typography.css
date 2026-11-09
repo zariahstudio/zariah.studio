@@ -34,3 +34,15 @@ button,.btn-primary,.btn-outline,.btn-order,.btn-notify{font-size:14px;line-heig
  small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text,.cart-head{font-size:12.5px;line-height:1.5}
  button,.btn-primary,.btn-outline,.btn-order,.btn-notify{font-size:13px;line-height:1.45}
 }
+
+
+/* Mobile drawer: make order tracking the first, clearly identifiable action. */
+.mnav-links .mnav-track-order-item{border-bottom:0;margin:0 0 12px}
+.mnav-links a.mnav-track-order{
+ display:flex;align-items:center;justify-content:space-between;gap:16px;
+ padding:15px 17px;border:1px solid #c5a06a;background:#f5eee5;color:#292522;
+ font-family:Inter,Arial,sans-serif;font-size:14px;font-weight:600;
+ letter-spacing:.08em;line-height:1.4;text-transform:uppercase;
+}
+.mnav-links a.mnav-track-order span{font-size:20px;color:#9b7847}
+.mnav-links a.mnav-track-order:hover{padding-left:17px;background:#eee2d3;color:#292522}
