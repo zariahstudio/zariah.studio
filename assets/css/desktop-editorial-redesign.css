@@ -212,3 +212,30 @@
     *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
   }
 }
+
+
+@media(min-width:1024px){
+  /* All Bags uses a compact .nav header rather than the homepage .nav-links. */
+  body:not(:has(.product-layout)) .hdr .nav{
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    gap:clamp(18px,2vw,30px)!important;
+  }
+  body:not(:has(.product-layout)) .hdr .nav a{
+    color:#51483f!important;font:500 10px/1.4 Inter,Arial,sans-serif!important;
+    letter-spacing:.14em!important;text-transform:uppercase!important;
+  }
+  body:not(:has(.product-layout)) .hdr .nav a:hover{color:#b5966b!important}
+  body:not(:has(.product-layout)) .hdr-right>a{
+    color:#51483f!important;font:500 10px/1.4 Inter,Arial,sans-serif!important;
+    letter-spacing:.12em!important;text-transform:uppercase!important;
+  }
+  body:not(:has(.product-layout)) .hdr-right>a[href*="wa.me"]{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    min-height:42px!important;padding:0 17px!important;background:#332e29!important;color:#fff!important;
+  }
+  body:not(:has(.product-layout)) .hdr-right .home-link{padding:10px 0!important}
+  body:not(:has(.product-layout)) .catalogue .grid .card .name,
+  body:not(:has(.product-layout)) .catalogue .grid .card h3{
+    font:400 22px/1.12 "Cormorant Garamond",Georgia,serif!important;color:#292622!important;
+  }
+}
