@@ -41,7 +41,7 @@ export async function processImageFile(originalFile, options = {}) {
     context.imageSmoothingQuality = 'high';
 
     // Contain: preserve the entire original image and its aspect ratio.
-    const scale = Math.min(width / bitmap.width, height / bitmap.height);
+    const scale = Math.min(1, width / bitmap.width, height / bitmap.height);
     const drawWidth = bitmap.width * scale;
     const drawHeight = bitmap.height * scale;
     const offsetX = (width - drawWidth) / 2;
