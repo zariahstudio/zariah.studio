@@ -321,6 +321,17 @@
  .z-collections-bottom .z-collections-all-link::after{content:"→";font:400 17px/1 Inter,sans-serif;color:#d8b77f}
 }
 </style>
+<style id="z-mobile-nav-simplify">
+/* Compact mobile primary navigation; desktop navigation remains unchanged. */
+@media (max-width: 768px){
+  .hdr nav[aria-label="Main navigation"] .nav-links > li:nth-child(n+3){display:none!important}
+  .hdr nav[aria-label="Main navigation"] > a[href="/pages/search/"]{display:none!important}
+  .hdr nav[aria-label="Main navigation"]{min-width:0;max-width:100%;overflow:hidden}
+  .hdr nav[aria-label="Main navigation"] .nav-links{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,20px);margin:0;padding:0;white-space:nowrap}
+  .hdr nav[aria-label="Main navigation"] .nav-links > li{flex:0 0 auto}
+  .hdr nav[aria-label="Main navigation"] a{font-size:9px;letter-spacing:.12em}
+}
+</style>
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
