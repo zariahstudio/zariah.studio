@@ -145,4 +145,20 @@
   .products .pcard-name,
   .z-mobile-home-name,
   .z-related-item p { font-size: 13px; }
+  /* Explicit homepage card override: keep the same framed treatment on New Collection and Best Sellers. */
+  body.z-homepage-route .z-mobile-home-grid .z-mobile-home-card .z-mobile-home-media {
+    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1 !important;
+    border: clamp(16px, 6vw, 28px) solid #f6f1ed !important;
+    background: #ead2bf !important;
+  }
+  body.z-homepage-route .z-mobile-home-grid .z-mobile-home-card .z-mobile-home-media img {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: none !important;
+    background: #ead2bf !important;
+  }
 }
