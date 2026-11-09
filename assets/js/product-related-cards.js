@@ -1,4 +1,4 @@
-/* ZARIAH Studio — exactly four curated related bags + one Discover More CTA */
+/* ZARIAH Studio — exactly four curated related bags + restrained discovery CTA */
 (()=>{
  const layout=document.querySelector('.product-layout');
  const more=document.querySelector('.more');
@@ -15,13 +15,9 @@
  if(!items.length)return;
  const start=Math.max(0,current-1)%items.length;
  const ordered=items.slice(start).concat(items.slice(0,start)).slice(0,4);
- const section=document.createElement('section');
- section.className='pd-related';
- section.setAttribute('aria-label','Pairs beautifully with');
- const heading=document.createElement('h2');
- heading.textContent='Pairs Beautifully With';
- const grid=document.createElement('div');
- grid.className='pd-related-grid';
+ const section=document.createElement('section');section.className='pd-related';section.setAttribute('aria-label','Pairs beautifully with');
+ const heading=document.createElement('h2');heading.textContent='Pairs Beautifully With';
+ const grid=document.createElement('div');grid.className='pd-related-grid';
  ordered.forEach(([name,price,id])=>{
   const card=document.createElement('article');card.className='pd-related-card';
   const imageLink=document.createElement('a');imageLink.className='pd-related-image';imageLink.href='/products/'+id+'/';
@@ -34,5 +30,5 @@
  });
  section.append(heading,grid);layout.insertAdjacentElement('afterend',section);
  more.className='more pd-discover-more';
- more.innerHTML='<a class="pd-discover-cta" href="/collections/all-bags/" aria-label="Discover more bags">DISCOVER MORE <span aria-hidden="true">→</span></a>';
+ more.innerHTML='<span class="pd-discover-kicker">THE ZARIAH EDIT</span><h2 class="pd-discover-title">Find Your Next Favourite</h2><a class="pd-discover-cta" href="/collections/all-bags/">EXPLORE ALL BAGS <span aria-hidden="true">→</span></a>';
 })();
