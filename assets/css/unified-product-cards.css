@@ -162,3 +162,85 @@
     background: #ead2bf !important;
   }
 }
+
+
+/* Mobile product grid refinement — premium 3:4 editorial frames.
+   Scoped to mobile only; desktop layout and product behaviour remain unchanged. */
+@media (max-width: 768px) {
+  .products .pcard-img,
+  .z-mobile-home-media,
+  .z-recently-card img,
+  .z-related-item img,
+  .catalogue .visual,
+  .grid:not(.z-collection-feature-grid) .visual,
+  .product-grid .product-image {
+    aspect-ratio: 3 / 4 !important;
+    border: 0 !important;
+    border-radius: 0;
+    background: #f2eee8 !important;
+  }
+
+  .products .pcard-img-real,
+  .z-mobile-home-media img,
+  .z-recently-card img,
+  .z-related-item img,
+  .catalogue .visual img,
+  .grid:not(.z-collection-feature-grid) .visual img,
+  .product-grid .product-image img {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    background: #f2eee8 !important;
+  }
+
+  .z-mobile-home-grid,
+  .z-recently-grid,
+  .z-related-grid {
+    column-gap: 13px;
+    row-gap: 25px;
+  }
+
+  .z-mobile-home-name {
+    margin-top: 10px;
+    color: #302a25;
+    font: 400 16px/1.18 'Cormorant Garamond', Georgia, serif !important;
+    letter-spacing: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .z-mobile-home-price {
+    margin-top: 5px;
+    color: #62574d;
+    font: 500 12px/1.35 Inter, Arial, sans-serif !important;
+  }
+
+  .z-mobile-home-badge {
+    top: 9px;
+    left: 9px;
+    padding: 6px 8px;
+    background: rgba(251, 248, 244, .96);
+    border: 1px solid rgba(169, 130, 69, .22);
+    color: #705a3d;
+    font: 500 8px/1 Inter, Arial, sans-serif;
+    letter-spacing: .12em;
+  }
+
+  .products .pcard-name,
+  .catalogue .name,
+  .grid:not(.z-collection-feature-grid) .name-price h2,
+  .product-grid .product-info h3 {
+    font: 400 16px/1.18 'Cormorant Garamond', Georgia, serif !important;
+    white-space: normal;
+  }
+
+  .products .pcard-price,
+  .catalogue .price,
+  .grid:not(.z-collection-feature-grid) .name-price span,
+  .product-grid .product-info strong {
+    font: 500 12px/1.35 Inter, Arial, sans-serif !important;
+  }
+}
