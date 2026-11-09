@@ -290,6 +290,37 @@
 <link rel="stylesheet" href="/assets/css/homepage-mobile-home.css">
 <link rel="stylesheet" href="/assets/css/product-grid-refinement.css">
 <link rel="stylesheet" href="/assets/css/unified-product-cards.css?v=20261109-mobile-grid-v5">
+<style id="z-mobile-cta-highlight">
+/* Mobile merchandising CTAs — intentional mobile-only emphasis; desktop untouched */
+@media(max-width:768px){
+ .z-mobile-home-section .z-mobile-home-heading{align-items:flex-end;gap:14px}
+ .z-mobile-home-section .z-mobile-home-link{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:36px;padding:0 12px;border:1px solid #c5a06a;
+  background:#f5eee5;color:#51463b;font:500 8px/1 Inter,sans-serif;
+  letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;
+ }
+ .z-mobile-home-section .z-mobile-home-link::after{content:"→";font-size:12px;color:#a9824f}
+ .z-mobile-home-section .z-mobile-home-all{
+  position:relative;display:flex;align-items:center;justify-content:center;gap:12px;
+  width:100%;min-height:60px;margin:20px 0 4px;padding:16px 20px;
+  border:1px solid #292522;background:#292522;color:#fff;
+  font:500 9px/1.2 Inter,sans-serif;letter-spacing:.2em;text-align:center;text-transform:uppercase;
+  box-shadow:0 5px 16px rgba(41,37,34,.10);
+ }
+ .z-mobile-home-section .z-mobile-home-all::after{content:"→";font:400 17px/1 Inter,sans-serif;color:#d8b77f}
+ .z-mobile-home-section .z-mobile-home-all:active{background:#4a4038}
+ .z-collections-bottom{padding:22px 0 30px;text-align:center}
+ .z-collections-bottom p{margin:0 0 13px;color:#82766b;font-size:10px;letter-spacing:.08em}
+ .z-collections-bottom .z-collections-all-link{
+  display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:62px;
+  padding:16px 20px;border:1px solid #292522;background:#292522;color:#fff;
+  font:500 9px/1.2 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;
+  box-shadow:0 5px 16px rgba(41,37,34,.10)
+ }
+ .z-collections-bottom .z-collections-all-link::after{content:"→";font:400 17px/1 Inter,sans-serif;color:#d8b77f}
+}
+</style>
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
