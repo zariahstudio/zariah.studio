@@ -177,14 +177,13 @@ function mediaDimensions(slotKey) {
 }
 function MediaPanel({assets,onUpload,onToggle,saving}) {
  const [files,setFiles]=useState({}); const [alts,setAlts]=useState({}); const [processing,setProcessing]=useState({});
- useEffect(()=>()=>Object.values(files).forEach(image=>image?.previewUrl&&URL.revokeObjectURL(image.previewUrl)),[files]);
  const chooseFile=async(slot,file)=>{
    if(!file)return;
    setProcessing(v=>({...v,[slot.key]:true}));
    try{
      const [width,height]=mediaDimensions(slot.key);
      const result=await processImageFile(file,{width,height,background:'#f6f1ed'});
-     setFiles(v=>({...v,[slot.key]:{...result,previewUrl:URL.createObjectURL(result.processedFile)}}));
+     setFiles(v=>{if(v[slot.key]?.previewUrl)URL.revokeObjectURL(v[slot.key].previewUrl);return {...v,[slot.key]:{...result,previewUrl:URL.createObjectURL(result.processedFile)}};});
    }catch(error){setFiles(v=>({...v,[slot.key]:null}));window.alert(error.message||'Image processing failed.');}
    finally{setProcessing(v=>({...v,[slot.key]:false}));}
  };
