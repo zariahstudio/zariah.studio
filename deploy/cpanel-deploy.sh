@@ -187,13 +187,13 @@ find "${DEPLOYPATH}" -mindepth 1 -maxdepth 1 \
 # STEP 5 — Verify the live document root.
 if [[ ! -s "${DEPLOYPATH}/index.html" ]]; then
   echo "ERROR: Published index.html is missing or empty."
-  exit 1
+  false
 fi
 
 for dir in "${REQUIRED_DIRS[@]}"; do
   if [[ ! -d "${DEPLOYPATH}/${dir}" ]]; then
     echo "ERROR: Published directory is missing: ${dir}"
-    exit 1
+    false
   fi
 done
 
