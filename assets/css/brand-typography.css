@@ -21,3 +21,16 @@ button{font-size:13px;line-height:1.4}
  small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text{font-size:11px}
  button{font-size:12px}
 }
+
+
+/* Readability pass — improve legibility while preserving existing layout geometry. */
+body{font-size:16px;line-height:1.7}
+p,li,dd,dt,label,input,textarea,select{font-size:15px;line-height:1.65}
+small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text,.cart-head{font-size:13px;line-height:1.55}
+button,.btn-primary,.btn-outline,.btn-order,.btn-notify{font-size:14px;line-height:1.45}
+@media(max-width:768px){
+ body{font-size:15.5px;line-height:1.7}
+ p,li,dd,dt,label,input,textarea,select{font-size:15px;line-height:1.65}
+ small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text,.cart-head{font-size:12.5px;line-height:1.5}
+ button,.btn-primary,.btn-outline,.btn-order,.btn-notify{font-size:13px;line-height:1.45}
+}
