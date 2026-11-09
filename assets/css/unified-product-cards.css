@@ -22,8 +22,10 @@
   .grid:not(.z-collection-feature-grid) .visual,
   .product-grid .product-image {
     aspect-ratio: 1 / 1 !important;
+    box-sizing: border-box;
     overflow: hidden;
-    background: var(--z-product-card-surface) !important;
+    border: clamp(16px, 6vw, 28px) solid var(--z-product-card-surface);
+    background: #ead2bf !important;
   }
 
   .products .pcard-img-real,
@@ -38,8 +40,16 @@
     height: 100%;
     object-fit: contain !important;
     object-position: center;
-    padding: 7%;
-    background: var(--z-product-card-surface);
+    padding: 0;
+    background: #ead2bf;
+  }
+
+  /* Recently viewed and related cards use the image itself as the frame. */
+  .z-recently-card img,
+  .z-related-item img {
+    box-sizing: border-box;
+    border: clamp(16px, 6vw, 28px) solid var(--z-product-card-surface);
+    background: #ead2bf;
   }
 
   .products .pcard-info { padding: 11px 1px 0 !important; }
