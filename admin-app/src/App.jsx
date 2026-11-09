@@ -54,6 +54,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
   const [imageProcessing, setImageProcessing] = useState(false);
   const [imageError, setImageError] = useState('');
   const [stockTouched, setStockTouched] = useState(false);
+  useEffect(() => () => processedImages.forEach(image => URL.revokeObjectURL(image.previewUrl)), [processedImages]);
   const handleImageSelection = async (files) => {
     setImages(files);
     setProcessedImages([]);
@@ -176,6 +177,7 @@ function mediaDimensions(slotKey) {
 }
 function MediaPanel({assets,onUpload,onToggle,saving}) {
  const [files,setFiles]=useState({}); const [alts,setAlts]=useState({}); const [processing,setProcessing]=useState({});
+ useEffect(()=>()=>Object.values(files).forEach(image=>image?.previewUrl&&URL.revokeObjectURL(image.previewUrl)),[files]);
  const chooseFile=async(slot,file)=>{
    if(!file)return;
    setProcessing(v=>({...v,[slot.key]:true}));
@@ -466,7 +468,7 @@ function App() {
     } finally { setSaving(false); }
   };
 
-  const uploadMedia = async (slot,file,altText) => {
+  const uploadMedia = async (slot,image,altText) => {
     if (!file?.originalFile || !['image/jpeg','image/png','image/webp'].includes(file.originalFile.type) || file.originalFile.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
     setSaving(true); try {
       const originalFile = image.originalFile;
