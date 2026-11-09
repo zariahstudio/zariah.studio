@@ -444,7 +444,7 @@ function App() {
         const image = imageFiles[i];
         const imageId = crypto.randomUUID();
         const originalExtension = image.originalFile.name.split('.').pop().toLowerCase();
-        const originalPath = `originals/${productId}/${imageId}.${originalExtension}`;
+        const originalPath = `${productId}/originals/${imageId}.${originalExtension}`;
         const { error: originalError } = await supabase.storage.from('product-images').upload(
           originalPath, image.originalFile, { contentType: image.originalFile.type, upsert: false }
         );
@@ -468,13 +468,13 @@ function App() {
   };
 
   const uploadMedia = async (slot,image,altText) => {
-    if (!file?.originalFile || !['image/jpeg','image/png','image/webp'].includes(file.originalFile.type) || file.originalFile.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
+    if (!image?.originalFile || !['image/jpeg','image/png','image/webp'].includes(image.originalFile.type) || image.originalFile.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
     setSaving(true); try {
       const originalFile = image.originalFile;
       if (!originalFile || !image.processedFile) throw new Error('Select an image and wait for optimization to finish.');
       const imageId = crypto.randomUUID();
       const originalExt = originalFile.name.split('.').pop().toLowerCase();
-      const originalPath = 'originals/site-media/'+slot.key+'/'+imageId+'.'+originalExt;
+      const originalPath = 'site-media/'+slot.key+'/originals/'+imageId+'.'+originalExt;
       const {error:originalError}=await supabase.storage.from('product-images').upload(
         originalPath,originalFile,{contentType:originalFile.type,upsert:false}
       );
