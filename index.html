@@ -289,7 +289,7 @@
 
 <link rel="stylesheet" href="/assets/css/homepage-mobile-home.css">
 <link rel="stylesheet" href="/assets/css/product-grid-refinement.css">
-<link rel="stylesheet" href="/assets/css/unified-product-cards.css?v=20261109-mobile-grid-v4">
+<link rel="stylesheet" href="/assets/css/unified-product-cards.css?v=20261109-mobile-grid-v5">
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
@@ -1251,7 +1251,7 @@ const OverlayManager = (function() {
 .z-floating-bag{position:fixed!important;right:18px!important;bottom:20px!important;z-index:99999!important;display:flex!important;align-items:center!important;gap:9px!important;padding:13px 17px!important;background:#292522!important;color:#fff!important;border:1px solid #c5a06a!important;box-shadow:0 5px 22px #0002!important;text-decoration:none!important;font:500 9px/1 Inter,Arial,sans-serif!important;letter-spacing:.14em!important}
 .z-floating-bag-icon{font-size:16px!important;line-height:1!important;color:#e4c99f!important}
 .z-floating-bag-count{display:inline-grid!important;place-items:center!important;min-width:19px!important;height:19px!important;padding:0 5px!important;border-radius:50%!important;background:#c5a06a!important;color:#fff!important;font-size:9px!important;letter-spacing:0!important}
-@media(max-width:600px){.z-floating-bag{right:12px!important;bottom:14px!important;padding:12px 14px!important}}
+@media(max-width:600px){.z-floating-bag{right:12px!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;width:50px!important;height:50px!important;min-width:50px!important;padding:0!important;justify-content:center!important;gap:0!important;border-radius:50%!important;letter-spacing:0!important}.z-floating-bag>span:nth-child(2){display:none!important}.z-floating-bag-icon{font-size:20px!important}.z-floating-bag-count{position:absolute!important;top:-4px!important;right:-4px!important;min-width:19px!important;height:19px!important;border:1px solid #292522!important}}
 </style>
 
 
