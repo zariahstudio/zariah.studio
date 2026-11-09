@@ -106,3 +106,13 @@
 .stock-alert-card{margin-top:2px}
 @media(max-width:900px){.intelligence-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.intelligence-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.analytics-card{padding:12px}.analytics-card-head{align-items:flex-start;flex-direction:column}.analytics-card-head select{width:100%}.revenue-bars{gap:4px}.revenue-bar-col>strong{font-size:8px}.intelligence-kpis strong{font-size:19px}}
+
+
+/* Automatic image optimization previews */
+.image-upload-previews{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.image-upload-preview{min-width:0;padding:8px;border:1px solid var(--line);background:#f6f1ed}
+.image-upload-preview img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain;background:#f6f1ed}
+.image-upload-preview span,.image-upload-preview small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.image-upload-preview span{margin-top:7px;font-size:10px;color:var(--ink)}
+.image-upload-preview small{margin-top:4px;font-size:9px;color:var(--muted)}
+.media-preview img{object-fit:contain;padding:8px}
