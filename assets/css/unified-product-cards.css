@@ -303,3 +303,68 @@
   .products .prod-grid > .pcard .btn-order,
   .products .prod-grid > .pcard .btn-notify { min-height: 44px !important; }
 }
+
+
+/* Final mobile row rhythm: all cards in each two-column row share one height. */
+@media (max-width: 768px) {
+  .prod-grid {
+    grid-auto-rows: 1fr !important;
+    align-items: stretch !important;
+  }
+  .prod-grid > .pcard {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+  }
+  .prod-grid > .pcard > .pcard-img {
+    flex: 0 0 auto !important;
+  }
+  .prod-grid > .pcard > .pcard-info {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+  }
+  .prod-grid > .pcard .pcard-top {
+    min-height: 2.65em !important;
+    align-items: flex-start !important;
+  }
+  .prod-grid > .pcard .pcard-name {
+    line-height: 1.22 !important;
+  }
+  .prod-grid > .pcard .pcard-type {
+    min-height: 1.35em !important;
+    margin-top: 7px !important;
+  }
+  .prod-grid > .pcard .btn-order,
+  .prod-grid > .pcard .btn-notify {
+    margin-top: auto !important;
+    min-height: 46px !important;
+  }
+}
+@media (max-width: 600px) {
+  /* Keep the persistent cart access visible without covering product names. */
+  .z-floating-bag {
+    right: 12px !important;
+    bottom: calc(14px + env(safe-area-inset-bottom)) !important;
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    border-radius: 50% !important;
+    letter-spacing: 0 !important;
+  }
+  .z-floating-bag > span:nth-child(2) { display: none !important; }
+  .z-floating-bag-icon { font-size: 20px !important; }
+  .z-floating-bag-count {
+    position: absolute !important;
+    top: -4px !important;
+    right: -4px !important;
+    min-width: 19px !important;
+    height: 19px !important;
+    border: 1px solid #292522 !important;
+  }
+}
