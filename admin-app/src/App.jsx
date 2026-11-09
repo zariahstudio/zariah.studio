@@ -164,10 +164,30 @@ const MEDIA_SLOTS = [
   {key:'about.main',label:'About Us Image',group:'Editorial'},
   {key:'brand.footer',label:'Footer Brand Visual',group:'Brand'}
 ];
+function mediaDimensions(slotKey) {
+  return ({
+    'hero.desktop': [1920,1080], 'hero.mobile': [1080,1600],
+    'campaign.main': [1920,900], 'lookbook.main': [1200,1800],
+    'about.main': [1600,1200], 'brand.footer': [1600,900],
+    'collection.essence.cover': [1200,1600],
+    'collection.signature.cover': [1200,1600],
+    'collection.noir.cover': [1200,1600]
+  })[slotKey] || [1920,1920];
+}
 function MediaPanel({assets,onUpload,onToggle,saving}) {
- const [files,setFiles]=useState({}); const [alts,setAlts]=useState({});
- return <section className="panel"><div className="panel-head"><div><p className="eyebrow">WEBSITE CONTENT</p><h2>Media Library</h2><p className="muted">Replace website images without editing code. Existing images remain as fallback until a replacement is published.</p></div></div>
- <div className="media-grid">{MEDIA_SLOTS.map(slot=>{const asset=assets.find(a=>a.slot_key===slot.key);return <article className="media-card" key={slot.key}><div className="media-preview">{asset?.public_url?<img src={asset.public_url} alt={asset.alt_text||slot.label}/>:<div className="thumb-placeholder"><ImagePlus size={24}/><span>Current website image</span></div>}</div><div className="media-meta"><small>{slot.group}</small><strong>{slot.label}</strong><span className={asset?.is_published?'status live':'status'}>{asset?.is_published?'Published':'Using website default'}</span></div><label className="field-label">Alt text<input value={alts[slot.key]??asset?.alt_text??''} onChange={e=>setAlts(v=>({...v,[slot.key]:e.target.value}))} placeholder="Describe this image"/></label><label className="upload-box"><Upload size={17}/><span><strong>{asset?'Replace image':'Upload image'}</strong><small>JPG, PNG or WebP · max 10 MB</small></span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>setFiles(v=>({...v,[slot.key]:e.target.files?.[0]||null}))}/></label>{files[slot.key]&&<><small className="muted">{files[slot.key].name}</small><button className="primary full" disabled={saving} onClick={()=>onUpload(slot,files[slot.key],alts[slot.key]??asset?.alt_text??'')}>Upload & publish</button></>}{asset&&<button className="secondary small" onClick={()=>onToggle(asset)}>{asset.is_published?'Unpublish':'Publish'}</button>}</article>})}</div></section>;
+ const [files,setFiles]=useState({}); const [alts,setAlts]=useState({}); const [processing,setProcessing]=useState({});
+ const chooseFile=async(slot,file)=>{
+   if(!file)return;
+   setProcessing(v=>({...v,[slot.key]:true}));
+   try{
+     const [width,height]=mediaDimensions(slot.key);
+     const result=await processImageFile(file,{width,height,background:'#f6f1ed'});
+     setFiles(v=>({...v,[slot.key]:{...result,previewUrl:URL.createObjectURL(result.processedFile)}}));
+   }catch(error){setFiles(v=>({...v,[slot.key]:null}));window.alert(error.message||'Image processing failed.');}
+   finally{setProcessing(v=>({...v,[slot.key]:false}));}
+ };
+ return <section className="panel"><div className="panel-head"><div><p className="eyebrow">WEBSITE CONTENT</p><h2>Media Library</h2><p className="muted">Replace website images without editing code. Images are automatically fitted, compressed and converted to WebP. Original uploads are backed up.</p></div></div>
+ <div className="media-grid">{MEDIA_SLOTS.map(slot=>{const asset=assets.find(a=>a.slot_key===slot.key);const selected=files[slot.key];return <article className="media-card" key={slot.key}><div className="media-preview">{selected?.previewUrl?<img src={selected.previewUrl} alt={slot.label+' optimized preview'}/>:asset?.public_url?<img src={asset.public_url} alt={asset.alt_text||slot.label}/>:<div className="thumb-placeholder"><ImagePlus size={24}/><span>Current website image</span></div>}</div><div className="media-meta"><small>{slot.group}</small><strong>{slot.label}</strong><span className={asset?.is_published?'status live':'status'}>{asset?.is_published?'Published':'Using website default'}</span></div><label className="field-label">Alt text<input value={alts[slot.key]??asset?.alt_text??''} onChange={e=>setAlts(v=>({...v,[slot.key]:e.target.value}))} placeholder="Describe this image"/></label><label className="upload-box"><Upload size={17}/><span><strong>{asset?'Replace image':'Upload image'}</strong><small>JPG, PNG or WebP · max 10 MB · auto-fit to slot dimensions</small></span><input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>chooseFile(slot,e.target.files?.[0])}/></label>{processing[slot.key]&&<small className="muted">Optimizing preview…</small>}{selected&&<><small className="muted">{selected.originalFile.name} · {selected.width} × {selected.height} WebP</small><button className="primary full" disabled={saving||processing[slot.key]} onClick={()=>onUpload(slot,selected,alts[slot.key]??asset?.alt_text??'')}>Upload & publish</button></>}{asset&&<button className="secondary small" onClick={()=>onToggle(asset)}>{asset.is_published?'Unpublish':'Publish'}</button>}</article>})}</div></section>;
 }
 
 function App() {
@@ -447,29 +467,20 @@ function App() {
   };
 
   const uploadMedia = async (slot,file,altText) => {
-    if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
+    if (!file?.originalFile || !['image/jpeg','image/png','image/webp'].includes(file.originalFile.type) || file.originalFile.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
     setSaving(true); try {
-      const dimensions = {
-        'hero.desktop': [1920,1080], 'hero.mobile': [1080,1600],
-        'campaign.main': [1920,900], 'lookbook.main': [1200,1800],
-        'about.main': [1600,1200], 'brand.footer': [1600,900],
-        'collection.essence.cover': [1200,1600],
-        'collection.signature.cover': [1200,1600],
-        'collection.noir.cover': [1200,1600]
-      }[slot.key] || [1920,1920];
-      const optimized = await processImageFile(file, {
-        width: dimensions[0], height: dimensions[1], background: '#f6f1ed'
-      });
+      const originalFile = image.originalFile;
+      if (!originalFile || !image.processedFile) throw new Error('Select an image and wait for optimization to finish.');
       const imageId = crypto.randomUUID();
-      const originalExt = file.name.split('.').pop().toLowerCase();
+      const originalExt = originalFile.name.split('.').pop().toLowerCase();
       const originalPath = 'originals/site-media/'+slot.key+'/'+imageId+'.'+originalExt;
       const {error:originalError}=await supabase.storage.from('product-images').upload(
-        originalPath,file,{contentType:file.type,upsert:false}
+        originalPath,originalFile,{contentType:originalFile.type,upsert:false}
       );
       if(originalError) throw originalError;
       const path='site-media/'+slot.key+'/'+imageId+'.webp';
       const {error:upErr}=await supabase.storage.from('product-images').upload(
-        path,optimized.processedFile,{contentType:'image/webp',upsert:false}
+        path,image.processedFile,{contentType:'image/webp',upsert:false}
       );
       if(upErr) throw upErr;
       const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);
