@@ -209,25 +209,97 @@
   .products .prod-grid { column-gap: 13px; row-gap: 25px; }
 }
 
-@media (max-width: 360px) {
-  .products .prod-grid,
-  .z-mobile-home-grid,
-  .z-recently-grid,
-  .z-related-grid,
-  .catalogue .grid,
-  .grid:not(.z-collection-feature-grid),
-  .product-grid {
-    column-gap: 10px;
-    row-gap: 21px;
+
+/* Targeted mobile collection-card corrections — appended to win over earlier mobile rules. */
+@media (max-width: 768px) {
+  .products .prod-grid { align-items: stretch !important; }
+  .products .prod-grid > .pcard {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    height: 100% !important;
   }
-  .z-mobile-home-inner { width: calc(100% - 28px); }
-  .products .pcard-name,
-  .z-mobile-home-name,
-  .z-recently-card strong,
-  .z-related-item p,
-  .catalogue .name,
-  .grid:not(.z-collection-feature-grid) .name-price h2,
-  .product-grid .product-info h3 {
-    font-size: 15px !important;
+  .products .prod-grid > .pcard > .pcard-img {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 3 / 4 !important;
+    flex: 0 0 auto !important;
+    overflow: hidden !important;
   }
+  .products .prod-grid > .pcard > .pcard-img .pcard-img-real {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: scale(1.10) !important;
+    background: #f2eee8 !important;
+  }
+  .products .prod-grid > .pcard > .pcard-info {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 10px 1px 0 !important;
+    min-height: 0 !important;
+  }
+  .products .prod-grid > .pcard .pcard-top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: start !important;
+    column-gap: 7px !important;
+    min-height: 2.55em !important;
+    margin: 0 !important;
+  }
+  .products .prod-grid > .pcard .pcard-name {
+    min-width: 0 !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.22 !important;
+    overflow-wrap: break-word !important;
+  }
+  .products .prod-grid > .pcard .pcard-price {
+    margin: 2px 0 0 !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    text-align: right !important;
+  }
+  .products .prod-grid > .pcard .pcard-type {
+    display: block !important;
+    min-height: 1.2em !important;
+    margin: 8px 0 0 !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    letter-spacing: .12em !important;
+    color: #8a8178 !important;
+  }
+  .products .prod-grid > .pcard .pcard-size { display: none !important; }
+  .products .prod-grid > .pcard .btn-order,
+  .products .prod-grid > .pcard .btn-notify {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    margin-top: auto !important;
+    padding: 12px 8px !important;
+    font-size: 10px !important;
+    letter-spacing: .16em !important;
+  }
+  .products .prod-grid > .pcard .pcard-info > .btn-order,
+  .products .prod-grid > .pcard .pcard-info > .btn-notify { margin-top: 14px !important; }
+  .z-floating-bag {
+    right: 12px !important;
+    bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+    padding: 10px 12px !important;
+    gap: 7px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .products .prod-grid { column-gap: 10px !important; row-gap: 22px !important; }
+  .products .prod-grid > .pcard .pcard-name { font-size: 15px !important; }
+  .products .prod-grid > .pcard .pcard-price { font-size: 11px !important; }
+  .products .prod-grid > .pcard .btn-order,
+  .products .prod-grid > .pcard .btn-notify { min-height: 44px !important; }
 }
