@@ -43,3 +43,144 @@
   .nav-links a { font-size: 11px; }
   .btn-wa { font-size: 10px; }
 }
+
+
+/* =========================================================
+   DESKTOP PREMIUM POLISH — PHASE 2
+   Presentation-only refinements for the existing storefront.
+   No markup, catalogue, navigation, cart, order or mobile rules.
+========================================================= */
+@media (min-width: 769px) {
+  /* Header: calmer editorial rhythm; preserve existing geometry. */
+  .hdr-inner { padding-bottom: 15px; }
+  .nav-links { align-items: center; }
+  .nav-links a {
+    font-weight: 500;
+    letter-spacing: .055em;
+    transition: color .22s ease;
+  }
+  .nav-links a::after { height: 1px; transition: width .28s ease; }
+  .hdr-right { align-items: center; }
+  .btn-wa { letter-spacing: .09em; }
+
+  /* Hero: strengthen the existing split-image/editorial composition. */
+  .hero {
+    border: 1px solid rgba(185, 150, 104, .18);
+    box-shadow: 0 14px 38px rgba(48, 39, 31, .045);
+  }
+  .hero-bg-img { transition: transform .8s cubic-bezier(.2,.65,.25,1); }
+  .hero:hover .hero-bg-img { transform: scale(1.012); }
+  .hero-content { gap: 2px; }
+  .hero-content::before {
+    font-size: clamp(48px, 6.2vw, 86px);
+    line-height: .94;
+    letter-spacing: -.045em;
+    max-width: 9ch;
+    margin-bottom: 22px;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: .24em;
+    color: #8b704f;
+  }
+  .hero-btns { gap: 26px; margin-top: 12px; }
+  .btn-primary, .btn-outline {
+    transition: color .22s ease, background .22s ease, border-color .22s ease, transform .22s ease;
+  }
+  .btn-outline:hover { border-color: #b99668; background: #f8f3ed; transform: translateY(-1px); }
+
+  /* Product discovery: premium image treatment without changing grid geometry. */
+  .products .pcard {
+    background: #fff;
+    transition: box-shadow .28s ease, transform .28s ease;
+  }
+  .products .pcard:hover {
+    box-shadow: 0 12px 30px rgba(48, 39, 31, .075);
+    transform: translateY(-3px);
+  }
+  .products .pcard-img {
+    background: #f5f0eb;
+    border: 1px solid rgba(185, 150, 104, .10);
+  }
+  .products .pcard-img-real {
+    transition: transform .55s cubic-bezier(.2,.65,.25,1);
+  }
+  .products .pcard:hover .pcard-img-real { transform: scale(1.045); }
+  .products .pcard-info { padding: 14px 10px 12px; }
+  .products .pcard-top { gap: 6px; }
+  .products .pcard-name {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(18px, 1.35vw, 21px);
+    line-height: 1.15;
+    letter-spacing: .005em;
+    color: #292522;
+  }
+  .products .pcard-price {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .035em;
+    color: #79654f;
+  }
+  .products .btn-order, .products .btn-notify {
+    min-height: 43px;
+    margin-top: 8px;
+    background: #302923;
+    border: 1px solid #302923;
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: .16em;
+    transition: background .22s ease, color .22s ease, border-color .22s ease;
+  }
+  .products .btn-order:hover, .products .btn-notify:hover {
+    background: #b99668;
+    border-color: #b99668;
+    color: #fff;
+  }
+
+  /* Section hierarchy: editorial heading paired with restrained supporting text. */
+  .prod-ttl {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(34px, 3.2vw, 46px);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -.02em;
+  }
+  .prod-count-line { color: #80746a; letter-spacing: .13em; }
+  .coll-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: .015em;
+  }
+
+  /* Clear keyboard focus for desktop shoppers. */
+  .nav-links a:focus-visible,
+  .btn-wa:focus-visible,
+  .btn-primary:focus-visible,
+  .btn-outline:focus-visible,
+  .products .btn-order:focus-visible,
+  .products .btn-notify:focus-visible {
+    outline: 2px solid #b99668;
+    outline-offset: 4px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+  .hero-content::before { font-size: clamp(42px, 5.4vw, 62px); }
+  .products .pcard-info { padding-left: 7px; padding-right: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @media (min-width: 769px) {
+    .hero-bg-img, .products .pcard, .products .pcard-img-real,
+    .nav-links a, .btn-primary, .btn-outline,
+    .products .btn-order, .products .btn-notify {
+      transition: none !important;
+    }
+    .hero:hover .hero-bg-img,
+    .products .pcard:hover,
+    .products .pcard:hover .pcard-img-real {
+      transform: none !important;
+    }
+  }
+}
