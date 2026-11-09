@@ -581,3 +581,60 @@ a { -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Desktop header composition: brand left, primary navigation centered, actions right.
+   Scoped above the mobile breakpoint so existing mobile header behavior is preserved. */
+@media (min-width: 769px) {
+  .hdr-inner {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center !important;
+    gap: clamp(22px, 3.2vw, 52px);
+    width: min(1480px, calc(100% - 64px));
+    min-height: 96px;
+    padding: 14px 0;
+  }
+  .hdr-inner > .logo {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    justify-self: start;
+    align-items: flex-start !important;
+    white-space: nowrap;
+  }
+  .hdr-inner > nav[aria-label="Main navigation"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 1.8vw, 28px);
+    min-width: 0;
+    margin: 0;
+  }
+  .hdr-inner > nav[aria-label="Main navigation"] .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: clamp(14px, 1.8vw, 28px);
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+  .hdr-inner > nav[aria-label="Main navigation"] .nav-links > li {
+    flex: 0 0 auto;
+  }
+  .hdr-inner > nav[aria-label="Main navigation"] .z-cart-nav {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .hdr-inner > .hdr-right {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 12px;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
