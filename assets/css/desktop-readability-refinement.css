@@ -205,3 +205,31 @@
   .ptrust-item { font-size: 10px; letter-spacing: .07em; }
   .pmodal-close { border-radius: 2px; }
 }
+
+
+/* DESKTOP TYPOGRAPHY SCALE — readable luxury editorial hierarchy */
+@media (min-width:769px){
+  body, body p, body li, body label, body input, body textarea, body select{
+    font-family:Inter,Arial,sans-serif!important;
+  }
+  body{font-size:16px!important;line-height:1.65!important}
+  body p, body li{font-size:15px!important;line-height:1.75!important}
+  body h1, body h2, body h3, body h4,
+  .prod-ttl,.hero-content strong,.hero-content::before,
+  .z-detail-title,.pmodal-name,.z-related-title{
+    font-family:"Cormorant Garamond",Georgia,serif!important;
+    font-weight:400!important;
+  }
+  body h1{font-size:clamp(42px,4.2vw,62px)!important;line-height:1.04!important}
+  body h2{font-size:clamp(34px,3.2vw,46px)!important;line-height:1.1!important}
+  body h3{font-size:clamp(26px,2.4vw,34px)!important;line-height:1.15!important}
+  .nav-links a{font-size:13px!important}
+  .ann,.btn-wa,.btn-primary,.btn-outline{font-size:12px!important}
+  .pcard-name{font-size:clamp(18px,1.45vw,22px)!important;line-height:1.22!important}
+  .pcard-price{font-size:15px!important}
+  .pcard-type,.pcard-size,.pcard-meta,.prod-count-line,.trust-txt{font-size:13px!important;line-height:1.55!important}
+  .btn-order,.btn-notify{font-size:12px!important}
+  .z-detail-desc,.z-detail-spec-row,.pmodal-desc{font-size:16px!important;line-height:1.8!important}
+  .lbl,.coll-lbl,.flbl,.z-detail-top,.z-detail-back{font-size:13px!important}
+  .footer-copy,.footer-legal a,.footer-tag{font-size:13px!important;line-height:1.65!important}
+}
