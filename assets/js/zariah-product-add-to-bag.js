@@ -40,6 +40,7 @@
       button.textContent = 'ADDED TO BAG';
       button.disabled = true;
       showToast('Added to your bag');
+      window.dispatchEvent(new Event('zariah:open-cart'));
       window.setTimeout(() => {
         if (!button.isConnected) return;
         button.textContent = originalLabel;
