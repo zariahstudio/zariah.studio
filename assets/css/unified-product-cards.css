@@ -1,125 +1,130 @@
-/* ZARIAH Studio — one visual system for every storefront product card.
-   Presentation-only overrides. Existing catalogue data, filters, wishlist and purchase actions remain unchanged. */
-:root { --z-product-card-surface: #f6f1ed; --z-product-card-ink: #292522; }
-
-.products .pcard,
-.z-mobile-home-card,
-.z-recently-card,
-.z-related-item,
-.catalogue .card,
-.grid:not(.z-collection-feature-grid) .card,
-.product-grid .product-card {
-  min-width: 0;
-  color: var(--z-product-card-ink);
-}
-
-.products .pcard-img,
-.z-mobile-home-media,
-.z-recently-card img,
-.z-related-item img,
-.catalogue .visual,
-.grid:not(.z-collection-feature-grid) .visual,
-.product-grid .product-image {
-  aspect-ratio: 1 / 1 !important;
-  overflow: hidden;
-  background: var(--z-product-card-surface) !important;
-}
-
-.products .pcard-img-real,
-.z-mobile-home-media img,
-.z-recently-card img,
-.z-related-item img,
-.catalogue .visual img,
-.grid:not(.z-collection-feature-grid) .visual img,
-.product-grid .product-image img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain !important;
-  object-position: center;
-  padding: 7%;
-  background: var(--z-product-card-surface);
-}
-
-.products .pcard-info { padding: 11px 1px 0 !important; }
-.products .pcard-top {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 4px;
-  margin: 0;
-}
-.products .pcard-name,
-.z-mobile-home-name,
-.z-recently-card strong,
-.z-related-item p,
-.catalogue .name,
-.grid:not(.z-collection-feature-grid) .name-price h2,
-.product-grid .product-info h3 {
-  display: block;
-  margin: 0;
-  color: var(--z-product-card-ink);
-  font: 500 13px/1.3 Inter, Arial, sans-serif;
-  letter-spacing: 0;
-}
-.products .pcard-price,
-.z-mobile-home-price,
-.z-recently-card span,
-.z-related-item small,
-.catalogue .price,
-.grid:not(.z-collection-feature-grid) .name-price span,
-.product-grid .product-info strong {
-  display: block;
-  margin: 4px 0 0;
-  padding: 0;
-  color: var(--z-product-card-ink);
-  font: 600 12px/1.3 Inter, Arial, sans-serif;
-  letter-spacing: 0;
-  white-space: normal;
-}
-
-.products .pcard-type,
-.products .pcard-size { display: none !important; }
-
-.z-recently-card {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-}
-.z-recently-card img { margin: 0; }
-.z-recently-card strong { margin-top: 10px; }
-.z-recently-card span { margin-top: 5px; }
-
-.z-mobile-home-card { text-align: left; }
-.z-mobile-home-media { display: block; }
-.z-mobile-home-name { overflow: visible; white-space: normal; margin-top: 10px; }
-.z-mobile-home-price { margin-top: 5px; }
-
-.z-related-item { display: block; }
-.z-related-item img { margin: 0; }
-.z-related-item p { margin-top: 10px; }
-.z-related-item small { margin-top: 5px; }
-
-.catalogue .card-info,
-.products .pcard-info,
-.product-grid .product-info { min-height: 0 !important; }
-.catalogue .card-info,
-.product-grid .product-info { padding: 11px 1px 0 !important; }
-.catalogue .name-price,
-.grid:not(.z-collection-feature-grid) .name-price,
-.product-grid .product-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-.catalogue .name-price { margin: 0; }
-.catalogue .price { flex: none; }
-.grid:not(.z-collection-feature-grid) .info { padding: 11px 1px 0 !important; }
-.grid:not(.z-collection-feature-grid) .name-price h2 { font-size: 13px !important; }
-.grid:not(.z-collection-feature-grid) .name-price span { font-size: 12px !important; }
-
+/* ZARIAH Studio — one visual system for mobile product cards.
+   The screenshot is the mobile reference. Desktop storefront styling and layout remain untouched. */
 @media (max-width: 768px) {
+  :root { --z-product-card-surface: #f6f1ed; --z-product-card-ink: #292522; }
+
+  .products .pcard,
+  .z-mobile-home-card,
+  .z-recently-card,
+  .z-related-item,
+  .catalogue .card,
+  .grid:not(.z-collection-feature-grid) .card,
+  .product-grid .product-card {
+    min-width: 0;
+    color: var(--z-product-card-ink);
+  }
+
+  .products .pcard-img,
+  .z-mobile-home-media,
+  .z-recently-card img,
+  .z-related-item img,
+  .catalogue .visual,
+  .grid:not(.z-collection-feature-grid) .visual,
+  .product-grid .product-image {
+    aspect-ratio: 1 / 1 !important;
+    overflow: hidden;
+    background: var(--z-product-card-surface) !important;
+  }
+
+  .products .pcard-img-real,
+  .z-mobile-home-media img,
+  .z-recently-card img,
+  .z-related-item img,
+  .catalogue .visual img,
+  .grid:not(.z-collection-feature-grid) .visual img,
+  .product-grid .product-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain !important;
+    object-position: center;
+    padding: 7%;
+    background: var(--z-product-card-surface);
+  }
+
+  .products .pcard-info { padding: 11px 1px 0 !important; }
+  .products .pcard-top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+    margin: 0;
+  }
+  .products .pcard-name,
+  .z-mobile-home-name,
+  .z-recently-card strong,
+  .z-related-item p,
+  .catalogue .name,
+  .grid:not(.z-collection-feature-grid) .name-price h2,
+  .product-grid .product-info h3 {
+    display: block;
+    margin: 0;
+    color: var(--z-product-card-ink);
+    font: 500 13px/1.3 Inter, Arial, sans-serif;
+    letter-spacing: 0;
+  }
+  .products .pcard-price,
+  .z-mobile-home-price,
+  .z-recently-card span,
+  .z-related-item small,
+  .catalogue .price,
+  .grid:not(.z-collection-feature-grid) .name-price span,
+  .product-grid .product-info strong {
+    display: block;
+    margin: 4px 0 0;
+    padding: 0;
+    color: var(--z-product-card-ink);
+    font: 600 12px/1.3 Inter, Arial, sans-serif;
+    letter-spacing: 0;
+    white-space: normal;
+  }
+
+  .products .pcard-type,
+  .products .pcard-size { display: none !important; }
+
+  .z-recently-card {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+  .z-recently-card img { margin: 0; }
+  .z-recently-card strong { margin-top: 10px; }
+  .z-recently-card span { margin-top: 5px; }
+
+  .z-mobile-home-card { text-align: left; }
+  .z-mobile-home-media { display: block; }
+  .z-mobile-home-name { overflow: visible; white-space: normal; margin-top: 10px; }
+  .z-mobile-home-price { margin-top: 5px; }
+
+  .z-related-item { display: block; }
+  .z-related-item img { margin: 0; }
+  .z-related-item p { margin-top: 10px; }
+  .z-related-item small { margin-top: 5px; }
+
+  .catalogue .card-info,
+  .products .pcard-info,
+  .product-grid .product-info { min-height: 0 !important; }
+  .catalogue .card-info,
+  .product-grid .product-info { padding: 11px 1px 0 !important; }
+  .catalogue .name-price,
+  .grid:not(.z-collection-feature-grid) .name-price,
+  .product-grid .product-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .catalogue .name-price { margin: 0; }
+  .catalogue .price { flex: none; }
+  .grid:not(.z-collection-feature-grid) .info { padding: 11px 1px 0 !important; }
+  .grid:not(.z-collection-feature-grid) .name-price h2 { font-size: 13px !important; }
+  .grid:not(.z-collection-feature-grid) .name-price span { font-size: 12px !important; }
+
   .z-recently-viewed { padding: 28px 0 42px; }
   .z-recently-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 13px; }
   .z-recently-card strong { font-size: 13px; }
