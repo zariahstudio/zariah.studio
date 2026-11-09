@@ -1,0 +1,26 @@
+/* ZARIAH Studio — shared framed product imagery for collection pages.
+   Mobile only: preserve each page's existing desktop and card-information layout. */
+@media (max-width: 768px) {
+  .catalogue .visual,
+  .grid:not(.z-collection-feature-grid) .visual,
+  .product-grid .product-image {
+    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1 !important;
+    overflow: hidden !important;
+    border: clamp(16px, 6vw, 28px) solid #f6f1ed !important;
+    background: #ead2bf !important;
+  }
+
+  .catalogue .visual img,
+  .grid:not(.z-collection-feature-grid) .visual img,
+  .product-grid .product-image img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    transform: none !important;
+    background: #ead2bf !important;
+  }
+}
