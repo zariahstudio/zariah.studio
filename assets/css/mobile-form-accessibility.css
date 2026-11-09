@@ -1,0 +1,52 @@
+/* ZARIAH Studio — mobile form and search accessibility.
+   Presentation-only mobile rules; no validation, search, tracking or contact
+   submission logic is changed. */
+@media (max-width: 760px) {
+  /* Prevent iOS focus zoom and provide comfortable text entry. */
+  .contact-wrap .field input,
+  .contact-wrap .field textarea,
+  .contact-wrap .field select,
+  .lookup .field input,
+  .searchbar input,
+  .searchbar .sort,
+  .sort {
+    min-height: 48px;
+    font-size: 16px !important;
+  }
+
+  .contact-wrap .field textarea {
+    min-height: 132px;
+    line-height: 1.55;
+  }
+
+  /* Minimum practical tap targets for primary actions and search filters. */
+  .contact-wrap .send,
+  .lookup .submit,
+  .searchbar button {
+    min-height: 50px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .filters .filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+
+  .lookup .field input,
+  .contact-wrap .field input,
+  .contact-wrap .field select,
+  .searchbar input {
+    box-sizing: border-box;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-wrap .send,
+  .lookup .submit,
+  .searchbar button {
+    transition: none !important;
+  }
+}
