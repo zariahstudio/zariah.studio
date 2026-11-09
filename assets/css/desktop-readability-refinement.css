@@ -98,7 +98,8 @@
     box-shadow: 0 12px 30px rgba(48, 39, 31, .075);
     transform: translateY(-3px);
   }
-  .products .pcard-img {\n    background: #f5f0eb !important;
+  .products .pcard-img {
+    background: #f5f0eb !important;
     border: 1px solid rgba(185, 150, 104, .10);
   }
   .products .pcard-img-real {
@@ -107,8 +108,16 @@
   .products .pcard:hover .pcard-img-real { transform: scale(1.045); }
   .products .pcard-info { padding: 14px 10px 12px !important; }
   .products .pcard-top { gap: 6px; }
-  .products .pcard-name {\n    font: 400 clamp(18px, 1.35vw, 21px)/1.15 'Cormorant Garamond', Georgia, serif !important;\n    letter-spacing: .005em !important;\n    color: #292522 !important;\n  }
-  .products .pcard-price {\n    font: 500 13px/1.35 Inter, Arial, sans-serif !important;\n    letter-spacing: .035em !important;\n    color: #79654f !important;\n  }
+  .products .pcard-name {
+    font: 400 clamp(18px, 1.35vw, 21px)/1.15 'Cormorant Garamond', Georgia, serif !important;
+    letter-spacing: .005em !important;
+    color: #292522 !important;
+  }
+  .products .pcard-price {
+    font: 500 13px/1.35 Inter, Arial, sans-serif !important;
+    letter-spacing: .035em !important;
+    color: #79654f !important;
+  }
   .products .btn-order, .products .btn-notify {
     min-height: 43px;
     margin-top: 8px;
