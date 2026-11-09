@@ -1,0 +1,42 @@
+/* ZARIAH Studio — desktop readability refinement
+   Isolated desktop-only typography layer. No mobile selectors or layout changes. */
+@media (min-width: 769px) {
+  /* Navigation and primary actions */
+  .nav-links a { font-size: 12px; line-height: 1.4; letter-spacing: .035em; }
+  .btn-wa { font-size: 11px; line-height: 1.4; letter-spacing: .07em; }
+  .hero-eyebrow { font-size: 13px; line-height: 1.5; letter-spacing: .18em; }
+  .btn-primary { font-size: 13px; line-height: 1.4; letter-spacing: .07em; }
+  .btn-outline { font-size: 12px; line-height: 1.4; letter-spacing: .07em; }
+
+  /* Shopping hierarchy */
+  .trust-txt { font-size: 12px; line-height: 1.55; letter-spacing: .07em; }
+  .prod-count-line { font-size: 12px; line-height: 1.5; letter-spacing: .08em; }
+  .mob-coll-tab, .dftab { font-size: 12px; line-height: 1.4; letter-spacing: .07em; }
+  .pcard-name { font-size: clamp(15px, 1.15vw, 17px); line-height: 1.3; }
+  .pcard-price { font-size: 14px; line-height: 1.4; }
+  .pcard-type, .pcard-size { font-size: 12px; line-height: 1.5; letter-spacing: .06em; }
+  .btn-order, .btn-notify { font-size: 11px; line-height: 1.4; letter-spacing: .08em; }
+
+  /* Editorial details and supporting copy */
+  .lbl, .coll-lbl { font-size: 12px; line-height: 1.5; letter-spacing: .2em; }
+  .coll-count { font-size: 13px; line-height: 1.5; }
+  .pillar-txt, .faq-ans { font-size: 15px; line-height: 1.75; }
+  .clbl, .stat-lbl, .tname, .tcity { font-size: 13px; line-height: 1.5; }
+  .footer-tag, .footer-col h4 { font-size: 12px; line-height: 1.5; letter-spacing: .12em; }
+  .footer-copy, .footer-legal a { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,.62); }
+
+  /* Product detail and form controls */
+  .z-detail-top, .z-detail-back { font-size: 13px; }
+  .z-detail-availability, .z-detail-colours-label, .z-detail-selected-colour { font-size: 13px; }
+  .z-detail-spec-row { font-size: 14px; line-height: 1.55; }
+  .z-detail-desc { font-size: 15px; line-height: 1.8; }
+  .z-detail-reserve { font-size: 12px; }
+  .flbl { font-size: 12px; line-height: 1.5; letter-spacing: .1em; }
+  .omodal-lbl { font-size: 11px; line-height: 1.5; letter-spacing: .16em; }
+}
+
+/* Keep tablet desktop navigation legible without changing its geometry. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .nav-links a { font-size: 11px; }
+  .btn-wa { font-size: 10px; }
+}
