@@ -1,20 +1,37 @@
-/* ZARIAH Studio — All Bags premium mobile editorial refinement.
-   Scoped to the All Bags catalogue and mobile viewports only.
-   Desktop layout, product data, filters, sorting and cart logic are untouched. */
+/* ZARIAH Studio — All Bags mobile alignment.
+   Scoped only to the All Bags catalogue on small screens.
+   Keeps product names intact; aligns price, type, details and purchase buttons.
+   Desktop styles and all catalogue/cart logic remain unchanged. */
 @media (max-width: 640px) {
-  .catalogue .grid {
+  .catalogue #productGrid.grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
     column-gap: 13px !important;
-    row-gap: 29px !important;
+    row-gap: 28px !important;
   }
 
-  .catalogue .visual {
-    box-sizing: border-box !important;
+  .catalogue #productGrid.grid > article.card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-self: stretch !important;
+    min-width: 0 !important;
+    height: 100% !important;
+  }
+
+  .catalogue #productGrid.grid > article.card > a.visual {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
     aspect-ratio: 3 / 4 !important;
+    box-sizing: border-box !important;
     border: 8px solid #f6f1ed !important;
+    overflow: hidden !important;
     background: #f1e8df !important;
   }
 
-  .catalogue .visual img {
+  .catalogue #productGrid.grid > article.card > a.visual img {
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
     padding: 0 !important;
@@ -23,306 +40,32 @@
     background: #f1e8df !important;
   }
 
-  .catalogue .collection-tag {
+  .catalogue #productGrid.grid > article.card .collection-tag {
     left: 8px !important;
     top: 8px !important;
     padding: 5px 7px !important;
     font-size: 7px !important;
   }
 
-  .catalogue .card-info {
-    min-height: 0 !important;
-    padding: 10px 1px 0 !important;
-  }
-
-  .catalogue .name-price {
-    gap: 6px !important;
-    align-items: flex-start !important;
-  }
-
-  .catalogue .name {
-    font-size: 17px !important;
-    line-height: 1.16 !important;
-  }
-
-  .catalogue .price {
-    flex: 0 0 auto !important;
-    font-size: 11px !important;
-    line-height: 1.3 !important;
-    color: #292522 !important;
-    padding-top: 2px !important;
-  }
-
-  .catalogue .type {
-    margin-top: 6px !important;
-    font-size: 8px !important;
-  }
-
-  .catalogue .view-link {
-    margin-top: 9px !important;
-    font-size: 8px !important;
-  }
-
-  .catalogue .z-card-add-bag {
-    display: block !important;
-    width: 100% !important;
-    min-height: 42px !important;
-    margin-top: 10px !important;
-    padding: 11px 8px !important;
-    border: 1px solid #292522 !important;
-    background: #292522 !important;
-    color: #fbf7f1 !important;
-    font: 500 9px/1.2 Inter, Arial, sans-serif !important;
-    letter-spacing: .12em !important;
-    text-transform: uppercase !important;
-  }
-
-  .catalogue .z-card-add-bag:disabled {
-    background: #81776f !important;
-    border-color: #81776f !important;
-    color: #fbf7f1 !important;
-    opacity: .7 !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .catalogue .visual {
-    border-width: 6px !important;
-  }
-
-  .catalogue .name {
-    font-size: 15px !important;
-  }
-
-  .catalogue .price {
-    font-size: 10px !important;
-  }
-}
-
-
-/* Mobile alignment fix for the actual All Bags markup:
-   .grid > .card > .card-info > .name-price / .type / .view-link / .z-card-add-bag.
-   The homepage .pcard selectors do not apply to this catalogue. */
-@media (max-width: 640px) {
-  .catalogue .grid {
-    align-items: stretch !important;
-    grid-auto-rows: 1fr !important;
-  }
-
-  .catalogue .grid > .card {
-    display: flex !important;
-    flex-direction: column !important;
-    min-width: 0 !important;
-    height: 100% !important;
-    position: relative !important;
-  }
-
-  .catalogue .grid > .card > .visual {
-    flex: 0 0 auto !important;
-    width: 100% !important;
-  }
-
-  .catalogue .grid > .card > .card-info {
+  .catalogue #productGrid.grid > article.card > .card-info {
     display: flex !important;
     flex: 1 1 auto !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    min-height: 0 !important;
-  }
-
-  .catalogue .grid > .card .name-price {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    align-items: start !important;
-    column-gap: 6px !important;
-    min-height: 2.45em !important;
-  }
-
-  .catalogue .grid > .card .name {
-    display: -webkit-box !important;
-    -webkit-box-orient: vertical !important;
-    -webkit-line-clamp: 2 !important;
-    overflow: hidden !important;
     min-width: 0 !important;
-    line-height: 1.16 !important;
-  }
-
-  .catalogue .grid > .card .price {
-    align-self: start !important;
-    white-space: nowrap !important;
-  }
-
-  .catalogue .grid > .card .type {
-    min-height: 1.25em !important;
-    margin-top: 7px !important;
-    line-height: 1.25 !important;
-  }
-
-  .catalogue .grid > .card .view-link {
-    display: inline-flex !important;
-    align-self: flex-start !important;
-    align-items: center !important;
-    min-height: 24px !important;
-    margin-top: 8px !important;
-    padding-bottom: 4px !important;
-  }
-
-  .catalogue .grid > .card .z-card-add-bag {
-    margin-top: auto !important;
-    min-height: 44px !important;
-  }
-}
-
-
-/* Definitive mobile alignment: fixed information rows make every CTA
-   occupy the same vertical position, even when a product name wraps. */
-@media (max-width: 640px) {
-  .catalogue .grid {
-    align-items: stretch !important;
-    grid-auto-rows: auto !important;
-  }
-
-  .catalogue .grid > .card {
-    display: flex !important;
-    flex-direction: column !important;
-    align-self: stretch !important;
-    height: 100% !important;
-    min-width: 0 !important;
-  }
-
-  .catalogue .grid > .card > .visual {
-    flex: 0 0 auto !important;
-  }
-
-  .catalogue .grid > .card > .card-info {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 2.45em 1.25em 24px 44px !important;
-    align-content: start !important;
-    align-items: start !important;
-    row-gap: 6px !important;
-    flex: 1 0 auto !important;
     min-height: 0 !important;
-    padding: 10px 1px 0 !important;
-  }
-
-  .catalogue .grid > .card .name-price {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto !important;
-    align-items: start !important;
-    column-gap: 6px !important;
-    height: 2.45em !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .catalogue .grid > .card .name {
-    display: -webkit-box !important;
-    -webkit-box-orient: vertical !important;
-    -webkit-line-clamp: 2 !important;
-    overflow: hidden !important;
-    min-width: 0 !important;
-    max-height: 2.32em !important;
-    margin: 0 !important;
-    font-size: 17px !important;
-    line-height: 1.16 !important;
-  }
-
-  .catalogue .grid > .card .price {
-    align-self: start !important;
-    margin: 2px 0 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
-    line-height: 1.3 !important;
-  }
-
-  .catalogue .grid > .card .type {
-    align-self: start !important;
-    min-height: 0 !important;
-    height: 1.25em !important;
-    margin: 0 !important;
-    overflow: hidden !important;
-    line-height: 1.25 !important;
-  }
-
-  .catalogue .grid > .card .view-link {
-    display: inline-flex !important;
-    align-self: start !important;
-    align-items: center !important;
-    width: max-content !important;
-    max-width: 100% !important;
-    height: 24px !important;
-    min-height: 24px !important;
-    margin: 0 !important;
-    padding: 0 0 4px !important;
-    line-height: 1 !important;
-  }
-
-  .catalogue .grid > .card .z-card-add-bag {
-    align-self: stretch !important;
-    width: 100% !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    margin: 0 !important;
-    padding: 0 8px !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .catalogue .grid > .card .name { font-size: 15px !important; }
-  .catalogue .grid > .card .price { font-size: 10px !important; }
-}
-
-
-/* FINAL OVERRIDE — equal-height catalogue cards and identical CTA baseline.
-   Uses the real markup emitted by render(): .card > .visual + .card-info. */
-@media (max-width: 640px) {
-  .catalogue #productGrid.grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: 1fr !important;
-    align-items: stretch !important;
-  }
-
-  .catalogue #productGrid.grid > article.card {
-    display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
-    align-self: stretch !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    min-width: 0 !important;
-  }
-
-  .catalogue #productGrid.grid > article.card > a.visual {
-    display: block !important;
-    width: 100% !important;
-    aspect-ratio: 3 / 4 !important;
-    min-height: 0 !important;
-  }
-
-  .catalogue #productGrid.grid > article.card > .card-info {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 2.5em 1.3em 26px 44px !important;
-    align-content: start !important;
-    align-items: start !important;
-    gap: 5px !important;
-    min-height: 0 !important;
-    height: 100% !important;
     padding: 10px 1px 0 !important;
     box-sizing: border-box !important;
   }
 
+  /* Reserve exactly two lines for every product title, without shortening names. */
   .catalogue #productGrid .name-price {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) max-content !important;
     align-items: start !important;
-    gap: 5px !important;
-    width: 100% !important;
-    height: 2.5em !important;
-    min-height: 0 !important;
-    overflow: hidden !important;
+    column-gap: 5px !important;
+    min-width: 0 !important;
+    min-height: 2.5em !important;
     margin: 0 !important;
   }
 
@@ -332,47 +75,70 @@
     -webkit-line-clamp: 2 !important;
     overflow: hidden !important;
     min-width: 0 !important;
-    max-height: 2.32em !important;
     margin: 0 !important;
     font-size: 17px !important;
     line-height: 1.16 !important;
   }
 
   .catalogue #productGrid .price {
-    white-space: nowrap !important;
-    margin: 1px 0 0 !important;
+    flex: 0 0 auto !important;
+    align-self: start !important;
+    margin: 2px 0 0 !important;
     padding: 0 !important;
-    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
   }
 
+  /* Keep the category row and details link at identical heights on both cards. */
   .catalogue #productGrid .type {
-    height: 1.3em !important;
-    min-height: 0 !important;
+    min-height: 1.3em !important;
+    margin: 7px 0 0 !important;
     overflow: hidden !important;
-    margin: 0 !important;
+    font-size: 8px !important;
     line-height: 1.3 !important;
   }
 
   .catalogue #productGrid .view-link {
     display: inline-flex !important;
+    align-self: flex-start !important;
     align-items: center !important;
-    justify-self: start !important;
-    height: 26px !important;
     min-height: 26px !important;
-    margin: 0 !important;
+    margin: 7px 0 0 !important;
     padding: 0 0 4px !important;
     box-sizing: border-box !important;
+    font-size: 8px !important;
+    line-height: 1 !important;
   }
 
+  /* The button is anchored to the bottom of each equal-height grid row. */
   .catalogue #productGrid .z-card-add-bag {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    align-self: stretch !important;
     width: 100% !important;
-    height: 44px !important;
     min-height: 44px !important;
-    margin: 0 !important;
+    height: 44px !important;
+    margin: auto 0 0 !important;
     padding: 0 6px !important;
     box-sizing: border-box !important;
+    border: 1px solid #292522 !important;
+    background: #292522 !important;
+    color: #fbf7f1 !important;
+    font: 500 9px/1.2 Inter, Arial, sans-serif !important;
+    letter-spacing: .12em !important;
+    text-transform: uppercase !important;
   }
+
+  .catalogue #productGrid .z-card-add-bag:disabled {
+    background: #81776f !important;
+    border-color: #81776f !important;
+    opacity: .7 !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .catalogue #productGrid .name { font-size: 15px !important; }
+  .catalogue #productGrid .price { font-size: 10px !important; }
 }
