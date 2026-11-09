@@ -29,7 +29,7 @@
     const matches = products.filter(function (product) {
       // Normalize CMS labels consistently (including spaces) and prefer the
       // explicit merchandising flags supplied by the published catalogue.
-      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
       if (config.badge === 'bestseller') {
         return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
       }
