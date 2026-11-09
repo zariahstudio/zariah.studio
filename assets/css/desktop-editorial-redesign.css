@@ -103,3 +103,45 @@
 @media (min-width:1440px){
   .hero{height:680px!important}
 }
+
+
+/* Markup-specific desktop compositions */
+@media(min-width:1024px){
+  .z-hero-slide{position:absolute!important;inset:0!important}
+  .z-hero-slide>img,.z-hero-slide>picture img{width:100%!important;height:100%!important;object-fit:cover!important}
+  .z-hero-copy{position:absolute!important;left:8%!important;top:50%!important;transform:translateY(-50%)!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;max-width:650px!important;text-align:left!important;color:#fff!important;gap:18px!important}
+  .z-hero-copy small{font:500 11px/1.5 Inter,Arial,sans-serif!important;letter-spacing:.28em!important;color:#ead9c2!important}
+  .z-hero-copy strong{font:300 clamp(60px,6.3vw,94px)/.9 "Cormorant Garamond",Georgia,serif!important;letter-spacing:-.035em!important;color:#fff!important;max-width:8ch!important}
+  .z-hero-copy em{font:500 11px/1 Inter,Arial,sans-serif!important;font-style:normal!important;letter-spacing:.2em!important;color:#fff!important;margin-top:16px!important}
+  .z-hero-arrow{width:54px!important;height:54px!important;border:1px solid rgba(255,255,255,.6)!important;background:rgba(30,25,20,.15)!important;color:#fff!important}
+  .z-hero-dots{bottom:28px!important}
+  /* Standalone product detail HTML uses its own header and class system. */
+  body:has(.product-layout) header{height:100px!important;padding:0 max(56px,calc((100% - 1360px)/2))!important;display:flex!important;align-items:center!important;justify-content:space-between!important;background:#fffdfa!important;border-bottom:1px solid #e6ded4!important}
+  body:has(.product-layout) header .brand{font:400 40px/.8 "Cormorant Garamond",Georgia,serif!important;letter-spacing:.14em!important;color:#292622!important}
+  body:has(.product-layout) header .brand small{display:block!important;text-align:center!important;font:500 9px/1.7 Inter,Arial,sans-serif!important;letter-spacing:.42em!important}
+  body:has(.product-layout) header nav{display:flex!important;gap:36px!important}
+  body:has(.product-layout) header nav a{font:500 11px/1.3 Inter,Arial,sans-serif!important;letter-spacing:.14em!important;text-transform:uppercase!important;color:#51483f!important}
+  body:has(.product-layout) main{width:min(1360px,calc(100% - 144px))!important;margin:52px auto 100px!important}
+  body:has(.product-layout) .breadcrumb{font:500 10px/1.5 Inter,Arial,sans-serif!important;letter-spacing:.1em!important;color:#8a7e72!important;margin-bottom:32px!important}
+  body:has(.product-layout) .product-layout{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(420px,.9fr)!important;gap:90px!important;align-items:start!important}
+  body:has(.product-layout) .gallery{position:sticky!important;top:135px!important}
+  body:has(.product-layout) .main-image{background:#f1ede7!important;border:0!important;aspect-ratio:4/5!important;max-height:760px!important;overflow:hidden!important}
+  body:has(.product-layout) .main-image img{width:100%!important;height:100%!important;object-fit:cover!important}
+  body:has(.product-layout) .thumbs{display:flex!important;gap:12px!important;margin-top:14px!important}
+  body:has(.product-layout) .thumb{width:88px!important;height:108px!important;border:1px solid #e6ded4!important;padding:0!important;background:#f1ede7!important}
+  body:has(.product-layout) .product-copy{padding:48px 0 0!important}
+  body:has(.product-layout) .product-copy .eyebrow{font:500 10px/1.5 Inter,Arial,sans-serif!important;letter-spacing:.24em!important;text-transform:uppercase!important;color:#a1845e!important}
+  body:has(.product-layout) .product-copy h1{font:400 clamp(48px,4.5vw,66px)/.96 "Cormorant Garamond",Georgia,serif!important;letter-spacing:-.025em!important;margin:20px 0!important}
+  body:has(.product-layout) .product-copy .price{font:500 23px/1.4 Inter,Arial,sans-serif!important;color:#806b53!important;margin:18px 0!important}
+  body:has(.product-layout) .product-copy .description{font:400 16px/1.9 Inter,Arial,sans-serif!important;color:#6d645b!important;max-width:560px!important}
+  body:has(.product-layout) .product-copy .availability{font:500 11px/1.5 Inter,Arial,sans-serif!important;letter-spacing:.1em!important;color:#65745e!important;margin:24px 0!important}
+  body:has(.product-layout) .specs{border-top:1px solid #e6ded4!important;margin:28px 0!important}
+  body:has(.product-layout) .specs>div{display:grid!important;grid-template-columns:150px 1fr!important;gap:20px!important;padding:14px 0!important;border-bottom:1px solid #e6ded4!important}
+  body:has(.product-layout) .specs span{font:500 10px/1.5 Inter,Arial,sans-serif!important;letter-spacing:.12em!important;text-transform:uppercase!important;color:#8a7e72!important}
+  body:has(.product-layout) .specs strong{font:400 14px/1.6 Inter,Arial,sans-serif!important;color:#39332d!important}
+  body:has(.product-layout) .order-btn{display:flex!important;align-items:center!important;justify-content:center!important;min-height:56px!important;padding:0 24px!important;background:#332e29!important;color:#fff!important;border:1px solid #332e29!important;text-decoration:none!important;font:500 10px/1 Inter,Arial,sans-serif!important;letter-spacing:.18em!important;text-transform:uppercase!important}
+  body:has(.product-layout) .order-btn:hover{background:#b5966b!important;border-color:#b5966b!important}
+  body:has(.product-layout) .note{font-size:13px!important;color:#82786f!important}
+  body:has(.product-layout) .more{margin-top:100px!important;padding:60px!important;background:#f4f0ea!important;text-align:center!important}
+  body:has(.product-layout) footer{padding:34px 7%!important;background:#eee8df!important;color:#6d645b!important;font:400 12px/1.7 Inter,Arial,sans-serif!important}
+}
