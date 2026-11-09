@@ -27,9 +27,14 @@
     if (!section || !grid) return;
 
     const matches = products.filter(function (product) {
-      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]/g, '');
-      if (config.badge === 'bestseller') return product.isBestseller === true || badge === 'bestseller';
-      return badge === config.badge;
+      // Normalize CMS labels consistently (including spaces) and prefer the
+      // explicit merchandising flags supplied by the published catalogue.
+      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+      if (config.badge === 'bestseller') {
+        return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
+      }
+      return product.isFeatured === true ||
+        ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
     }).slice(0, 4);
 
     section.hidden = matches.length === 0;
