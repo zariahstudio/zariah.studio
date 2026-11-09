@@ -1,0 +1,23 @@
+/* ZARIAH Studio — unified readable editorial typography */
+:root{--z-type-display:"Cormorant Garamond",Georgia,serif;--z-type-body:"Inter",Arial,sans-serif}
+html{ text-size-adjust:100%; -webkit-text-size-adjust:100% }
+body{font-family:var(--z-type-body)!important;font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+p,li,dd,dt,label,input,textarea,select,button{font-family:var(--z-type-body)}
+p,li{line-height:1.7}
+h1,h2,h3,h4,.name,.product-title,.section-title,.page-title{font-family:var(--z-type-display)!important;font-weight:400;line-height:1.12;letter-spacing:-.01em}
+h1{font-size:clamp(36px,5vw,58px)}
+h2{font-size:clamp(29px,3.8vw,42px)}
+h3{font-size:clamp(23px,2.8vw,30px)}
+small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text{font-size:12px;line-height:1.5}
+button,a{ -webkit-tap-highlight-color:transparent }
+input,textarea,select{font-size:16px;line-height:1.5}
+button{font-size:13px;line-height:1.4}
+@media(max-width:768px){
+ body{font-size:15.5px;line-height:1.65}
+ p,li{font-size:15px;line-height:1.7}
+ h1{font-size:clamp(34px,9vw,46px)}
+ h2{font-size:clamp(28px,7.2vw,36px)}
+ h3{font-size:clamp(22px,5.8vw,27px)}
+ small,.eyebrow,.meta,.breadcrumb,.crumb,.sku,.caption,.helper-text{font-size:11px}
+ button{font-size:12px}
+}
