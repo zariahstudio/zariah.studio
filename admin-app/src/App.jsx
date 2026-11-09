@@ -6,6 +6,7 @@ import {
   Printer, MessageCircle, Award, TrendingUp
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
+import { processImageFile } from './imageProcessing';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -49,7 +50,30 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
     cost_bdt: product.cost_bdt ?? ''
   } : emptyProduct);
   const [images, setImages] = useState([]);
+  const [processedImages, setProcessedImages] = useState([]);
+  const [imageProcessing, setImageProcessing] = useState(false);
+  const [imageError, setImageError] = useState('');
   const [stockTouched, setStockTouched] = useState(false);
+  const handleImageSelection = async (files) => {
+    setImages(files);
+    setProcessedImages([]);
+    setImageError('');
+    if (!files.length) return;
+    setImageProcessing(true);
+    try {
+      const results = await Promise.all(files.map(file => processImageFile(file, {
+        width: 1200, height: 1600, background: '#f6f1ed'
+      })));
+      setProcessedImages(results.map(result => ({
+        ...result,
+        previewUrl: URL.createObjectURL(result.processedFile)
+      })));
+    } catch (error) {
+      setImageError(error.message || 'Could not process one or more images.');
+    } finally {
+      setImageProcessing(false);
+    }
+  };
   const [error, setError] = useState('');
   const change = (key, value) => setForm(old => ({ ...old, [key]: value }));
   const submit = async (e) => {
@@ -75,7 +99,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       availability_mode: form.availability_mode === 'pre_order' ? 'pre_order' : 'auto',
       display_order: Number(form.display_order || 0)
     };
-    try { await onSave(payload, Number(form.stock || 0), images, stockTouched); }
+    try { await onSave(payload, Number(form.stock || 0), processedImages, stockTouched); }
     catch (err) { setError(err.message || 'Could not save product.'); }
   };
   return <div className="modal-backdrop" role="presentation" onMouseDown={e => e.target === e.currentTarget && onClose()}>
@@ -97,8 +121,10 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label className="span-2">Size / specifications<input value={form.size || ''} onChange={e => change('size', e.target.value)} placeholder="Medium · L 26cm × H 20cm × D 10cm"/></label>
           <label>Badge<input value={form.badge || ''} onChange={e => change('badge', e.target.value)} placeholder="New / Bestseller"/></label>
           <label>Display order<input type="number" value={form.display_order} onChange={e => change('display_order', e.target.value)}/></label>
-          <label className="upload-box span-2"><Upload size={19}/><span><strong>Upload product images</strong><small>JPG, PNG or WebP · up to 10 MB each</small></span><input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e => setImages(Array.from(e.target.files || []))}/></label>
-          {images.length > 0 && <p className="span-2 tiny muted">{images.length} new image(s) selected: {images.map(f => f.name).join(', ')}</p>}
+          <label className="upload-box span-2"><Upload size={19}/><span><strong>Upload product images</strong><small>JPG, PNG or WebP · up to 10 MB each · auto-fit to 1200 × 1600</small></span><input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e => handleImageSelection(Array.from(e.target.files || []))}/></label>
+          {imageProcessing && <p className="span-2 tiny muted">Optimizing images…</p>}
+          {imageError && <p className="span-2 form-error">{imageError}</p>}
+          {processedImages.length > 0 && <div className="span-2 image-upload-previews">{processedImages.map((image, index) => <div className="image-upload-preview" key={image.originalFile.name + index}><img src={image.previewUrl} alt={image.originalFile.name + ' optimized preview'}/><span>{image.originalFile.name}</span><small>{image.width} × {image.height} · WebP</small></div>)}</div>}
           <div className="checks span-2">
             <label className="check"><input type="checkbox" checked={form.is_featured} onChange={e => change('is_featured', e.target.checked)}/> Featured</label>
             <label className="check"><input type="checkbox" checked={form.is_bestseller} onChange={e => change('is_bestseller', e.target.checked)}/> Bestseller</label>
@@ -106,7 +132,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           </div>
         </div>
         {error && <p className="form-error">{error}</p>}
-        <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? <LoaderCircle className="spin" size={16}/> : null} Save product</button></footer>
+        <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving || imageProcessing || Boolean(imageError) || processedImages.length !== images.length}>{saving || imageProcessing ? <LoaderCircle className="spin" size={16}/> : null} Save product</button></footer>
       </form>
     </section>
   </div>;
@@ -394,10 +420,19 @@ function App() {
         if (stockError) throw stockError;
       }
       for (let i = 0; i < imageFiles.length; i++) {
-        const file = imageFiles[i];
-        const extension = file.name.split('.').pop().toLowerCase();
-        const path = `${productId}/${crypto.randomUUID()}.${extension}`;
-        const { error: uploadError } = await supabase.storage.from('product-images').upload(path, file, { contentType: file.type, upsert: false });
+        const image = imageFiles[i];
+        const imageId = crypto.randomUUID();
+        const originalExtension = image.originalFile.name.split('.').pop().toLowerCase();
+        const originalPath = `originals/${productId}/${imageId}.${originalExtension}`;
+        const { error: originalError } = await supabase.storage.from('product-images').upload(
+          originalPath, image.originalFile, { contentType: image.originalFile.type, upsert: false }
+        );
+        if (originalError) throw originalError;
+
+        const path = `${productId}/${imageId}.webp`;
+        const { error: uploadError } = await supabase.storage.from('product-images').upload(
+          path, image.processedFile, { contentType: 'image/webp', upsert: false }
+        );
         if (uploadError) throw uploadError;
         const { data: publicData } = supabase.storage.from('product-images').getPublicUrl(path);
         const { error: imageError } = await supabase.from('product_images').insert({
@@ -414,11 +449,33 @@ function App() {
   const uploadMedia = async (slot,file,altText) => {
     if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10*1024*1024) return notify('error','Choose JPG, PNG or WebP up to 10 MB.');
     setSaving(true); try {
-      const ext=file.name.split('.').pop().toLowerCase(); const path='site-media/'+slot.key+'/'+crypto.randomUUID()+'.'+ext;
-      const {error:upErr}=await supabase.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false}); if(upErr) throw upErr;
+      const dimensions = {
+        'hero.desktop': [1920,1080], 'hero.mobile': [1080,1600],
+        'campaign.main': [1920,900], 'lookbook.main': [1200,1800],
+        'about.main': [1600,1200], 'brand.footer': [1600,900],
+        'collection.essence.cover': [1200,1600],
+        'collection.signature.cover': [1200,1600],
+        'collection.noir.cover': [1200,1600]
+      }[slot.key] || [1920,1920];
+      const optimized = await processImageFile(file, {
+        width: dimensions[0], height: dimensions[1], background: '#f6f1ed'
+      });
+      const imageId = crypto.randomUUID();
+      const originalExt = file.name.split('.').pop().toLowerCase();
+      const originalPath = 'originals/site-media/'+slot.key+'/'+imageId+'.'+originalExt;
+      const {error:originalError}=await supabase.storage.from('product-images').upload(
+        originalPath,file,{contentType:file.type,upsert:false}
+      );
+      if(originalError) throw originalError;
+      const path='site-media/'+slot.key+'/'+imageId+'.webp';
+      const {error:upErr}=await supabase.storage.from('product-images').upload(
+        path,optimized.processedFile,{contentType:'image/webp',upsert:false}
+      );
+      if(upErr) throw upErr;
       const {data:urlData}=supabase.storage.from('product-images').getPublicUrl(path);
-      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'}); if(error) throw error;
-      await loadData(); notify('success',slot.label+' published.');
+      const {error}=await supabase.from('site_media').upsert({slot_key:slot.key,label:slot.label,storage_path:path,public_url:urlData.publicUrl,alt_text:altText,is_published:true,updated_at:new Date().toISOString()},{onConflict:'slot_key'});
+      if(error) throw error;
+      await loadData(); notify('success',slot.label+' optimized and published. Original image backed up.');
     } catch(e){notify('error',e.message||'Image upload failed.');} finally{setSaving(false);}
   };
   const toggleMedia = async (asset) => {const {error}=await supabase.from('site_media').update({is_published:!asset.is_published,updated_at:new Date().toISOString()}).eq('id',asset.id);if(error)notify('error',error.message);else{await loadData();notify('success','Image visibility updated.');}};
