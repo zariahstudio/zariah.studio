@@ -172,3 +172,36 @@
     }
   }
 }
+
+
+/* Product quick-view: retain the existing vertical modal and all interactions. */
+@media (min-width: 769px) {
+  .pmodal {
+    width: min(760px, calc(100vw - 80px));
+    max-width: 760px;
+    border: 1px solid rgba(185, 150, 104, .34);
+    border-radius: 5px;
+    box-shadow: 0 28px 90px rgba(35, 29, 24, .24);
+  }
+  .pmodal-overlay { background: rgba(30, 26, 23, .76); }
+  .pmodal-gallery { background: #f4eee8; }
+  .pmodal-main-img {
+    height: 460px;
+    max-height: 58vh;
+    object-fit: contain;
+    object-position: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+  .pmodal-info { padding: 34px 42px 112px; }
+  .pmodal-coll { font-size: 10px; letter-spacing: .28em; color: #9b7b53; }
+  .pmodal-name { font-size: clamp(34px, 3.2vw, 44px); line-height: 1.04; }
+  .pmodal-type { font-size: 11px; letter-spacing: .14em; color: #81766d; }
+  .pmodal-price { font-size: 32px; color: #9b7b53; }
+  .pmodal-desc { max-width: 620px; font-size: 15px; line-height: 1.85; color: #6f655d; }
+  .pmodal-size { border: 1px solid #e8dfd5; border-radius: 3px; background: #faf7f3; }
+  .pmodal-features { gap: 12px 22px; }
+  .pfeat { font-size: 13px; line-height: 1.5; color: #6f655d; }
+  .ptrust-item { font-size: 10px; letter-spacing: .07em; }
+  .pmodal-close { border-radius: 2px; }
+}
