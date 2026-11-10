@@ -52,7 +52,7 @@
     background:linear-gradient(90deg,rgba(39,33,28,.82) 0%,rgba(39,33,28,.63) 31%,rgba(39,33,28,.12) 68%,rgba(39,33,28,0) 100%)!important;
   }
   .hero.z-hero-carousel:before {
-    content:"Z A R I A H   S T U D I O\\A\\AThe art of\\Aquiet luxury.";
+    content:"Z A R I A H   S T U D I O\A\AThe art of\Aquiet luxury.";
     white-space:pre!important; position:absolute!important; z-index:4!important;
     left:8.5%!important; top:47%!important; transform:translateY(-50%)!important;
     width:42%!important; color:#fffaf3!important;
