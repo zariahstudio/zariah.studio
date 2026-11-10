@@ -1,0 +1,178 @@
+/* ZARIAH STUDIO — DESKTOP STOREFRONT REBUILD V4
+   Structural layout correction for the existing storefront. Desktop only.
+   Preserves all existing HTML hooks, product data, commerce and mobile rules. */
+@media (min-width: 1024px) {
+  :root {
+    --z4-ink:#292622; --z4-muted:#766d63; --z4-paper:#fbf9f6;
+    --z4-cream:#f0ebe4; --z4-line:#e3dbd1; --z4-brass:#aa8b63;
+    --z4-dark:#302a25; --z4-display:"Cormorant Garamond", Georgia, serif;
+    --z4-body:Inter, Arial, sans-serif;
+  }
+  html { scroll-padding-top:150px; }
+  body { background:var(--z4-paper)!important; color:var(--z4-ink)!important; }
+  /* Header: explicit grid placement prevents inherited absolute/flex positioning collisions. */
+  .hdr {
+    position:sticky!important; top:0!important; z-index:100!important;
+    width:100%!important; background:rgba(251,249,246,.98)!important;
+    border-bottom:1px solid var(--z4-line)!important; box-shadow:0 5px 24px rgba(40,32,24,.045)!important;
+  }
+  .hdr-inner {
+    display:grid!important; position:relative!important;
+    grid-template-columns:minmax(150px, .8fr) minmax(400px, 1.8fr) minmax(250px, .9fr)!important;
+    grid-template-areas:"brand nav actions"!important;
+    align-items:center!important; gap:24px!important;
+    width:min(1480px,calc(100% - 100px))!important; max-width:1480px!important;
+    min-height:112px!important; height:auto!important; margin:0 auto!important;
+    padding:18px 0!important; box-sizing:border-box!important;
+  }
+  .hdr-inner > .logo {
+    grid-area:brand!important; position:static!important; inset:auto!important;
+    transform:none!important; display:flex!important; flex-direction:column!important;
+    align-items:flex-start!important; justify-self:start!important;
+    width:max-content!important; max-width:100%!important; margin:0!important;
+    z-index:2!important; text-decoration:none!important;
+  }
+  .logo-name { display:block!important; font:400 43px/.9 var(--z4-display)!important;
+    letter-spacing:.13em!important; color:var(--z4-ink)!important; white-space:nowrap!important; }
+  .logo-studio { display:block!important; margin:5px 0 0!important; padding:0!important;
+    font:500 9px/1 var(--z4-body)!important; letter-spacing:.48em!important;
+    color:var(--z4-brass)!important; text-align:left!important; }
+  .hdr-inner > nav[aria-label="Main navigation"] {
+    grid-area:nav!important; position:static!important; inset:auto!important;
+    transform:none!important; display:flex!important; align-items:center!important;
+    justify-content:center!important; justify-self:stretch!important;
+    width:100%!important; min-width:0!important; max-width:none!important;
+    margin:0!important; padding:0!important; overflow:visible!important;
+  }
+  .hdr nav[aria-label="Main navigation"] .nav-links {
+    display:flex!important; flex-flow:row nowrap!important; align-items:center!important;
+    justify-content:center!important; gap:clamp(16px,2vw,30px)!important;
+    width:100%!important; margin:0!important; padding:0!important; list-style:none!important;
+    white-space:nowrap!important;
+  }
+  .hdr nav[aria-label="Main navigation"] .nav-links > li {
+    display:block!important; flex:0 0 auto!important; min-width:0!important; margin:0!important;
+  }
+  .hdr nav[aria-label="Main navigation"] .nav-links a {
+    display:inline-flex!important; align-items:center!important; min-height:40px!important;
+    color:#51483f!important; font:500 10px/1.4 var(--z4-body)!important;
+    letter-spacing:.13em!important; text-transform:uppercase!important;
+    white-space:nowrap!important; text-decoration:none!important;
+  }
+  .hdr nav[aria-label="Main navigation"] .mnav-cart-link { display:none!important; }
+  .hdr nav[aria-label="Main navigation"] .z-cart-nav { display:none!important; }
+  .hdr-inner > .hdr-right {
+    grid-area:actions!important; position:static!important; inset:auto!important;
+    transform:none!important; display:flex!important; flex-flow:row nowrap!important;
+    align-items:center!important; justify-content:flex-end!important;
+    justify-self:end!important; gap:10px!important; width:auto!important;
+    min-width:0!important; max-width:100%!important; margin:0!important; padding:0!important;
+  }
+  .hdr-right > * { position:static!important; transform:none!important; flex:0 0 auto!important; }
+  .z-wishlist-trigger,.btn-wa {
+    display:inline-flex!important; align-items:center!important; justify-content:center!important;
+    min-height:44px!important; max-width:100%!important; padding:0 14px!important;
+    border:1px solid #d9cfc2!important; border-radius:0!important;
+    background:transparent!important; color:var(--z4-ink)!important;
+    font:500 9px/1.2 var(--z4-body)!important; letter-spacing:.09em!important;
+    white-space:nowrap!important; text-decoration:none!important;
+  }
+  .btn-wa { background:var(--z4-dark)!important; border-color:var(--z4-dark)!important; color:#fff!important; }
+  .ann { min-height:34px!important; height:34px!important; line-height:34px!important;
+    background:var(--z4-dark)!important; color:#f5eee5!important;
+    font:500 9px/34px var(--z4-body)!important; letter-spacing:.16em!important; }
+  /* Editorial hero: use the existing carousel assets and controls, with a stable desktop frame. */
+  .hero.z-hero-carousel {
+    position:relative!important; display:block!important;
+    width:min(1480px,calc(100% - 100px))!important;
+    height:clamp(500px,42vw,650px)!important; min-height:500px!important;
+    margin:34px auto 88px!important; overflow:hidden!important;
+    background:#e9e0d5!important; border:1px solid rgba(170,139,99,.2)!important;
+    box-shadow:0 22px 55px rgba(45,37,29,.09)!important;
+  }
+  .z-hero-slides,.z-hero-slide { position:absolute!important; inset:0!important; width:100%!important; height:100%!important; }
+  .z-hero-slide { display:block!important; opacity:0!important; visibility:hidden!important; }
+  .z-hero-slide.is-active { opacity:1!important; visibility:visible!important; }
+  .z-hero-slide picture,.z-hero-slide picture img,.z-hero-slide>img {
+    position:absolute!important; inset:0!important; display:block!important;
+    width:100%!important; height:100%!important; object-fit:cover!important;
+    object-position:center 48%!important;
+  }
+  .z-hero-slide:after {
+    content:""!important; position:absolute!important; inset:0!important; pointer-events:none!important;
+    background:linear-gradient(90deg,rgba(36,31,27,.52),rgba(36,31,27,.18) 48%,transparent 78%)!important;
+  }
+  .hero.z-hero-carousel:before {
+    content:"A considered collection.\A A lasting impression."!important;
+    white-space:pre-line!important; position:absolute!important; z-index:4!important;
+    left:7.5%!important; top:46%!important; transform:translateY(-50%)!important;
+    width:42%!important; color:#fffaf2!important; pointer-events:none!important;
+    font:400 clamp(48px,5vw,76px)/.98 var(--z4-display)!important;
+    letter-spacing:-.025em!important; text-shadow:0 2px 24px rgba(0,0,0,.18)!important;
+  }
+  .hero.z-hero-carousel:after {
+    content:"ZARIAH STUDIO  ·  CURATED BAGS. TIMELESS STYLE."!important;
+    position:absolute!important; z-index:4!important; left:7.7%!important; top:67%!important;
+    color:#f0dfc6!important; font:500 9px/1.5 var(--z4-body)!important;
+    letter-spacing:.2em!important; pointer-events:none!important;
+  }
+  .z-hero-arrow,.z-hero-dots { z-index:6!important; }
+  /* Product discovery and merchandising. */
+  .products { padding:44px 0 112px!important; background:var(--z4-paper)!important; }
+  .products > .container,.why > .container,.process > .container,.testi > .container,
+  .story > .container,.editorial > .container,.faq > .container {
+    width:min(1360px,calc(100% - 120px))!important; max-width:1360px!important;
+    margin-left:auto!important; margin-right:auto!important;
+  }
+  .products-header { display:flex!important; align-items:flex-end!important; justify-content:space-between!important;
+    gap:32px!important; margin:0 0 38px!important; padding:0 0 24px!important;
+    border-bottom:1px solid var(--z4-line)!important; }
+  .prod-intro { display:flex!important; flex-direction:column!important; align-items:flex-start!important; text-align:left!important; }
+  .prod-ttl { margin:0!important; color:var(--z4-ink)!important;
+    font:400 clamp(48px,4.4vw,66px)/.95 var(--z4-display)!important; letter-spacing:-.03em!important; }
+  .coll-names { margin:12px 0 6px!important; color:var(--z4-brass)!important;
+    font:500 9px/1.5 var(--z4-body)!important; letter-spacing:.2em!important; }
+  .prod-count-line { color:var(--z4-muted)!important; font:500 9px/1.5 var(--z4-body)!important; letter-spacing:.12em!important; text-transform:uppercase!important; }
+  .prod-grid,.products .prod-grid { display:grid!important; grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    align-items:start!important; gap:48px 26px!important; }
+  .products .pcard { min-width:0!important; background:transparent!important; border:0!important; box-shadow:none!important; }
+  .products .pcard-img { position:relative!important; aspect-ratio:3/4!important; overflow:hidden!important;
+    background:var(--z4-cream)!important; border:1px solid rgba(170,139,99,.14)!important; }
+  .products .pcard-img-real { width:100%!important; height:100%!important; object-fit:contain!important;
+    padding:5%!important; transition:transform .6s ease!important; }
+  .products .pcard:hover .pcard-img-real { transform:scale(1.035)!important; }
+  .products .pcard-info { padding:16px 2px 0!important; text-align:left!important; }
+  .products .pcard-name { color:var(--z4-ink)!important; font:400 23px/1.12 var(--z4-display)!important; }
+  .products .pcard-price { color:#80694e!important; font:500 13px/1.4 var(--z4-body)!important; }
+  .products .pcard-type { color:#8b8176!important; font:500 9px/1.5 var(--z4-body)!important; letter-spacing:.15em!important; }
+  .products .coll-badge { background:#fffdfa!important; color:#594b3d!important; border:1px solid #e1d4c3!important; }
+  .products .btn-order,.products .btn-notify { min-height:44px!important; border-radius:0!important;
+    background:var(--z4-dark)!important; color:#fff!important; border:1px solid var(--z4-dark)!important; }
+  .prod-trust-bar { margin-top:56px!important; background:var(--z4-cream)!important; border:1px solid var(--z4-line)!important; }
+  /* Lower editorial sections share a consistent warm, quiet-luxury system. */
+  .why { padding:110px 0!important; background:var(--z4-cream)!important; }
+  .why-inner,.story-inner { gap:clamp(48px,7vw,100px)!important; }
+  .why .ttl,.story .ttl,.editorial .ttl,.faq .ttl,.process .ttl,.testi .ttl {
+    font:400 clamp(46px,4.2vw,62px)/1 var(--z4-display)!important; letter-spacing:-.025em!important; }
+  .why .lbl,.process .lbl,.story .lbl,.editorial .lbl,.faq .lbl { color:var(--z4-brass)!important; letter-spacing:.2em!important; }
+  .why .sub,.process .sub,.editorial .sub,.story-body p { color:var(--z4-muted)!important; line-height:1.85!important; }
+  .process { padding:108px 0!important; background:var(--z4-paper)!important; }
+  .testi { padding:104px 0!important; background:var(--z4-dark)!important; }
+  .story { padding:110px 0!important; background:var(--z4-cream)!important; }
+  .editorial { padding:104px 0!important; background:var(--z4-paper)!important; }
+  .editorial .ig-grid { width:min(1360px,calc(100% - 120px))!important; margin:0 auto!important; }
+  .faq { padding:104px 0!important; background:var(--z4-cream)!important; }
+  .footer { background:var(--z4-dark)!important; }
+  :focus-visible { outline:2px solid var(--z4-brass)!important; outline-offset:3px!important; }
+}
+@media (min-width:1024px) and (max-width:1279px) {
+  .hdr-inner { width:calc(100% - 48px)!important; grid-template-columns:130px minmax(330px,1fr) 220px!important; gap:12px!important; }
+  .logo-name { font-size:36px!important; }
+  .hdr nav[aria-label="Main navigation"] .nav-links { gap:14px!important; }
+  .hdr nav[aria-label="Main navigation"] .nav-links a { font-size:9px!important; letter-spacing:.08em!important; }
+  .z-wishlist-trigger,.btn-wa { padding:0 9px!important; font-size:8px!important; }
+  .hero.z-hero-carousel { width:calc(100% - 48px)!important; height:520px!important; }
+  .products > .container,.why > .container,.process > .container,.testi > .container,
+  .story > .container,.editorial > .container,.faq > .container { width:calc(100% - 64px)!important; }
+  .prod-grid,.products .prod-grid { grid-template-columns:repeat(3,minmax(0,1fr))!important; }
+}
