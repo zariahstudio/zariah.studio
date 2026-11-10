@@ -102,20 +102,9 @@
     content:""!important; position:absolute!important; inset:0!important; pointer-events:none!important;
     background:linear-gradient(90deg,rgba(36,31,27,.52),rgba(36,31,27,.18) 48%,transparent 78%)!important;
   }
-  .hero.z-hero-carousel:before {
-    content:"A considered collection.\A A lasting impression."!important;
-    white-space:pre-line!important; position:absolute!important; z-index:4!important;
-    left:7.5%!important; top:46%!important; transform:translateY(-50%)!important;
-    width:42%!important; color:#fffaf2!important; pointer-events:none!important;
-    font:400 clamp(48px,5vw,76px)/.98 var(--z4-display)!important;
-    letter-spacing:-.025em!important; text-shadow:0 2px 24px rgba(0,0,0,.18)!important;
-  }
-  .hero.z-hero-carousel:after {
-    content:"ZARIAH STUDIO  ·  CURATED BAGS. TIMELESS STYLE."!important;
-    position:absolute!important; z-index:4!important; left:7.7%!important; top:67%!important;
-    color:#f0dfc6!important; font:500 9px/1.5 var(--z4-body)!important;
-    letter-spacing:.2em!important; pointer-events:none!important;
-  }
+  /* Do not add text over baked-in campaign artwork; prevent duplicate hero copy. */
+  .hero.z-hero-carousel:before,
+  .hero.z-hero-carousel:after { content:none!important; display:none!important; }
   .z-hero-arrow,.z-hero-dots { z-index:6!important; }
   /* Product discovery and merchandising. */
   .products { padding:44px 0 112px!important; background:var(--z4-paper)!important; }
