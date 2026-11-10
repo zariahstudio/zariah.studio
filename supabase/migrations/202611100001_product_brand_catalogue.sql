@@ -18,7 +18,7 @@ returns table (
   product_type text, color text, description text, size_text text,
   price_bdt integer, compare_at_price_bdt integer, badge text, badge_style text,
   is_featured boolean, is_bestseller boolean, display_order integer,
-  stock_counted boolean, is_sold_out boolean, images jsonb
+  stock_counted boolean, is_sold_out boolean, availability_mode text, images jsonb
 )
 language sql stable security definer set search_path = ''
 as $$
@@ -29,6 +29,7 @@ as $$
     p.is_featured, p.is_bestseller, p.display_order,
     coalesce(i.stock_counted, false) as stock_counted,
     coalesce(i.stock_counted and i.on_hand <= i.reserved, false) as is_sold_out,
+    p.availability_mode,
     coalesce((
       select jsonb_agg(jsonb_build_object('url', pi.public_url, 'role', pi.image_role, 'display_order', pi.display_order)
         order by pi.display_order, pi.created_at)
