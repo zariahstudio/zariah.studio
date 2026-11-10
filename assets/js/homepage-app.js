@@ -137,7 +137,7 @@ function renderProducts() {
           <h3 class="pcard-name">${p.name}</h3>
           <span class="pcard-price">${p.price}</span>
         </div>
-        ${p.brand ? `<p class="pcard-type">${p.brand}</p>` : ''}
+        ${p.brand ? `<p class="pcard-type">${zEscape(p.brand)}</p>` : ''}
         <p class="pcard-type">${p.type}</p>
         <p class="pcard-size">${p.size}</p>
         ${p.soldOut
