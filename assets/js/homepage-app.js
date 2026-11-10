@@ -879,14 +879,13 @@ function openPModal(id) {
 
   const featuresEl = document.getElementById('pmodalFeatures');
   if (featuresEl) {
-    const materialLabel = p.collection === 'Noir' ? 'Top-grain genuine cowhide' : 'Premium vegan leather';
     featuresEl.innerHTML = `
-      <span class="pfeat">${materialLabel}</span>
-      <span class="pfeat">Gold-tone hardware</span>
-      <span class="pfeat">Interior pockets</span>
+      <span class="pfeat">Brand details shown on listing</span>
+      <span class="pfeat">Product details vary by style</span>
       <span class="pfeat">Checked before dispatch</span>
-      <span class="pfeat">Luxury gift packaging</span>
-      <span class="pfeat">Pay on delivery</span>
+      <span class="pfeat">7-day exchange policy</span>
+      <span class="pfeat">Additional photos on WhatsApp</span>
+      <span class="pfeat">Cash on delivery where available</span>
     `;
   }
 
