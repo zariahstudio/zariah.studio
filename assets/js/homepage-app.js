@@ -137,6 +137,7 @@ function renderProducts() {
           <h3 class="pcard-name">${p.name}</h3>
           <span class="pcard-price">${p.price}</span>
         </div>
+        ${p.brand ? `<p class="pcard-type">${p.brand}</p>` : ''}
         <p class="pcard-type">${p.type}</p>
         <p class="pcard-size">${p.size}</p>
         ${p.soldOut
@@ -1654,6 +1655,7 @@ async function loadPublishedProductsFromSupabase() {
         sku: row.sku,
         assetFolder: String(row.sku || '').toLowerCase(),
         name: row.name,
+        brand: row.brand || '',
         collection: row.collection_name,
         type: row.product_type || 'Shoulder Bag',
         color: row.color || '',
