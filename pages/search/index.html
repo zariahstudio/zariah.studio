@@ -65,7 +65,7 @@ async function loadLiveCatalogue(){
  try{
   if(!window.ZARIAH_LOAD_SUPABASE)return;
   await window.ZARIAH_LOAD_SUPABASE();
-  const config=window.ZARIA_SUPABASE_CONFIG;
+  const config=window.ZARIAH_SUPABASE_CONFIG;
   if(!config||!window.supabase?.createClient)return;
   const client=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data,error}=await client.rpc('get_storefront_catalogue');
