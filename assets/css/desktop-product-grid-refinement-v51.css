@@ -1,0 +1,22 @@
+/* ZARIAH DESKTOP V5.1 — product discovery refinement */
+@media (min-width:1024px){
+ .products .pcard{display:flex!important;flex-direction:column!important;min-width:0!important}
+ .products .pcard-img{aspect-ratio:4/5!important;background:#f0eae2!important;isolation:isolate!important}
+ .products .pcard-img-real{padding:0!important;transform:scale(1.13)!important;transform-origin:center center!important;transition:transform .5s cubic-bezier(.2,.7,.2,1)!important}
+ .products .pcard:hover .pcard-img-real{transform:scale(1.20)!important}
+ .products .pcard:focus-within .pcard-img-real{transform:scale(1.16)!important}
+ .products .pcard-info{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:7px!important;padding:16px 2px 0!important}
+ .products .pcard-name{font-size:clamp(21px,1.65vw,25px)!important;line-height:1.08!important;min-height:2.16em!important;max-width:100%!important}
+ .products .pcard-price{font-size:14px!important;letter-spacing:.025em!important;margin-top:1px!important}
+ .products .pcard-type{font-size:9px!important;letter-spacing:.16em!important;margin-top:1px!important}
+ .products .pcard-img .coll-badge{top:14px!important;left:14px!important;padding:7px 10px!important;font-size:9px!important;letter-spacing:.13em!important}
+ .products .pcard-img button[aria-label*="wishlist"],.products .pcard-img button[aria-label*="Wishlist"]{top:13px!important;right:13px!important;width:42px!important;height:42px!important}
+ .products .pcard .btn-order,.products .pcard .btn-notify{width:100%!important;min-height:46px!important;margin-top:10px!important;opacity:1!important;transform:none!important}
+ .products .pcard .btn-order:hover,.products .pcard .btn-notify:hover{background:#a88a63!important;border-color:#a88a63!important;color:#fff!important}
+ .prod-grid{row-gap:48px!important}
+}
+@media (min-width:1024px) and (max-width:1279px){
+ .products .pcard-name{font-size:21px!important}
+ .products .pcard-img-real{transform:scale(1.10)!important}
+ .products .pcard:hover .pcard-img-real{transform:scale(1.16)!important}
+}
