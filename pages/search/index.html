@@ -63,8 +63,8 @@ document.getElementById('filters').addEventListener('click',e=>{const b=e.target
 const params=new URLSearchParams(location.search);if(params.has('q'))input.value=params.get('q');render();
 async function loadLiveCatalogue(){
  try{
-  if(!window.ZARIA_LOAD_SUPABASE)return;
-  await window.ZARIA_LOAD_SUPABASE();
+  if(!window.ZARIAH_LOAD_SUPABASE)return;
+  await window.ZARIAH_LOAD_SUPABASE();
   const config=window.ZARIA_SUPABASE_CONFIG;
   if(!config||!window.supabase?.createClient)return;
   const client=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
