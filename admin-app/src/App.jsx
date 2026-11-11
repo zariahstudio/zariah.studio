@@ -345,7 +345,7 @@ function App() {
     setAnalyticsLoading(true);
     const [orderResult, movementResult] = await Promise.all([
       supabase.from('orders')
-        .select('id,status,created_at,source,total_bdt,order_items(product_id,sku_snapshot,name_snapshot,quantity,line_total_bdt)')
+        .select('id,status,created_at,source,total_bdt,order_items(product_id,sku_snapshot,name_snapshot,quantity,line_total_bdt,unit_cost_snapshot,brand_snapshot)')
         .order('created_at', { ascending: false }).limit(5000),
       supabase.from('inventory_movements')
         .select('id,product_id,quantity_delta,reason,reference,created_at,products(name,sku)')
@@ -720,13 +720,13 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
   const totalUnits = salesLines.reduce((sum,line) => sum + Number(line.quantity || 0),0);
   const knownCostLines = salesLines.filter(line => {
     const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
-    return product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '';
+    return line.unit_cost_snapshot !== null && line.unit_cost_snapshot !== undefined || (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '');
   });
   const costCoverage = salesLines.length ? knownCostLines.length / salesLines.length : 0;
   const knownRevenue = knownCostLines.reduce((sum,line) => sum + Number(line.line_total_bdt || 0),0);
   const knownCost = knownCostLines.reduce((sum,line) => {
     const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
-    return sum + Number(product.cost_bdt || 0) * Number(line.quantity || 0);
+    return sum + Number(line.unit_cost_snapshot ?? product.cost_bdt ?? 0) * Number(line.quantity || 0);
   },0);
   const grossProfit = knownRevenue - knownCost;
   const grossMargin = knownRevenue > 0 ? grossProfit / knownRevenue * 100 : 0;
@@ -756,7 +756,7 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
   const brandMap = new Map();
   for (const line of salesLines) {
     const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
-    const brandName = product?.brand || 'Unassigned / legacy';
+    const brandName = line.brand_snapshot || product?.brand || 'Unassigned / legacy';
     const row = brandMap.get(brandName) || { brand:brandName, revenue:0, units:0, knownCost:0, knownRevenue:0 };
     const revenue = Number(line.line_total_bdt || 0);
     const quantity = Number(line.quantity || 0);
