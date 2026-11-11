@@ -13,9 +13,10 @@
 1. Pull the latest `main` branch into the website document root.
 2. Confirm PHP 7.4+ and Apache `mod_rewrite` are enabled (typical cPanel defaults).
 3. Confirm PHP cURL is enabled; the product renderer also has a stream-wrapper fallback.
-4. Open `https://www.zariahstudio.com/products/essence01/` and confirm it loads with the existing product layout.
-5. Open `https://www.zariahstudio.com/sitemap.php` and confirm it returns XML.
-6. Test an unpublished/non-existent slug; it should return HTTP 404 and noindex.
+4. Confirm the root `.htaccess` is deployed. It routes `/products/<slug>/` to `product-seo.php` before existing static product folders are resolved.
+5. Open `https://www.zariahstudio.com/products/essence01/` and confirm it loads with the existing product layout.
+6. Open `https://www.zariahstudio.com/sitemap.php` and confirm it returns XML.
+7. Test an unpublished/non-existent slug; it should return HTTP 404 and noindex.
 
 The production Supabase migration was applied separately to project `keuqvqnhxlpsglsjfopd`. The SQL is retained under `database/migrations/` for source control.
 
