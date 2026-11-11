@@ -150,7 +150,7 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
   </div>;
 }
 
-function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, onSaveBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, onSaveEvidence, onVerifyEvidence, saving }) {
+function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, onSaveBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, onSaveEvidence, onViewEvidence, onVerifyEvidence, saving }) {
  const [brand,setBrand]=useState({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});
  const [supplier,setSupplier]=useState({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});
  const [source,setSource]=useState({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false,confirm_availability:false});
@@ -203,7 +203,7 @@ function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, on
     <label className="span-2">Internal review notes<textarea rows="2" value={evidenceForm.notes} onChange={e=>setEvidenceForm(v=>({...v,notes:e.target.value}))}/></label>
     {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!evidenceForm.product_id||!evidenceFile}><Upload size={16}/> Upload evidence</button></div>
    </form>
-   <div className="table-wrap"><table><thead><tr><th>Product</th><th>Evidence</th><th>Reference</th><th>Review</th><th>Action</th></tr></thead><tbody>{evidence.map(e=><tr key={e.id}><td><strong>{e.products?.name||'Product'}</strong><small className="muted" style={{display:'block'}}>{e.products?.sku||''}</small></td><td>{e.evidence_type.replaceAll('_',' ')}</td><td>{e.reference_number||'—'}</td><td>{e.verified_at?<span className="status live">Verified</span>:<span className="status warning">Pending review</span>}</td><td>{!e.verified_at&&<button className="secondary small" onClick={()=>onVerifyEvidence(e)}>Approve evidence</button>}</td></tr>)}</tbody></table>{!evidence.length&&<div className="empty">No evidence uploaded yet.</div>}</div>
+   <div className="table-wrap"><table><thead><tr><th>Product</th><th>Evidence</th><th>Reference</th><th>Review</th><th>Action</th></tr></thead><tbody>{evidence.map(e=><tr key={e.id}><td><strong>{e.products?.name||'Product'}</strong><small className="muted" style={{display:'block'}}>{e.products?.sku||''}</small></td><td>{e.evidence_type.replaceAll('_',' ')}</td><td>{e.reference_number||'—'}</td><td>{e.verified_at?<span className="status live">Verified</span>:<span className="status warning">Pending review</span>}</td><td><button className="secondary small" onClick={()=>onViewEvidence(e)}>View file</button> {!e.verified_at&&<button className="secondary small" onClick={()=>onVerifyEvidence(e)}>Approve evidence</button>}</td></tr>)}</tbody></table>{!evidence.length&&<div className="empty">No evidence uploaded yet.</div>}</div>
   </section>
  </div>;
 }
@@ -597,6 +597,13 @@ function App() {
     if(error){await supabase.storage.from('authenticity-evidence').remove([path]);throw error;}
     await loadData();notify('success','Evidence uploaded to private storage.');
   };
+  const viewAuthenticityEvidence = async evidence => {
+    const popup=window.open('about:blank','_blank');
+    if(!popup){notify('error','Allow pop-ups to view private evidence.');return;}
+    const {data,error}=await supabase.storage.from('authenticity-evidence').createSignedUrl(evidence.storage_path,60);
+    if(error){popup.close();notify('error',error.message);return;}
+    popup.location.href=data.signedUrl;
+  };
   const verifyAuthenticityEvidence = async evidence => {
     if(!window.confirm('Confirm that you reviewed this document and it supports the product authenticity claim?'))return;
     setSaving(true);
@@ -670,7 +677,7 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
-        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
+        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
