@@ -1253,15 +1253,20 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
     });
 
     // Keep the same idempotency key on retries so a delayed response cannot create a duplicate order.
-    if (!submitButton.dataset.idempotencyKey) {
+    const requestPayload = {
+      p_customer: { full_name: name, phone, district, area, address },
+      p_items: [{ sku: productCode, quantity: qty }]
+    };
+    const requestSignature = JSON.stringify(requestPayload);
+    if (!submitButton.dataset.idempotencyKey || submitButton.dataset.requestSignature !== requestSignature) {
       submitButton.dataset.idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
         ? window.crypto.randomUUID()
         : 'zs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      submitButton.dataset.requestSignature = requestSignature;
     }
 
     const { data: order, error } = await client.rpc('create_website_order', {
-      p_customer: { full_name: name, phone, district, area, address },
-      p_items: [{ sku: productCode, quantity: qty }],
+      ...requestPayload,
       p_idempotency_key: submitButton.dataset.idempotencyKey
     });
     if (error) throw error;
@@ -1292,9 +1297,17 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
       successSection.style.display = 'flex';
       const detail = document.getElementById('osuccessDetail');
       if (detail) {
-        detail.innerHTML = `<strong>Order ${order.order_number}</strong><br><strong>${productName}</strong> · ${collection} Collection<br>` +
-          `${price} · Qty: ${qty}<br>` +
-          `<span style="opacity:.6;font-size:11px">Delivery to: ${address.substring(0,60)}${address.length > 60 ? '...' : ''}</span>`;
+        detail.replaceChildren();
+        const orderLine = document.createElement('strong');
+        orderLine.textContent = 'Order ' + order.order_number;
+        const productLine = document.createElement('strong');
+        productLine.textContent = productName;
+        const deliveryLine = document.createElement('span');
+        deliveryLine.style.cssText = 'opacity:.6;font-size:11px';
+        deliveryLine.textContent = 'Delivery to: ' + address.substring(0,60) + (address.length > 60 ? '...' : '');
+        detail.append(orderLine, document.createElement('br'), productLine);
+        detail.append(document.createTextNode(' · ' + collection + ' Collection'), document.createElement('br'));
+        detail.append(document.createTextNode(price + ' · Qty: ' + qty), document.createElement('br'), deliveryLine);
       }
     }
 
