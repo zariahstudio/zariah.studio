@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /pages/cart/
+Disallow: /pages/checkout/
+
+Sitemap: https://www.zariahstudio.com/sitemap.php
