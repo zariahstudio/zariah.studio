@@ -342,7 +342,146 @@
 }
 </style>
 <link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261110"><link rel="stylesheet" href="/assets/css/homepage-mobile-ux.css?v=20261110-mobile-ux1">
-<link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-v2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2"><link rel="stylesheet" href="/assets/css/desktop-premium-redesign-v3.css?v=20261110-desktop-v3"><link rel="stylesheet" href="/assets/css/desktop-storefront-rebuild-v4.css?v=20261110-v4"><link rel="stylesheet" href="/assets/css/desktop-practical-luxury-v5.css?v=20261110-v5"><link rel="stylesheet" href="/assets/css/desktop-shopping-experience-v6.css?v=20261110-v6"><link rel="stylesheet" href="/assets/css/desktop-sidebar-layout-fix-v7.css?v=20261110-v7"></head>
+<link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-v2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2"><link rel="stylesheet" href="/assets/css/desktop-premium-redesign-v3.css?v=20261110-desktop-v3"><link rel="stylesheet" href="/assets/css/desktop-storefront-rebuild-v4.css?v=20261110-v4"><link rel="stylesheet" href="/assets/css/desktop-practical-luxury-v5.css?v=20261110-v5"><link rel="stylesheet" href="/assets/css/desktop-shopping-experience-v6.css?v=20261110-v6"><link rel="stylesheet" href="/assets/css/desktop-sidebar-layout-fix-v7.css?v=20261110-v7">
+<style id="zariah-collection-type-alignment-v8">
+/* Collection catalogue typography + alignment refinement.
+   Desktop-only, layered after existing V1–V7 styles; no markup, data or JS changes. */
+@media (min-width:1280px){
+  .products>.container{
+    grid-template-columns:250px minmax(0,1fr)!important;
+    column-gap:38px!important;
+    align-items:start!important;
+  }
+  .products-header{
+    width:100%!important;
+    margin:0 0 30px!important;
+    padding:0 0 28px!important;
+    border-bottom:1px solid #e5ddd3!important;
+  }
+  .products-header .prod-intro{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:12px!important;
+    width:100%!important;
+  }
+  .products-header .prod-ttl{
+    margin:0!important;
+    color:#302a25!important;
+    font-family:var(--z5-serif),Georgia,serif!important;
+    font-size:clamp(48px,5.2vw,72px)!important;
+    font-weight:400!important;
+    line-height:.98!important;
+    letter-spacing:-.045em!important;
+    text-align:left!important;
+  }
+  .products-header .coll-names{display:none!important}
+  .products-header .prod-count-line{
+    margin:0!important;
+    color:#8b8074!important;
+    font:500 10px/1.5 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.16em!important;
+    text-transform:uppercase!important;
+  }
+  #desktopFilterBar{
+    width:100%!important;
+    min-width:0!important;
+    border:1px solid #e5ddd3!important;
+    background:#fffdfa!important;
+    box-shadow:0 7px 22px rgba(42,34,26,.045)!important;
+  }
+  #desktopFilterBar .dfbar-inner{gap:20px!important;padding:20px 16px!important}
+  #desktopFilterBar .dfbar-sect-lbl,
+  #desktopFilterBar .dfbar-sort-lbl{
+    margin:0 0 2px!important;
+    font:600 10px/1.45 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.17em!important;
+  }
+  #desktopFilterBar .dftabs{gap:7px!important}
+  #desktopFilterBar .dftab{
+    min-height:58px!important;
+    padding:11px 13px!important;
+    gap:5px!important;
+    text-align:left!important;
+  }
+  #desktopFilterBar .dftab-name{
+    font:600 11px/1.35 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.105em!important;
+  }
+  #desktopFilterBar .dftab-count{margin-left:5px!important}
+  #desktopFilterBar .dftab-desc{
+    font:400 10px/1.4 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.015em!important;
+  }
+  #desktopFilterBar .dftab.active{
+    outline:1px solid #b99562!important;
+    outline-offset:2px!important;
+    border-color:#302b26!important;
+  }
+  #desktopFilterBar .dfbar-right{gap:14px!important;padding-top:18px!important}
+  #desktopFilterBar .dfbar-sort-wrap{gap:8px!important}
+  #desktopFilterBar .dfbar-sort{
+    height:46px!important;
+    padding:0 13px!important;
+    font:500 11px/1 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.09em!important;
+  }
+  #filterStatusBar{
+    min-height:42px!important;
+    margin:0 0 24px!important;
+    padding:0 0 13px!important;
+    align-items:center!important;
+    font:500 10px/1.5 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.16em!important;
+  }
+  #prodGrid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    align-items:start!important;
+    gap:40px 26px!important;
+  }
+  #prodGrid .pcard{min-width:0!important}
+  #prodGrid .pcard-img{
+    aspect-ratio:4/5!important;
+    border:1px solid #e8dfd5!important;
+    background:#f1ebe3!important;
+  }
+  #prodGrid .pcard-img-real{padding:5%!important;object-fit:contain!important}
+  #prodGrid .pcard-info{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    gap:7px!important;
+    padding:14px 2px 0!important;
+    text-align:left!important;
+  }
+  #prodGrid .pcard-name{
+    min-height:2.25em!important;
+    margin:0!important;
+    color:#302a25!important;
+    font:400 clamp(19px,1.7vw,24px)/1.12 var(--z5-serif),Georgia,serif!important;
+    letter-spacing:-.018em!important;
+    text-align:left!important;
+  }
+  #prodGrid .pcard-price{
+    margin:0!important;
+    color:#80694e!important;
+    font:600 15px/1.4 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.015em!important;
+  }
+  #prodGrid .pcard-type{
+    margin:1px 0 0!important;
+    color:#8b8176!important;
+    font:500 10px/1.5 var(--z5-sans),Inter,sans-serif!important;
+    letter-spacing:.15em!important;
+    text-transform:uppercase!important;
+  }
+}
+@media (min-width:1280px) and (max-width:1450px){
+  .products>.container{grid-template-columns:250px minmax(0,1fr)!important;column-gap:30px!important}
+  #prodGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:34px 20px!important}
+}
+</style>
+</head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
 
