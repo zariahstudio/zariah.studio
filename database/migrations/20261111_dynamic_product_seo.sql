@@ -22,12 +22,12 @@ begin
   end if;
 
   if nullif(btrim(new.seo_title), '') is null
-     or (tg_op = 'UPDATE' and old.seo_title = old_auto_title) then
+     or (tg_op = 'UPDATE' and new.seo_title is not distinct from old.seo_title and old.seo_title = old_auto_title) then
     new.seo_title := left(coalesce(nullif(btrim(new.name), ''), 'Luxury Handbag') || ' | ZARIAH Studio Bangladesh', 60);
   end if;
 
   if nullif(btrim(new.seo_description), '') is null
-     or (tg_op = 'UPDATE' and old.seo_description = old_auto_description) then
+     or (tg_op = 'UPDATE' and new.seo_description is not distinct from old.seo_description and old.seo_description = old_auto_description) then
     new.seo_description := left(
       'Shop ' || coalesce(nullif(btrim(new.name), ''), 'refined handbags') ||
       ' from ZARIAH Studio Bangladesh. ' ||
