@@ -10,7 +10,7 @@ import { processImageFile } from './imageProcessing';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', brand: '', product_type: '', color: '', description: '', size: '', price_bdt: '', cost_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
+const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', brand: '', brand_id: '', authenticity_status: 'not_yet_verified', product_type: '', color: '', description: '', size: '', price_bdt: '', cost_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
 
 function Notice({ notice, clear }) {
   if (!notice) return null;
@@ -41,7 +41,7 @@ function PasswordRecovery({ onSave, busy, error }) {
   return <main className="login-wrap"><section className="login-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Set new password</h1><p className="muted">Choose a new password for your admin account.</p><form onSubmit={e => { e.preventDefault(); if (password !== confirm) return; onSave(password); }}><label>New password<input type="password" autoComplete="new-password" minLength={8} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 8 characters"/></label><label>Confirm password<input type="password" autoComplete="new-password" minLength={8} required value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Re-enter new password"/></label>{confirm && password !== confirm && <p className="form-error">Passwords do not match.</p>}{error && <p className="form-error">{error}</p>}<button className="primary full" disabled={busy || password.length<8 || password!==confirm}>{busy ? 'Updating…' : 'Update password'}</button></form></section></main>;
 }
 
-function ProductEditor({ product, collections, onClose, onSave, saving }) {
+function ProductEditor({ product, collections, brands, onClose, onSave, saving }) {
   const [form, setForm] = useState(() => product ? {
     ...emptyProduct, ...product,
     stock: product.inventory?.[0]?.on_hand ?? 0,
@@ -86,7 +86,7 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       sku: (form.sku ?? '').trim(), name: (form.name ?? '').trim(),
       slug: (form.slug ?? '').trim() || slugify(form.name ?? ''),
       collection_id: form.collection_id,
-      brand: (form.brand ?? '').trim() || null,
+      brand: brands.find(b => b.id === form.brand_id)?.name || (form.brand ?? '').trim() || null,\n      brand_id: form.brand_id || null,\n      authenticity_status: form.authenticity_status || 'not_yet_verified',
       product_type: (form.product_type ?? '').trim() || null,
       color: (form.color ?? '').trim() || null,
       description: (form.description ?? '').trim() || null,
@@ -113,7 +113,8 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
           <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
           <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
-          <label>Brand name<input list="zariah-brand-suggestions" value={form.brand || ''} onChange={e => change('brand', e.target.value)} placeholder="e.g. Coach, Aarong or independent"/><datalist id="zariah-brand-suggestions"><option value="Aarong"/><option value="Yellow"/><option value="Sailor"/><option value="Le Reve"/><option value="Ecstasy"/><option value="Charles & Keith"/><option value="ALDO"/><option value="Michael Kors"/><option value="Coach"/><option value="GUESS"/><option value="Independent / Unbranded"/></datalist></label>
+          <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
+          <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified">Verified with evidence</option><option value="not_applicable">Not applicable</option></select></label>
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
           <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="For internal margin reporting only"/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
@@ -649,7 +650,7 @@ function App() {
       } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
       finally { setSaving(false); }
     }} />}
-    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
+    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
   </div>;
 }
 
