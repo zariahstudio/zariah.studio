@@ -761,8 +761,8 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
     const revenue = Number(line.line_total_bdt || 0);
     const quantity = Number(line.quantity || 0);
     row.revenue += revenue; row.units += quantity;
-    if (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '') {
-      row.knownCost += Number(product.cost_bdt || 0) * quantity; row.knownRevenue += revenue;
+    if (line.unit_cost_snapshot !== null && line.unit_cost_snapshot !== undefined || (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '')) {
+      row.knownCost += Number(line.unit_cost_snapshot ?? product.cost_bdt ?? 0) * quantity; row.knownRevenue += revenue;
     }
     brandMap.set(brandName,row);
   }
