@@ -61,6 +61,7 @@ let activeCollection = (() => {
   return 'all';
 })();
 let activeType = 'all';
+let activeBrand = 'all';
 let activeSortOrder = 'featured';
 let currentProductModal = null;
 let currentGalleryIdx = 0;
@@ -75,7 +76,8 @@ function renderProducts() {
   let filtered = PRODUCTS.filter(p => {
     const collMatch = activeCollection === 'all' || p.collection === activeCollection;
     const typeMatch = activeType === 'all' || p.type === activeType;
-    return collMatch && typeMatch;
+    const brandMatch = activeBrand === 'all' || String(p.brand || '').trim() === activeBrand;
+    return collMatch && typeMatch && brandMatch;
   });
 
   // ── TASK 1: Sort ─────────────────────────────────
@@ -305,8 +307,8 @@ function updateFilterStatus(visibleCount) {
   if (!statusBar || !statusTxt) return;
 
   const collLabels = { all: 'All Collections', Essence: 'Essence Collection', Signature: 'Signature Collection', Noir: 'Noir Collection' };
-  const collLabel = collLabels[activeCollection] || (activeCollection === 'all' ? 'All Collections' : `${activeCollection} Collection`);
-  const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeSortOrder !== 'featured';
+  const collLabel = activeBrand !== 'all' ? `${activeBrand} Brand` : (collLabels[activeCollection] || (activeCollection === 'all' ? 'All Collections' : `${activeCollection} Collection`));
+  const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeBrand !== 'all' || activeSortOrder !== 'featured';
 
   statusTxt.innerHTML = `Showing <em>${collLabel}</em> &mdash; <strong>${visibleCount} ${visibleCount === 1 ? 'Product' : 'Products'}</strong>`;
   if (resetBtn) resetBtn.classList.toggle('hidden', !isFiltered);
@@ -316,7 +318,7 @@ function updateFilterStatus(visibleCount) {
   if (countLine) {
     if (isFiltered) {
       const collShort = { all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection;
-      const typeLabel = activeType !== 'all' ? ' — ' + activeType : '';
+      const typeLabel = (activeBrand !== 'all' ? ' — ' + activeBrand : '') + (activeType !== 'all' ? ' — ' + activeType : '');
       countLine.textContent = 'Showing ' + collShort + typeLabel + ' — ' + visibleCount + ' ' + (visibleCount === 1 ? 'Product' : 'Products');
     } else {
       countLine.textContent = 'Showing ' + visibleCount + ' Products';
@@ -357,6 +359,30 @@ function setCollFilter(coll) {
     t.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
 }
+function setBrandFilter(brand) {
+  activeBrand = brand || 'all';
+  ['dfbarBrand','mobileBrandSelect'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = activeBrand;
+  });
+  document.querySelectorAll('[data-brand-filter]').forEach(el => {
+    el.setAttribute('aria-label', activeBrand === 'all' ? 'Filter by brand' : 'Brand: ' + activeBrand);
+  });
+}
+function syncDynamicBrandFilters() {
+  const brands = [...new Set(PRODUCTS.map(p => String(p.brand || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+  ['dfbarBrand','mobileBrandSelect'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const current = select.value || activeBrand;
+    select.replaceChildren(new Option('All Brands', 'all'));
+    brands.forEach(name => select.add(new Option(name, name)));
+    select.value = brands.includes(current) ? current : 'all';
+    select.disabled = brands.length === 0;
+    select.setAttribute('aria-label', brands.length ? 'Filter by brand' : 'Brand filter available when branded products are added');
+  });
+  if (!brands.includes(activeBrand)) activeBrand = 'all';
+}
 function setTypeFilter(type) {
   activeType = type;
   document.querySelectorAll('.ftab').forEach(t => {
@@ -383,12 +409,26 @@ document.querySelectorAll('.ftab').forEach(tab => {
 /* ── Desktop filter bar tab clicks ── */
 document.querySelectorAll('.dftab').forEach(tab => {
   tab.addEventListener('click', () => {
+    setBrandFilter('all');
     setCollFilter(tab.dataset.dfcoll);
     setTypeFilter('all'); // reset type when switching collection
     renderProducts();
   });
 });
 
+/* ── Brand filter controls (desktop + mobile) ── */
+(function initBrandFilters() {
+  ['dfbarBrand','mobileBrandSelect'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', function() {
+      setBrandFilter(this.value);
+      setCollFilter('all');
+      setTypeFilter('all');
+      renderProducts();
+    });
+  });
+})();
 /* ── Sort select event listeners ── */
 (function initSortControls() {
   const dfSort = document.getElementById('dfbarSort');
@@ -405,6 +445,7 @@ document.querySelectorAll('.dftab').forEach(tab => {
 (function initMobileColl() {
   document.querySelectorAll('.mob-coll-tab').forEach(function(tab) {
     tab.addEventListener('click', function() {
+      setBrandFilter('all');
       setCollFilter(tab.dataset.mobcoll);
       setTypeFilter('all');
       // Sync mobile type select back to all
@@ -445,6 +486,7 @@ document.querySelectorAll('.dftab').forEach(tab => {
   if (!btn) return;
   btn.addEventListener('click', () => {
     setCollFilter('all');
+    setBrandFilter('all');
     setTypeFilter('all');
     setSortOrder('featured');
     renderProducts();
@@ -1656,6 +1698,8 @@ async function loadPublishedProductsFromSupabase() {
         assetFolder: String(row.sku || '').toLowerCase(),
         name: row.name,
         brand: row.brand || '',
+        brandId: row.brand_id || null,
+        authenticityStatus: row.authenticity_status || 'not_yet_verified',
         collection: row.collection_name,
         type: row.product_type || 'Shoulder Bag',
         color: row.color || '',
@@ -1673,6 +1717,7 @@ async function loadPublishedProductsFromSupabase() {
     });
 
     syncDynamicStorefrontFilters();
+    syncDynamicBrandFilters();
     renderProducts();
     zRenderRecentlyViewed();
     syncProductRoute();
