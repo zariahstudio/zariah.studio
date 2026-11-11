@@ -1,0 +1,9 @@
+# ZARIAH Studio — product SEO routing.
+# Keep unrelated cPanel/LiteSpeed settings outside this rule unchanged.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Route product URLs before Apache/LiteSpeed resolves existing product folders
+# and their static index.html files. Query parameters (UTM etc.) are preserved.
+RewriteRule ^products/([A-Za-z0-9-]+)/?$ product-seo.php?slug=$1 [L,QSA]
+</IfModule>
