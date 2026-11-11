@@ -1062,7 +1062,9 @@ function openOModal(id, fromPModal) {
 
   document.getElementById('oProductName').textContent = `${p.name} (${p.collection})`;
   document.getElementById('oProductPrice').textContent = p.price;
-  ['oName','oPhone','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
+  ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
+  const orderError = document.getElementById('oCheckoutError');
+  if (orderError) { orderError.textContent = ''; orderError.style.display = 'none'; }
   document.getElementById('oQty').value = '1';
 
   lastFocusedElement = fromPModal ? lastFocusedElement : document.activeElement;
@@ -1091,7 +1093,7 @@ function closeOModal() {
   if (bodySection)    bodySection.style.display = '';
   if (footerSection)  footerSection.style.display = '';
   if (successSection) successSection.style.display = 'none';
-  ['oName','oPhone','oAddress'].forEach(id => {
+  ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.borderColor = '';
   });
@@ -1199,83 +1201,131 @@ function openWhatsApp(url) {
   window.location.href = url;
 }
 
-document.getElementById('btnSubmitOrder').addEventListener('click', () => {
-  const name    = document.getElementById('oName').value.trim();
-  const phone   = document.getElementById('oPhone').value.trim();
+document.getElementById('btnSubmitOrder').addEventListener('click', async () => {
+  const name = document.getElementById('oName').value.trim();
+  const phone = document.getElementById('oPhone').value.trim();
   const address = document.getElementById('oAddress').value.trim();
-  const qty     = document.getElementById('oQty').value;
+  const district = document.getElementById('oDistrict').value.trim();
+  const area = document.getElementById('oArea').value.trim();
+  const qty = Number(document.getElementById('oQty').value);
+  const submitButton = document.getElementById('btnSubmitOrder');
+  const checkoutError = document.getElementById('oCheckoutError');
+  if (checkoutError) { checkoutError.textContent = ''; checkoutError.style.display = 'none'; }
 
-  // Inline validation with focus
-  if (!name)    { document.getElementById('oName').focus();    document.getElementById('oName').style.borderColor = 'var(--gold)';    return; }
-  if (!phone)   { document.getElementById('oPhone').focus();   document.getElementById('oPhone').style.borderColor = 'var(--gold)';   return; }
-  if (!address) { document.getElementById('oAddress').focus(); document.getElementById('oAddress').style.borderColor = 'var(--gold)'; return; }
+  if (!name) { document.getElementById('oName').focus(); return; }
+  if (!phone) { document.getElementById('oPhone').focus(); return; }
+  if (!district) { document.getElementById('oDistrict').focus(); return; }
+  if (!area) { document.getElementById('oArea').focus(); return; }
+  if (!address) { document.getElementById('oAddress').focus(); return; }
+  if (!Number.isInteger(qty) || qty < 1 || qty > 10) {
+    document.getElementById('oQty').focus();
+    if (checkoutError) { checkoutError.textContent = 'Please choose a quantity between 1 and 10.'; checkoutError.style.display = 'block'; }
+    return;
+  }
 
-  // Parse product info stored in modal
-  const fullProductText = document.getElementById('oProductName').textContent; // "Crescent Shoulder Bag (Essence)"
-  const price    = document.getElementById('oProductPrice').textContent;
-  // Extract name and collection from "Name (Collection)" format
+  const fullProductText = document.getElementById('oProductName').textContent;
+  const price = document.getElementById('oProductPrice').textContent;
   const parenMatch = fullProductText.match(/^(.+?)\s+\((.+?)\)$/);
-  const productName  = parenMatch ? parenMatch[1].trim() : fullProductText;
-  const collection   = parenMatch ? parenMatch[2].trim() : '';
-  // Find product code from PRODUCTS array
+  const productName = parenMatch ? parenMatch[1].trim() : fullProductText;
+  const collection = parenMatch ? parenMatch[2].trim() : '';
   const productObj = PRODUCTS.find(p => p.name === productName && p.collection === collection);
-  const productCode  = productObj ? productObj.id : fullProductText;
+  const productCode = productObj ? (productObj.sku || productObj.id) : '';
 
-  // WhatsApp message
-  const waMsg = encodeURIComponent(
-    `Hello ZARIAH Studio! 🌿\n\nI'd like to place an order:\n\n` +
-    `📦 Product: ${productName}\n` +
-    `🏷 Collection: ${collection}\n` +
-    `🔖 Code: ${productCode}\n` +
-    `🎨 Color: ${productObj ? productObj.color : 'Please advise'}\n` +
-    `💰 Price: ${price}\n` +
-    `🔢 Quantity: ${qty}\n\n` +
-    `👤 Name: ${name}\n` +
-    `📞 Phone: ${phone}\n` +
-    `📍 Address: ${address}\n\n` +
-    `Please confirm my order. Thank you!`
-  );
-  const waUrl = `https://wa.me/8801642779056?text=${waMsg}`;
+  if (!productCode) {
+    if (checkoutError) { checkoutError.textContent = 'We could not identify this product. Please refresh the page and try again.'; checkoutError.style.display = 'block'; }
+    return;
+  }
 
-  // 1. Submit silently to Google Form (background)
-  submitToGoogleForm({
-    name:        name,
-    phone:       phone,
-    address:     address,
-    district:    '',          // district field not in current form UI — left empty
-    productName: productName, // e.g. "Crescent Shoulder Bag"
-    productCode: productCode, // e.g. "Essence01"
-    quantity:    qty,
-    notes:       '',          // no customer notes field in current UI
-  });
+  submitButton.disabled = true;
+  submitButton.setAttribute('aria-busy', 'true');
+  const originalButtonText = submitButton.dataset.originalText || submitButton.textContent.trim();
+  submitButton.dataset.originalText = originalButtonText;
+  submitButton.textContent = 'Submitting order…';
 
-  // 2. Show success state in modal (better UX than closing)
-  const formSection = document.querySelector('.omodal-hdr');
-  const bodySection = document.querySelector('.omodal-body');
-  const footerSection = document.querySelector('.omodal-ftr');
-  const successSection = document.getElementById('omodalSuccess');
-  if (formSection) formSection.style.display = 'none';
-  if (bodySection) bodySection.style.display = 'none';
-  if (footerSection) footerSection.style.display = 'none';
-  if (successSection) {
-    successSection.style.display = 'flex';
-    // Populate order summary
-    const detail = document.getElementById('osuccessDetail');
-    if (detail) {
-      detail.innerHTML = `<strong>${productName}</strong> · ${collection} Collection<br>` +
-        `${price} · Qty: ${qty}<br>` +
-        `<span style="opacity:.6;font-size:11px">Delivery to: ${address.substring(0,60)}${address.length > 60 ? '...' : ''}</span>`;
+  try {
+    const config = window.ZARIAH_SUPABASE_CONFIG;
+    if (!config || !config.url || !config.publishableKey) throw new Error('Order service is temporarily unavailable. Please try again or contact us on WhatsApp.');
+    const sdk = await window.ZARIAH_LOAD_SUPABASE();
+    const client = sdk.createClient(config.url, config.publishableKey, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
+
+    // Keep the same idempotency key on retries so a delayed response cannot create a duplicate order.
+    const requestPayload = {
+      p_customer: { full_name: name, phone, district, area, address },
+      p_items: [{ sku: productCode, quantity: qty }]
+    };
+    const requestSignature = JSON.stringify(requestPayload);
+    if (!submitButton.dataset.idempotencyKey || submitButton.dataset.requestSignature !== requestSignature) {
+      submitButton.dataset.idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
+        ? window.crypto.randomUUID()
+        : 'zs-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+      submitButton.dataset.requestSignature = requestSignature;
     }
-  }
 
-  // 3. Attach WhatsApp button listener
-  const waBtn = document.getElementById('btnWaConfirm');
-  if (waBtn) {
-    waBtn.onclick = () => openWhatsApp(waUrl);
-  }
+    const { data: order, error } = await client.rpc('create_website_order', {
+      ...requestPayload,
+      p_idempotency_key: submitButton.dataset.idempotencyKey
+    });
+    if (error) throw error;
+    if (!order || order.success !== true || !order.order_number) throw new Error('We could not confirm your order. Please try again.');
 
-  // 4. Auto-open WhatsApp after brief delay (gives modal success animation time to show)
-  setTimeout(() => openWhatsApp(waUrl), 1200);
+    const waMsg = encodeURIComponent(
+      `Hello ZARIAH Studio! 🌿\n\nI'd like to confirm my order:\n\n` +
+      `🧾 Order: ${order.order_number}\n` +
+      `📦 Product: ${productName}\n` +
+      `🏷 Collection: ${collection}\n` +
+      `🔖 Code: ${productCode}\n` +
+      `💰 Price: ${price}\n` +
+      `🔢 Quantity: ${qty}\n\n` +
+      `👤 Name: ${name}\n📞 Phone: ${phone}\n` +
+      `📍 District: ${district}\nArea: ${area}\nAddress: ${address}\n\n` +
+      `Please confirm availability and delivery charge. Thank you!`
+    );
+    const waUrl = `https://wa.me/8801642779056?text=${waMsg}`;
+
+    const formSection = document.querySelector('.omodal-hdr');
+    const bodySection = document.querySelector('.omodal-body');
+    const footerSection = document.querySelector('.omodal-ftr');
+    const successSection = document.getElementById('omodalSuccess');
+    if (formSection) formSection.style.display = 'none';
+    if (bodySection) bodySection.style.display = 'none';
+    if (footerSection) footerSection.style.display = 'none';
+    if (successSection) {
+      successSection.style.display = 'flex';
+      const detail = document.getElementById('osuccessDetail');
+      if (detail) {
+        detail.replaceChildren();
+        const orderLine = document.createElement('strong');
+        orderLine.textContent = 'Order ' + order.order_number;
+        const productLine = document.createElement('strong');
+        productLine.textContent = productName;
+        const deliveryLine = document.createElement('span');
+        deliveryLine.style.cssText = 'opacity:.6;font-size:11px';
+        deliveryLine.textContent = 'Delivery to: ' + address.substring(0,60) + (address.length > 60 ? '...' : '');
+        detail.append(orderLine, document.createElement('br'), productLine);
+        detail.append(document.createTextNode(' · ' + collection + ' Collection'), document.createElement('br'));
+        detail.append(document.createTextNode(price + ' · Qty: ' + qty), document.createElement('br'), deliveryLine);
+      }
+    }
+
+    // The database has confirmed the order. WhatsApp is a separate confirmation step.
+    delete submitButton.dataset.idempotencyKey;
+    delete submitButton.dataset.requestSignature;
+    const waBtn = document.getElementById('btnWaConfirm');
+    if (waBtn) waBtn.onclick = () => openWhatsApp(waUrl);
+    setTimeout(() => openWhatsApp(waUrl), 1200);
+  } catch (error) {
+    console.error('[ZARIAH] Website order submission failed:', error);
+    if (checkoutError) {
+      checkoutError.textContent = error.message || 'We could not submit your order. Please try again.';
+      checkoutError.style.display = 'block';
+    }
+  } finally {
+    submitButton.disabled = false;
+    submitButton.removeAttribute('aria-busy');
+    submitButton.textContent = originalButtonText;
+  }
 });
 
 // (closeOModal function above already handles success state reset natively)
