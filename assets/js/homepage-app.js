@@ -1065,8 +1065,6 @@ function openOModal(id, fromPModal) {
   ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
   const orderError = document.getElementById('oCheckoutError');
   if (orderError) { orderError.textContent = ''; orderError.style.display = 'none'; }
-  const orderButton = document.getElementById('btnSubmitOrder');
-  if (orderButton) delete orderButton.dataset.idempotencyKey;
   document.getElementById('oQty').value = '1';
 
   lastFocusedElement = fromPModal ? lastFocusedElement : document.activeElement;
@@ -1313,6 +1311,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
 
     // The database has confirmed the order. WhatsApp is a separate confirmation step.
     delete submitButton.dataset.idempotencyKey;
+    delete submitButton.dataset.requestSignature;
     const waBtn = document.getElementById('btnWaConfirm');
     if (waBtn) waBtn.onclick = () => openWhatsApp(waUrl);
     setTimeout(() => openWhatsApp(waUrl), 1200);
