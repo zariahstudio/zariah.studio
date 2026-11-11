@@ -1062,7 +1062,11 @@ function openOModal(id, fromPModal) {
 
   document.getElementById('oProductName').textContent = `${p.name} (${p.collection})`;
   document.getElementById('oProductPrice').textContent = p.price;
-  ['oName','oPhone','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
+  ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
+  const orderError = document.getElementById('oCheckoutError');
+  if (orderError) { orderError.textContent = ''; orderError.style.display = 'none'; }
+  const orderButton = document.getElementById('btnSubmitOrder');
+  if (orderButton) delete orderButton.dataset.idempotencyKey;
   document.getElementById('oQty').value = '1';
 
   lastFocusedElement = fromPModal ? lastFocusedElement : document.activeElement;
@@ -1091,7 +1095,7 @@ function closeOModal() {
   if (bodySection)    bodySection.style.display = '';
   if (footerSection)  footerSection.style.display = '';
   if (successSection) successSection.style.display = 'none';
-  ['oName','oPhone','oAddress'].forEach(id => {
+  ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.borderColor = '';
   });
@@ -1223,7 +1227,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
 
   const fullProductText = document.getElementById('oProductName').textContent;
   const price = document.getElementById('oProductPrice').textContent;
-  const parenMatch = fullProductText.match(/^(.+?)\\s+\\((.+?)\\)$/);
+  const parenMatch = fullProductText.match(/^(.+?)\s+\\((.+?)\\)$/);
   const productName = parenMatch ? parenMatch[1].trim() : fullProductText;
   const collection = parenMatch ? parenMatch[2].trim() : '';
   const productObj = PRODUCTS.find(p => p.name === productName && p.collection === collection);
@@ -1264,15 +1268,15 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
     if (!order || order.success !== true || !order.order_number) throw new Error('We could not confirm your order. Please try again.');
 
     const waMsg = encodeURIComponent(
-      `Hello ZARIAH Studio! 🌿\\n\\nI'd like to confirm my order:\\n\\n` +
-      `🧾 Order: ${order.order_number}\\n` +
-      `📦 Product: ${productName}\\n` +
-      `🏷 Collection: ${collection}\\n` +
-      `🔖 Code: ${productCode}\\n` +
-      `💰 Price: ${price}\\n` +
-      `🔢 Quantity: ${qty}\\n\\n` +
-      `👤 Name: ${name}\\n📞 Phone: ${phone}\\n` +
-      `📍 District: ${district}\\nArea: ${area}\\nAddress: ${address}\\n\\n` +
+      `Hello ZARIAH Studio! 🌿\n\nI'd like to confirm my order:\n\n` +
+      `🧾 Order: ${order.order_number}\n` +
+      `📦 Product: ${productName}\n` +
+      `🏷 Collection: ${collection}\n` +
+      `🔖 Code: ${productCode}\n` +
+      `💰 Price: ${price}\n` +
+      `🔢 Quantity: ${qty}\n\n` +
+      `👤 Name: ${name}\n📞 Phone: ${phone}\n` +
+      `📍 District: ${district}\nArea: ${area}\nAddress: ${address}\n\n` +
       `Please confirm availability and delivery charge. Thank you!`
     );
     const waUrl = `https://wa.me/8801642779056?text=${waMsg}`;
@@ -1310,7 +1314,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
     submitButton.removeAttribute('aria-busy');
     submitButton.textContent = originalButtonText;
   }
-});;
+});
 
 // (closeOModal function above already handles success state reset natively)
 
