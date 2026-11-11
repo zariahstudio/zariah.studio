@@ -714,6 +714,20 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
     productMap.set(key,item);
   }
   const bestsellers = [...productMap.values()].sort((a,b) => b.units-a.units).slice(0,8);
+  const brandMap = new Map();
+  for (const line of salesLines) {
+    const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
+    const brandName = product?.brand || 'Unassigned / legacy';
+    const row = brandMap.get(brandName) || { brand:brandName, revenue:0, units:0, knownCost:0, knownRevenue:0 };
+    const revenue = Number(line.line_total_bdt || 0);
+    const quantity = Number(line.quantity || 0);
+    row.revenue += revenue; row.units += quantity;
+    if (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '') {
+      row.knownCost += Number(product.cost_bdt || 0) * quantity; row.knownRevenue += revenue;
+    }
+    brandMap.set(brandName,row);
+  }
+  const brandPerformance = [...brandMap.values()].sort((a,b)=>b.revenue-a.revenue);
   const lowStock = products.filter(product => {
     const inv=product.inventory?.[0];
     return inv?.stock_counted && Number(inv.on_hand || 0)-Number(inv.reserved || 0) <= Number(inv.low_stock_threshold ?? 2);
@@ -745,6 +759,11 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
           {bestsellers.length ? <div className="bestseller-list">{bestsellers.map((item,index)=><div className="bestseller-row" key={item.sku}><span className="bestseller-rank">{index+1}</span><div className="bestseller-info"><strong>{item.name}</strong><small>{item.sku} · {money(item.revenue)}</small></div><b>{item.units} units</b></div>)}</div> : <div className="empty">No order item sales found yet.</div>}
         </section>
       </div>
+      <section className="analytics-card">
+        <div className="analytics-card-head"><div><p className="eyebrow">MERCHANDISING PERFORMANCE</p><h3>Brand-wise sales & margin</h3></div></div>
+        {brandPerformance.length ? <div className="table-wrap"><table><thead><tr><th>Brand / catalogue group</th><th>Units</th><th>Revenue</th><th>Estimated gross profit</th><th>Margin</th></tr></thead><tbody>{brandPerformance.map(row=>{const profit=row.knownRevenue-row.knownCost;const margin=row.knownRevenue?profit/row.knownRevenue*100:null;return <tr key={row.brand}><td><strong>{row.brand}</strong></td><td>{row.units}</td><td>{money(row.revenue)}</td><td>{row.knownRevenue?money(profit):'—'}</td><td>{margin===null?'—':margin.toFixed(1)+'%'}</td></tr>})}</tbody></table></div> : <div className="empty">Brand performance will appear after product sales are recorded.</div>}
+        <p className="tiny muted">Margins use the current landed unit cost and are shown only where cost data exists. Historical accounting cost requires order-item cost snapshots.</p>
+      </section>
       <section className="analytics-card stock-alert-card">
         <div className="analytics-card-head"><div><p className="eyebrow">INVENTORY CONTROL</p><h3>Low-stock alerts <span className="count">{lowStock.length}</span></h3></div></div>
         {lowStock.length ? <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Threshold</th></tr></thead><tbody>{lowStock.map(product=>{const inv=product.inventory?.[0]||{};const available=Number(inv.on_hand||0)-Number(inv.reserved||0);return <tr key={product.id}><td><strong>{product.name}</strong></td><td>{product.sku}</td><td>{inv.on_hand}</td><td>{inv.reserved}</td><td><span className="status warning">{available}</span></td><td>{inv.low_stock_threshold??2}</td></tr>})}</tbody></table></div> : <div className="empty">No stock-counted products are currently below their alert threshold.</div>}
