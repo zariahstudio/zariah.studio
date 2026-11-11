@@ -1588,17 +1588,24 @@ function renderProductDetailsPage(id){
  document.title=p.name+' | ZARIAH Studio';
 }
 function navigateToProduct(id){history.pushState({zProduct:id},'',location.pathname+'?product='+encodeURIComponent(id));renderProductDetailsPage(id);}
+function zCollectionSlug(value){
+ return String(value||'').toLowerCase().trim().normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
 function syncIndividualCollectionRoute(){
- const path=location.pathname.toLowerCase();
- const collection=path.includes('/essence')?'Essence':path.includes('/signature')?'Signature':path.includes('/noir')?'Noir':null;
- document.body.classList.toggle('z-individual-collection-route',!!collection);
+ const path=location.pathname.replace(/\\/+$/,'').toLowerCase();
+ const match=path.match(/^\\/collections\\/([^/]+)$/);
+ const requestedSlug=match?.[1]||'';
+ const collection=PRODUCTS.map(p=>p.collection).find(name=>zCollectionSlug(name)===requestedSlug)||null;
+ const isCollectionRoute=Boolean(collection);
+ document.body.classList.toggle('z-individual-collection-route',isCollectionRoute);
  if(collection){
    activeCollection=collection;
    document.title=collection+' Collection | ZARIAH Studio';
    const meta=document.querySelector('meta[name=description]');
    if(meta)meta.content='Explore the '+collection+' handbag collection by ZARIAH Studio.';
    const canonical=document.querySelector('link[rel=canonical]');
-   if(canonical)canonical.href='https://www.zariahstudio.com/collections/'+collection.toLowerCase()+'/';
+   if(canonical)canonical.href='https://www.zariahstudio.com/collections/'+requestedSlug+'/';
+   setCollFilter(collection);
  }
 }
 function syncCollectionsRoute(){
@@ -1621,11 +1628,18 @@ document.getElementById('zWishlistOpen')?.addEventListener('click',zOpenWishlist
 // The embedded 18-product catalogue remains the fail-safe if Supabase is unavailable.
 function syncDynamicStorefrontFilters() {
   const collectionNames = [...new Set(PRODUCTS.map(p => p.collection).filter(Boolean))];
-  const knownCollections = new Set([...document.querySelectorAll('.dftab')].map(el => el.dataset.dfcoll));
+  const activeNames = new Set(collectionNames);
   const hiddenFilterHost = document.querySelector('.products-header > div[aria-hidden="true"]');
   const mobileCollectionHost = document.querySelector('.mob-coll-track');
   const desktopCollectionHost = document.querySelector('.dftabs');
 
+  // Keep collection controls aligned with the active published catalogue; never leave stale tabs after a rename/hide.
+  document.querySelectorAll('.fcol-tab').forEach(node => { if (node.dataset.coll !== 'all' && !activeNames.has(node.dataset.coll)) node.remove(); });
+  document.querySelectorAll('.mob-coll-tab').forEach(node => { if (node.dataset.mobcoll !== 'all' && !activeNames.has(node.dataset.mobcoll)) node.remove(); });
+  document.querySelectorAll('.dftab').forEach(node => { if (node.dataset.dfcoll !== 'all' && !activeNames.has(node.dataset.dfcoll)) node.remove(); });
+  if (!activeNames.has(activeCollection)) activeCollection = 'all';
+
+  const knownCollections = new Set([...document.querySelectorAll('.dftab')].map(el => el.dataset.dfcoll));
   collectionNames.forEach(name => {
     if (knownCollections.has(name)) return;
     if (hiddenFilterHost) {
@@ -1785,6 +1799,7 @@ async function loadPublishedProductsFromSupabase() {
     syncDynamicStorefrontFilters();
     syncDynamicBrandFilters();
     syncDynamicTypeFilters();
+    syncIndividualCollectionRoute();
     renderProducts();
     zRenderRecentlyViewed();
     syncProductRoute();
