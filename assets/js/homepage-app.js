@@ -1589,11 +1589,11 @@ function renderProductDetailsPage(id){
 }
 function navigateToProduct(id){history.pushState({zProduct:id},'',location.pathname+'?product='+encodeURIComponent(id));renderProductDetailsPage(id);}
 function zCollectionSlug(value){
- return String(value||'').toLowerCase().trim().normalize('NFKD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+ return String(value||'').toLowerCase().trim().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
 function syncIndividualCollectionRoute(){
- const path=location.pathname.replace(/\\/+$/,'').toLowerCase();
- const match=path.match(/^\\/collections\\/([^/]+)$/);
+ const path=location.pathname.replace(/\/+$/,'').toLowerCase();
+ const match=path.match(/^\/collections\/([^/]+)$/);
  const requestedSlug=match?.[1]||'';
  const collection=PRODUCTS.map(p=>p.collection).find(name=>zCollectionSlug(name)===requestedSlug)||null;
  const isCollectionRoute=Boolean(collection);
