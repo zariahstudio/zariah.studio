@@ -34,10 +34,12 @@ begin
         and coalesce(i.stock_counted, p.stock_counted, false)
       group by oi.product_id
     )
-    select e.product_id, e.expected_reserved, coalesce(i.reserved, 0) as actual_reserved
+    select coalesce(e.product_id, i.product_id) as product_id,
+           coalesce(e.expected_reserved, 0) as expected_reserved,
+           coalesce(i.reserved, 0) as actual_reserved
     from expected e
-    left join public.inventory i on i.product_id = e.product_id
-    where coalesce(i.reserved, 0) <> e.expected_reserved
+    full join public.inventory i on i.product_id = e.product_id
+    where coalesce(i.reserved, 0) <> coalesce(e.expected_reserved, 0)
   loop
     raise exception
       'Inventory reservation reconciliation required for product %: open website orders require %, inventory currently reserves %.',
@@ -84,8 +86,12 @@ begin
   left join public.inventory i on i.product_id = p.id
   where p.id = new.product_id;
 
-  if v_source = 'website' and new.product_id is not null
-     and v_mode <> 'pre_order' and v_stock_counted then
+  if v_source = 'website' and new.product_id is not null then
+    if v_mode is null then
+      raise exception 'Cannot reserve website stock: product record is missing.'
+        using errcode = 'P0001';
+    end if;
+    if v_mode <> 'pre_order' and v_stock_counted then
     update public.inventory
        set reserved = reserved + new.quantity,
            updated_at = now()
@@ -108,6 +114,7 @@ begin
     if not found then
       raise exception 'Could not record the website order stock reservation.'
         using errcode = 'P0001';
+    end if;
     end if;
   end if;
 
