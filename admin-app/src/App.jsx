@@ -86,7 +86,9 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
       sku: (form.sku ?? '').trim(), name: (form.name ?? '').trim(),
       slug: (form.slug ?? '').trim() || slugify(form.name ?? ''),
       collection_id: form.collection_id,
-      brand: brands.find(b => b.id === form.brand_id)?.name || (form.brand ?? '').trim() || null,\n      brand_id: form.brand_id || null,\n      authenticity_status: form.authenticity_status || 'not_yet_verified',
+      brand: brands.find(b => b.id === form.brand_id)?.name || (form.brand ?? '').trim() || null,
+      brand_id: form.brand_id || null,
+      authenticity_status: form.authenticity_status || 'not_yet_verified',
       product_type: (form.product_type ?? '').trim() || null,
       color: (form.color ?? '').trim() || null,
       description: (form.description ?? '').trim() || null,
@@ -252,7 +254,10 @@ function App() {
   const [section, setSection] = useState('dashboard');
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
-  const [collections, setCollections] = useState([]);\n  const [brands, setBrands] = useState([]);\n  const [suppliers, setSuppliers] = useState([]);\n  const [productSources, setProductSources] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [productSources, setProductSources] = useState([]);
   const [mediaAssets, setMediaAssets] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -284,7 +289,10 @@ function App() {
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('site_media').select('*').order('slot_key'),
-      supabase.from('product_costs').select('product_id,cost_bdt'),\n      supabase.from('brands').select('*').order('display_order').order('name'),\n      supabase.from('suppliers').select('*').order('supplier_name'),\n      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false})
+      supabase.from('product_costs').select('product_id,cost_bdt'),
+      supabase.from('brands').select('*').order('display_order').order('name'),
+      supabase.from('suppliers').select('*').order('supplier_name'),
+      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false})
     ]);
     if (p.error) notify('error', p.error.message);
     else {
@@ -293,7 +301,10 @@ function App() {
       setProducts((p.data || []).map(product => ({ ...product, cost_bdt: costByProduct.get(product.id) ?? '' })));
     }
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
-    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);\n    if (b.error) notify('error','Brands: '+b.error.message); else setBrands(b.data||[]);\n    if (s.error) notify('error','Suppliers: '+s.error.message); else setSuppliers(s.data||[]);\n    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);
+    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
+    if (b.error) notify('error','Brands: '+b.error.message); else setBrands(b.data||[]);
+    if (s.error) notify('error','Suppliers: '+s.error.message); else setSuppliers(s.data||[]);
+    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);
     setDataLoading(false);
   }, [session]);
 
