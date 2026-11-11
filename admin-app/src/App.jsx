@@ -41,7 +41,7 @@ function PasswordRecovery({ onSave, busy, error }) {
   return <main className="login-wrap"><section className="login-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Set new password</h1><p className="muted">Choose a new password for your admin account.</p><form onSubmit={e => { e.preventDefault(); if (password !== confirm) return; onSave(password); }}><label>New password<input type="password" autoComplete="new-password" minLength={8} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 8 characters"/></label><label>Confirm password<input type="password" autoComplete="new-password" minLength={8} required value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Re-enter new password"/></label>{confirm && password !== confirm && <p className="form-error">Passwords do not match.</p>}{error && <p className="form-error">{error}</p>}<button className="primary full" disabled={busy || password.length<8 || password!==confirm}>{busy ? 'Updating…' : 'Update password'}</button></form></section></main>;
 }
 
-function ProductEditor({ product, collections, brands, onClose, onSave, saving }) {
+function ProductEditor({ product, collections, brands, products, onClose, onSave, saving }) {
   const [form, setForm] = useState(() => product ? {
     ...emptyProduct, ...product,
     stock: product.inventory?.[0]?.on_hand ?? 0,
@@ -116,7 +116,7 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
           <label>Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
           <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
           <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
-          <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
+          <label>Bag category<input list="zariah-bag-category-options" value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Choose or add a bag category"/><datalist id="zariah-bag-category-options">{[...new Set(['Shoulder Bag','Crossbody','Tote','Top Handle','East-West','Flap Bag','Satchel','Bucket Bag','Bowling Bag','Underarm Bag',...products.map(item => item.product_type).filter(Boolean)])].sort((x,y)=>x.localeCompare(y)).map(type=><option key={type} value={type}/>)}</datalist></label>
           <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
           <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
@@ -150,8 +150,9 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
   </div>;
 }
 
-function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, onSaveBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, onSaveEvidence, onViewEvidence, onVerifyEvidence, saving }) {
+function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, onSaveBrand, onUpdateBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, onSaveEvidence, onViewEvidence, onVerifyEvidence, saving }) {
  const [brand,setBrand]=useState({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});
+ const [editingBrand,setEditingBrand]=useState(null);
  const [supplier,setSupplier]=useState({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});
  const [source,setSource]=useState({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false,confirm_availability:false});
  const [error,setError]=useState('');
@@ -160,16 +161,16 @@ function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, on
  const field=(label,key,value,setter,type='text')=><label>{label}<input type={type} value={value[key]??''} onChange={e=>setter(v=>({...v,[key]:e.target.value}))}/></label>;
  return <div className="panel-stack">
   <section className="panel"><div className="panel-head"><div><p className="eyebrow">PUBLIC CATALOGUE</p><h2>Brand Directory</h2><p className="muted">Only active brand names and descriptions can appear publicly.</p></div></div>
-   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveBrand({...brand,slug:brand.name.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),display_order:brands.length});setBrand({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});}catch(x){setError(x.message);}}}>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{const payload={...brand,slug:brand.name.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),display_order:editingBrand?.display_order??brands.length};if(editingBrand)await onUpdateBrand(editingBrand.id,payload);else await onSaveBrand(payload);setBrand({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});setEditingBrand(null);}catch(x){setError(x.message);}}}>
     
     <label>Brand name *<input required value={brand.name} onChange={e=>setBrand(v=>({...v,name:e.target.value}))}/></label>
     <label>Brand type<select value={brand.brand_type} onChange={e=>setBrand(v=>({...v,brand_type:e.target.value}))}><option value="established">Established brand</option><option value="zariah_edit">The ZARIAH Edit</option><option value="private_label">Private label</option></select></label>
     <label>Authenticity policy<select value={brand.authenticity_policy} onChange={e=>setBrand(v=>({...v,authenticity_policy:e.target.value}))}><option value="mixed">Mixed / item-level status</option><option value="verified_only">Verified only</option><option value="not_applicable">Not applicable</option></select></label>
     <label>Website<input type="url" value={brand.website_url} onChange={e=>setBrand(v=>({...v,website_url:e.target.value}))}/></label>
     <label className="span-2">Description<textarea rows="2" value={brand.description} onChange={e=>setBrand(v=>({...v,description:e.target.value}))}/></label>
-    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!brand.name.trim()}><Plus size={16}/> Create brand</button></div>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!brand.name.trim()}>{editingBrand?<Pencil size={16}/>:<Plus size={16}/>} {editingBrand?'Update brand':'Create brand'}</button>{editingBrand&&<button type="button" className="secondary" onClick={()=>{setEditingBrand(null);setBrand({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});}}>Cancel edit</button>}</div>
    </form>
-   <div className="collection-list">{brands.map(b=><div className="collection-row" key={b.id}><div><strong>{b.name}</strong><small>{b.brand_type.replaceAll('_',' ')} · {b.authenticity_policy.replaceAll('_',' ')}</small></div><span className={b.is_active?'status live':'status'}>{b.is_active?'Active':'Hidden'}</span><button className="secondary small" onClick={()=>onToggleBrand(b)}>{b.is_active?'Hide':'Activate'}</button></div>)}{!brands.length&&<div className="empty">No brands created. Existing products remain unassigned.</div>}</div>
+   <div className="collection-list">{brands.map(b=><div className="collection-row" key={b.id}><div><strong>{b.name}</strong><small>{b.brand_type.replaceAll('_',' ')} · {b.authenticity_policy.replaceAll('_',' ')}</small></div><span className={b.is_active?'status live':'status'}>{b.is_active?'Active':'Hidden'}</span><button className="secondary small" onClick={()=>{setEditingBrand(b);setBrand({name:b.name,brand_type:b.brand_type,authenticity_policy:b.authenticity_policy,description:b.description||'',website_url:b.website_url||''});setError('');}}><Pencil size={13}/> Edit</button><button className="secondary small" onClick={()=>onToggleBrand(b)}>{b.is_active?'Hide':'Activate'}</button></div>)}{!brands.length&&<div className="empty">No brands created. Existing products remain unassigned.</div>}</div>
   </section>
   <section className="panel"><div className="panel-head"><div><p className="eyebrow">PRIVATE SOURCING</p><h2>Supplier Directory</h2><p className="muted">Supplier identities and contact details are staff-only.</p></div></div>
    <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveSupplier(supplier);setSupplier({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});}catch(x){setError(x.message);}}}>
@@ -208,20 +209,41 @@ function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, on
  </div>;
 }
 
-function CollectionPanel({ collections, onCreate, onToggle, saving }) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) {
+  const emptyForm = { name: '', description: '' };
+  const [form, setForm] = useState(emptyForm);
+  const [editing, setEditing] = useState(null);
+  const [error, setError] = useState('');
+  const submit = async e => {
+    e.preventDefault();
+    const name = form.name.trim();
+    if (!name) return;
+    setError('');
+    try {
+      if (editing) await onUpdate(editing.id, name, form.description.trim());
+      else await onCreate(name, form.description.trim());
+      setForm(emptyForm);
+      setEditing(null);
+    } catch (err) { setError(err.message || 'Could not save collection.'); }
+  };
+  const startEdit = collection => {
+    setEditing(collection);
+    setForm({ name: collection.name, description: collection.description || '' });
+    setError('');
+  };
+  const cancelEdit = () => { setEditing(null); setForm(emptyForm); setError(''); };
   return <section className="panel">
-    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create and manage collections without editing website code.</p></div></div>
-    <form className="inline-create" onSubmit={async e => { e.preventDefault(); if (!name.trim()) return; await onCreate(name.trim(), description.trim()); setName(''); setDescription(''); }}>
-      <input required value={name} onChange={e => setName(e.target.value)} placeholder="New collection name"/>
-      <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description (optional)"/>
-      <button className="primary" disabled={saving}><Plus size={16}/> Add collection</button>
+    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create, edit and manage the collections shown in the published catalogue. Hiding a collection does not delete its products.</p></div></div>
+    <form className="inline-create" onSubmit={submit}>
+      <input required maxLength="60" value={form.name} onChange={e => setForm(v => ({...v, name:e.target.value}))} placeholder="Collection name"/>
+      <input maxLength="240" value={form.description} onChange={e => setForm(v => ({...v, description:e.target.value}))} placeholder="Short description (optional)"/>
+      <button className="primary" disabled={saving || !form.name.trim()}>{editing ? <Pencil size={16}/> : <Plus size={16}/>} {editing ? 'Save changes' : 'Add collection'}</button>
+      {editing && <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>}
     </form>
-    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{c.name}</strong><small>{c.slug}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
+    {error && <p className="form-error">{error}</p>}
+    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{c.name}</strong><small>{c.slug}{c.description ? ' · ' + c.description : ''}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => startEdit(c)}><Pencil size={13}/> Edit</button><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
   </section>;
 }
-
 
 const MEDIA_SLOTS = [
   {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
@@ -582,10 +604,27 @@ function App() {
 
   const createCollection = async (name, description) => {
     setSaving(true);
-    const slug = slugify(name);
-    const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length });
-    setSaving(false);
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection created.'); }
+    try {
+      const slug = slugify(name);
+      const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length, sort_order: collections.length });
+      if (error) throw error;
+      await loadData();
+      notify('success', 'Collection created.');
+    } catch (error) { notify('error', error.message || 'Could not create collection.'); throw error; }
+    finally { setSaving(false); }
+  };
+  const updateCollection = async (id, name, description) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('collections').update({
+        name, slug: slugify(name), description,
+        updated_at: new Date().toISOString()
+      }).eq('id', id);
+      if (error) throw error;
+      await loadData();
+      notify('success', 'Collection details updated.');
+    } catch (error) { notify('error', error.message || 'Could not update collection.'); throw error; }
+    finally { setSaving(false); }
   };
 
   const saveAuthenticityEvidence = async (payload,file) => {
@@ -619,6 +658,7 @@ function App() {
   };
 
   const saveBrand = async payload => { const {error}=await supabase.from('brands').insert(payload); if(error) throw error; await loadData(); notify('success','Brand created.'); };
+  const updateBrand = async (id, payload) => { const {error}=await supabase.from('brands').update({...payload,updated_at:new Date().toISOString()}).eq('id',id); if(error) throw error; await loadData(); notify('success','Brand details updated.'); };
   const toggleBrand = async brand => { const {error}=await supabase.from('brands').update({is_active:!brand.is_active,updated_at:new Date().toISOString()}).eq('id',brand.id); if(error)notify('error',error.message);else{await loadData();notify('success','Brand visibility updated.');} };
   const saveSupplier = async payload => { const {error}=await supabase.from('suppliers').insert(payload); if(error)throw error; await loadData();notify('success','Supplier saved privately.'); };
   const toggleSupplier = async supplier => { const {error}=await supabase.from('suppliers').update({is_active:!supplier.is_active,updated_at:new Date().toISOString()}).eq('id',supplier.id); if(error)notify('error',error.message);else{await loadData();notify('success','Supplier status updated.');} };
@@ -676,8 +716,8 @@ function App() {
         {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU, brand or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
-        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
-        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
+        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onUpdate={updateCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onUpdateBrand={updateBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
@@ -714,7 +754,7 @@ function App() {
       } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
       finally { setSaving(false); }
     }} />}
-    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
+    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} products={products} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
   </div>;
 }
 
