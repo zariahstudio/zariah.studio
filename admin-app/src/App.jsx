@@ -274,7 +274,8 @@ function App() {
   const [collections, setCollections] = useState([]);
   const [brands, setBrands] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [productSources, setProductSources] = useState([]);\n  const [authenticityEvidence, setAuthenticityEvidence] = useState([]);
+  const [productSources, setProductSources] = useState([]);
+  const [authenticityEvidence, setAuthenticityEvidence] = useState([]);
   const [mediaAssets, setMediaAssets] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -309,7 +310,8 @@ function App() {
       supabase.from('product_costs').select('product_id,cost_bdt,purchase_cost,packaging_cost,inbound_shipping_cost,other_cost'),
       supabase.from('brands').select('*').order('display_order').order('name'),
       supabase.from('suppliers').select('*').order('supplier_name'),
-      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false}),\n      supabase.from('authenticity_evidence').select('*,products(name,sku)').order('created_at',{ascending:false})
+      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false}),
+      supabase.from('authenticity_evidence').select('*,products(name,sku)').order('created_at',{ascending:false})
     ]);
     if (p.error) notify('error', p.error.message);
     else {
