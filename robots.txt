@@ -3,5 +3,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /pages/cart/
 Disallow: /pages/checkout/
+Disallow: /pages/search/
 
 Sitemap: https://www.zariahstudio.com/sitemap.php
