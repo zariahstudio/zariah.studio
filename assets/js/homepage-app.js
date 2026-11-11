@@ -383,6 +383,22 @@ function syncDynamicBrandFilters() {
   });
   if (!brands.includes(activeBrand)) activeBrand = 'all';
 }
+function syncDynamicTypeFilters() {
+  const types = [...new Set(PRODUCTS.map(p => String(p.type || '').trim()).filter(Boolean))]
+    .sort((a,b) => a.localeCompare(b));
+  const labels = { 'Shoulder Bag':'Shoulder', 'Flap Bag':'Flap', 'Bucket Bag':'Bucket' };
+  ['dfbarType','mobileTypeSelect'].forEach(id => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    const current = select.value || activeType;
+    select.replaceChildren(new Option('All Types', 'all'));
+    types.forEach(type => select.add(new Option(labels[type] || type, type)));
+    select.value = types.includes(current) ? current : 'all';
+    select.disabled = types.length === 0;
+    select.setAttribute('aria-label', types.length ? 'Filter by bag type' : 'Bag type filters unavailable');
+  });
+  if (!types.includes(activeType)) activeType = 'all';
+}
 function setTypeFilter(type) {
   activeType = type;
   document.querySelectorAll('.ftab').forEach(t => {
@@ -1768,6 +1784,7 @@ async function loadPublishedProductsFromSupabase() {
 
     syncDynamicStorefrontFilters();
     syncDynamicBrandFilters();
+    syncDynamicTypeFilters();
     renderProducts();
     zRenderRecentlyViewed();
     syncProductRoute();
