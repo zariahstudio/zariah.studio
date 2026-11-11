@@ -317,7 +317,7 @@ function updateFilterStatus(visibleCount) {
   const countLine = document.getElementById('prodCountLine');
   if (countLine) {
     if (isFiltered) {
-      const collShort = { all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection;
+      const collShort = activeBrand !== 'all' ? activeBrand : ({ all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection);
       const typeLabel = (activeBrand !== 'all' ? ' — ' + activeBrand : '') + (activeType !== 'all' ? ' — ' + activeType : '');
       countLine.textContent = 'Showing ' + collShort + typeLabel + ' — ' + visibleCount + ' ' + (visibleCount === 1 ? 'Product' : 'Products');
     } else {
