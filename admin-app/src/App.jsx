@@ -325,7 +325,8 @@ function App() {
     if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
     if (b.error) notify('error','Brands: '+b.error.message); else setBrands(b.data||[]);
     if (s.error) notify('error','Suppliers: '+s.error.message); else setSuppliers(s.data||[]);
-    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);\n    if (ev.error) notify('error','Authenticity evidence: '+ev.error.message); else setAuthenticityEvidence(ev.data||[]);
+    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);
+    if (ev.error) notify('error','Authenticity evidence: '+ev.error.message); else setAuthenticityEvidence(ev.data||[]);
     setDataLoading(false);
   }, [session]);
 
