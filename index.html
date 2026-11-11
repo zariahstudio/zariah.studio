@@ -481,6 +481,13 @@
   #prodGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:34px 20px!important}
 }
 </style>
+
+<style id="z-multibrand-filter-foundation">
+/* Brand filtering is additive; existing collection, type and sort controls remain intact. */
+#dfbarBrand:disabled,#mobileBrandSelect:disabled{opacity:.58;cursor:not-allowed}
+@media(min-width:769px){#dfbarBrand{min-width:132px}}
+@media(max-width:768px){.mob-controls-row .mob-ctrl-wrap:has(#mobileBrandSelect){flex:1 0 100%;width:100%}#mobileBrandSelect{width:100%}}
+</style>
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
@@ -697,6 +704,10 @@
         <!-- Mobile type + sort selects -->
         <div class="mob-controls-row">
           <div class="mob-ctrl-wrap">
+            <span class="mob-ctrl-lbl">Brand</span>
+            <select class="mob-ctrl-select" id="mobileBrandSelect" aria-label="Filter by brand" data-brand-filter disabled><option value="all">All Brands</option></select>
+          </div>
+          <div class="mob-ctrl-wrap">
             <span class="mob-ctrl-lbl">Type</span>
             <select class="mob-ctrl-select" id="mobileTypeSelect" aria-label="Filter by bag type">
               <option value="all">All Types</option>
@@ -750,6 +761,10 @@
           </div>
         </div>
         <div class="dfbar-right">
+          <div class="dfbar-sort-wrap">
+            <span class="dfbar-sort-lbl">Brand</span>
+            <select class="dfbar-sort" id="dfbarBrand" aria-label="Filter by brand" data-brand-filter disabled><option value="all">All Brands</option></select>
+          </div>
           <div class="dfbar-sort-wrap">
             <span class="dfbar-sort-lbl">Type</span>
             <select class="dfbar-sort" id="dfbarType" aria-label="Filter by bag type">

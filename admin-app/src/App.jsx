@@ -10,7 +10,7 @@ import { processImageFile } from './imageProcessing';
 
 const money = (value) => new Intl.NumberFormat('en-BD', { style: 'currency', currency: 'BDT', maximumFractionDigits: 0 }).format(Number(value || 0));
 const slugify = (value) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', brand: '', product_type: '', color: '', description: '', size: '', price_bdt: '', cost_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
+const emptyProduct = { sku: '', name: '', slug: '', collection_id: '', brand: '', brand_id: '', authenticity_status: 'not_yet_verified', product_type: '', color: '', description: '', size: '', price_bdt: '', cost_bdt: '', compare_at_price_bdt: '', badge: '', is_featured: false, is_bestseller: false, is_published: false, availability_mode: 'auto', display_order: 0, stock: 0 };
 
 function Notice({ notice, clear }) {
   if (!notice) return null;
@@ -41,13 +41,13 @@ function PasswordRecovery({ onSave, busy, error }) {
   return <main className="login-wrap"><section className="login-card"><div className="brand-mark">Z</div><p className="eyebrow">ZARIAH STUDIO</p><h1>Set new password</h1><p className="muted">Choose a new password for your admin account.</p><form onSubmit={e => { e.preventDefault(); if (password !== confirm) return; onSave(password); }}><label>New password<input type="password" autoComplete="new-password" minLength={8} required value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 8 characters"/></label><label>Confirm password<input type="password" autoComplete="new-password" minLength={8} required value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Re-enter new password"/></label>{confirm && password !== confirm && <p className="form-error">Passwords do not match.</p>}{error && <p className="form-error">{error}</p>}<button className="primary full" disabled={busy || password.length<8 || password!==confirm}>{busy ? 'Updating…' : 'Update password'}</button></form></section></main>;
 }
 
-function ProductEditor({ product, collections, onClose, onSave, saving }) {
+function ProductEditor({ product, collections, brands, onClose, onSave, saving }) {
   const [form, setForm] = useState(() => product ? {
     ...emptyProduct, ...product,
     stock: product.inventory?.[0]?.on_hand ?? 0,
     size: product.specifications?.size || '',
     compare_at_price_bdt: product.compare_at_price_bdt ?? '',
-    cost_bdt: product.cost_bdt ?? ''
+    cost_bdt: product.cost_bdt ?? '', purchase_cost: product.purchase_cost ?? product.cost_bdt ?? '', packaging_cost: product.packaging_cost ?? 0, inbound_shipping_cost: product.inbound_shipping_cost ?? 0, other_cost: product.other_cost ?? 0
   } : emptyProduct);
   const [images, setImages] = useState([]);
   const [processedImages, setProcessedImages] = useState([]);
@@ -82,17 +82,21 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
     if (!form.collection_id) return setError('Select a collection.');
     if (!(form.sku ?? '').trim() || !(form.name ?? '').trim() || Number(form.price_bdt) < 0 || form.price_bdt === '') return setError('SKU, name and a valid price are required.');
     if (images.some(file => !['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024)) return setError('Images must be JPG, PNG or WebP and no larger than 10 MB each.');
+    const costParts = ['purchase_cost','packaging_cost','inbound_shipping_cost','other_cost'].map(key => Number(form[key] || 0));
+    const calculatedCost = costParts.some(value => value > 0) ? costParts.reduce((sum,value)=>sum+value,0) : (form.cost_bdt === '' ? null : Number(form.cost_bdt));
     const payload = {
       sku: (form.sku ?? '').trim(), name: (form.name ?? '').trim(),
       slug: (form.slug ?? '').trim() || slugify(form.name ?? ''),
       collection_id: form.collection_id,
-      brand: (form.brand ?? '').trim() || null,
+      brand: brands.find(b => b.id === form.brand_id)?.name || (form.brand ?? '').trim() || null,
+      brand_id: form.brand_id || null,
+      authenticity_status: form.authenticity_status || 'not_yet_verified',
       product_type: (form.product_type ?? '').trim() || null,
       color: (form.color ?? '').trim() || null,
       description: (form.description ?? '').trim() || null,
       specifications: { size: (form.size ?? '').trim() },
       price_bdt: Number(form.price_bdt),
-      cost_bdt: form.cost_bdt === '' ? null : Number(form.cost_bdt),
+      cost_bdt: calculatedCost, purchase_cost: form.purchase_cost === '' ? null : Number(form.purchase_cost), packaging_cost: Number(form.packaging_cost || 0), inbound_shipping_cost: Number(form.inbound_shipping_cost || 0), other_cost: Number(form.other_cost || 0),
       compare_at_price_bdt: form.compare_at_price_bdt === '' ? null : Number(form.compare_at_price_bdt),
       badge: (form.badge ?? '').trim() || null,
       is_featured: Boolean(form.is_featured),
@@ -113,9 +117,14 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
           <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
           <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
           <label>Product type<input value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Shoulder Bag"/></label>
-          <label>Brand name<input list="zariah-brand-suggestions" value={form.brand || ''} onChange={e => change('brand', e.target.value)} placeholder="e.g. Coach, Aarong or independent"/><datalist id="zariah-brand-suggestions"><option value="Aarong"/><option value="Yellow"/><option value="Sailor"/><option value="Le Reve"/><option value="Ecstasy"/><option value="Charles & Keith"/><option value="ALDO"/><option value="Michael Kors"/><option value="Coach"/><option value="GUESS"/><option value="Independent / Unbranded"/></datalist></label>
+          <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
+          <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
-          <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="For internal margin reporting only"/></label>
+          <label>Purchase cost (BDT)<input type="number" min="0" step="1" value={form.purchase_cost ?? ''} onChange={e => change('purchase_cost', e.target.value)} placeholder="Supplier purchase price"/></label>
+          <label>Packaging cost (BDT)<input type="number" min="0" step="1" value={form.packaging_cost ?? 0} onChange={e => change('packaging_cost', e.target.value)}/></label>
+          <label>Inbound shipping (BDT)<input type="number" min="0" step="1" value={form.inbound_shipping_cost ?? 0} onChange={e => change('inbound_shipping_cost', e.target.value)}/></label>
+          <label>Other unit cost (BDT)<input type="number" min="0" step="1" value={form.other_cost ?? 0} onChange={e => change('other_cost', e.target.value)}/></label>
+          <label>Calculated total unit cost (BDT)<input readOnly value={['purchase_cost','packaging_cost','inbound_shipping_cost','other_cost'].reduce((sum,key)=>sum+Number(form[key]||0),0)||form.cost_bdt||0}/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
           <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
@@ -139,6 +148,64 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
       </form>
     </section>
   </div>;
+}
+
+function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, onSaveBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, onSaveEvidence, onViewEvidence, onVerifyEvidence, saving }) {
+ const [brand,setBrand]=useState({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});
+ const [supplier,setSupplier]=useState({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});
+ const [source,setSource]=useState({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false,confirm_availability:false});
+ const [error,setError]=useState('');
+ const [evidenceForm,setEvidenceForm]=useState({product_id:'',evidence_type:'purchase_invoice',reference_number:'',notes:''});
+ const [evidenceFile,setEvidenceFile]=useState(null);
+ const field=(label,key,value,setter,type='text')=><label>{label}<input type={type} value={value[key]??''} onChange={e=>setter(v=>({...v,[key]:e.target.value}))}/></label>;
+ return <div className="panel-stack">
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">PUBLIC CATALOGUE</p><h2>Brand Directory</h2><p className="muted">Only active brand names and descriptions can appear publicly.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveBrand({...brand,slug:brand.name.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),display_order:brands.length});setBrand({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});}catch(x){setError(x.message);}}}>
+    
+    <label>Brand name *<input required value={brand.name} onChange={e=>setBrand(v=>({...v,name:e.target.value}))}/></label>
+    <label>Brand type<select value={brand.brand_type} onChange={e=>setBrand(v=>({...v,brand_type:e.target.value}))}><option value="established">Established brand</option><option value="zariah_edit">The ZARIAH Edit</option><option value="private_label">Private label</option></select></label>
+    <label>Authenticity policy<select value={brand.authenticity_policy} onChange={e=>setBrand(v=>({...v,authenticity_policy:e.target.value}))}><option value="mixed">Mixed / item-level status</option><option value="verified_only">Verified only</option><option value="not_applicable">Not applicable</option></select></label>
+    <label>Website<input type="url" value={brand.website_url} onChange={e=>setBrand(v=>({...v,website_url:e.target.value}))}/></label>
+    <label className="span-2">Description<textarea rows="2" value={brand.description} onChange={e=>setBrand(v=>({...v,description:e.target.value}))}/></label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!brand.name.trim()}><Plus size={16}/> Create brand</button></div>
+   </form>
+   <div className="collection-list">{brands.map(b=><div className="collection-row" key={b.id}><div><strong>{b.name}</strong><small>{b.brand_type.replaceAll('_',' ')} · {b.authenticity_policy.replaceAll('_',' ')}</small></div><span className={b.is_active?'status live':'status'}>{b.is_active?'Active':'Hidden'}</span><button className="secondary small" onClick={()=>onToggleBrand(b)}>{b.is_active?'Hide':'Activate'}</button></div>)}{!brands.length&&<div className="empty">No brands created. Existing products remain unassigned.</div>}</div>
+  </section>
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">PRIVATE SOURCING</p><h2>Supplier Directory</h2><p className="muted">Supplier identities and contact details are staff-only.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveSupplier(supplier);setSupplier({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});}catch(x){setError(x.message);}}}>
+    <label>Supplier name *<input required value={supplier.supplier_name} onChange={e=>setSupplier(v=>({...v,supplier_name:e.target.value}))}/></label>
+    <label>Type<select value={supplier.supplier_type} onChange={e=>setSupplier(v=>({...v,supplier_type:e.target.value}))}><option value="local">Local</option><option value="international">International</option><option value="brand_authorized">Brand-authorized</option><option value="other">Other</option></select></label>
+    <label>Contact person<input value={supplier.contact_person} onChange={e=>setSupplier(v=>({...v,contact_person:e.target.value}))}/></label><label>Phone<input value={supplier.phone} onChange={e=>setSupplier(v=>({...v,phone:e.target.value}))}/></label><label>Email<input type="email" value={supplier.email} onChange={e=>setSupplier(v=>({...v,email:e.target.value}))}/></label><label>Country<input value={supplier.country} onChange={e=>setSupplier(v=>({...v,country:e.target.value}))}/></label>
+    <label className="span-2">Internal notes<textarea rows="2" value={supplier.internal_notes} onChange={e=>setSupplier(v=>({...v,internal_notes:e.target.value}))}/></label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!supplier.supplier_name.trim()}><Plus size={16}/> Add supplier</button></div>
+   </form>
+   <div className="collection-list">{suppliers.map(s=><div className="collection-row" key={s.id}><div><strong>{s.supplier_name}</strong><small>{s.supplier_type.replaceAll('_',' ')} · {[s.country,s.phone].filter(Boolean).join(' · ')}</small></div><span className={s.is_active?'status live':'status'}>{s.is_active?'Active':'Inactive'}</span><button className="secondary small" onClick={()=>onToggleSupplier(s)}>{s.is_active?'Deactivate':'Activate'}</button></div>)}</div>
+  </section>
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">SUPPLIER MAPPING</p><h2>Product Sources</h2><p className="muted">Internal supplier SKU, purchase cost, MOQ and lead time; never exposed to customers.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveSource({...source,purchase_cost_bdt:source.purchase_cost_bdt===''?null:Number(source.purchase_cost_bdt),lead_time_days:source.lead_time_days===''?null:Number(source.lead_time_days),minimum_order_quantity:Number(source.minimum_order_quantity),availability_confirmed_at:source.confirm_availability?new Date().toISOString():null});setSource({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false,confirm_availability:false});}catch(x){setError(x.message);}}}>
+    <label>Product *<select required value={source.product_id} onChange={e=>setSource(v=>({...v,product_id:e.target.value}))}><option value="">Choose product</option>{products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.sku}</option>)}</select></label>
+    <label>Supplier *<select required value={source.supplier_id} onChange={e=>setSource(v=>({...v,supplier_id:e.target.value}))}><option value="">Choose supplier</option>{suppliers.filter(s=>s.is_active).map(s=><option key={s.id} value={s.id}>{s.supplier_name}</option>)}</select></label>
+    <label>Supplier SKU<input value={source.supplier_sku} onChange={e=>setSource(v=>({...v,supplier_sku:e.target.value}))}/></label>
+    <label>Purchase cost (BDT)<input type="number" min="0" value={source.purchase_cost_bdt} onChange={e=>setSource(v=>({...v,purchase_cost_bdt:e.target.value}))}/></label>
+    <label>Lead time (days)<input type="number" min="0" value={source.lead_time_days} onChange={e=>setSource(v=>({...v,lead_time_days:e.target.value}))}/></label>
+    <label>MOQ<input type="number" min="1" value={source.minimum_order_quantity} onChange={e=>setSource(v=>({...v,minimum_order_quantity:e.target.value}))}/></label>
+    <label className="check"><input type="checkbox" checked={source.is_preferred} onChange={e=>setSource(v=>({...v,is_preferred:e.target.checked}))}/> Preferred supplier</label><label className="check"><input type="checkbox" checked={source.confirm_availability} onChange={e=>setSource(v=>({...v,confirm_availability:e.target.checked}))}/> Supplier availability confirmed now</label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!source.product_id||!source.supplier_id}><Plus size={16}/> Save source link</button></div>
+   </form>
+   <div className="table-wrap"><table><thead><tr><th>Product</th><th>Supplier</th><th>SKU</th><th>Cost</th><th>Lead time</th><th>Availability confirmation</th><th>Preferred</th></tr></thead><tbody>{sources.map(s=><tr key={s.id}><td>{s.products?.name||'—'}</td><td>{s.suppliers?.supplier_name||'—'}</td><td>{s.supplier_sku||'—'}</td><td>{s.purchase_cost_bdt==null?'—':money(s.purchase_cost_bdt)}</td><td>{s.lead_time_days==null?'—':s.lead_time_days+' days'}</td><td>{s.availability_confirmed_at && Date.now()-new Date(s.availability_confirmed_at).getTime()<86400000?<span className="status live">Confirmed · {new Date(s.availability_confirmed_at).toLocaleString('en-GB')}</span>:<span className="status warning">Confirmation required</span>}</td><td>{s.is_preferred?'Yes':'No'}</td></tr>)}</tbody></table></div>
+  </section>
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">AUTHENTICITY CONTROL</p><h2>Evidence & Verification</h2><p className="muted">Private invoices, certificates and supplier declarations. Verification must be an explicit staff review.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();const form=e.currentTarget;setError('');try{if(!evidenceFile)throw new Error('Choose a supporting PDF or image.');await onSaveEvidence(evidenceForm,evidenceFile);setEvidenceForm({product_id:'',evidence_type:'purchase_invoice',reference_number:'',notes:''});setEvidenceFile(null);form.reset();}catch(x){setError(x.message);}}}>
+    <label>Product *<select required value={evidenceForm.product_id} onChange={e=>setEvidenceForm(v=>({...v,product_id:e.target.value}))}><option value="">Choose product</option>{products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.sku}</option>)}</select></label>
+    <label>Evidence type<select value={evidenceForm.evidence_type} onChange={e=>setEvidenceForm(v=>({...v,evidence_type:e.target.value}))}><option value="purchase_invoice">Purchase invoice</option><option value="authorization">Brand authorization</option><option value="certificate">Certificate</option><option value="supplier_declaration">Supplier declaration</option><option value="other">Other</option></select></label>
+    <label>Reference number<input value={evidenceForm.reference_number} onChange={e=>setEvidenceForm(v=>({...v,reference_number:e.target.value}))}/></label>
+    <label>Supporting file *<input required type="file" accept="application/pdf,image/jpeg,image/png,image/webp" onChange={e=>setEvidenceFile(e.target.files?.[0]||null)}/><small>Private storage · PDF/JPG/PNG/WebP · max 10 MB</small></label>
+    <label className="span-2">Internal review notes<textarea rows="2" value={evidenceForm.notes} onChange={e=>setEvidenceForm(v=>({...v,notes:e.target.value}))}/></label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!evidenceForm.product_id||!evidenceFile}><Upload size={16}/> Upload evidence</button></div>
+   </form>
+   <div className="table-wrap"><table><thead><tr><th>Product</th><th>Evidence</th><th>Reference</th><th>Review</th><th>Action</th></tr></thead><tbody>{evidence.map(e=><tr key={e.id}><td><strong>{e.products?.name||'Product'}</strong><small className="muted" style={{display:'block'}}>{e.products?.sku||''}</small></td><td>{e.evidence_type.replaceAll('_',' ')}</td><td>{e.reference_number||'—'}</td><td>{e.verified_at?<span className="status live">Verified</span>:<span className="status warning">Pending review</span>}</td><td><button className="secondary small" onClick={()=>onViewEvidence(e)}>View file</button> {!e.verified_at&&<button className="secondary small" onClick={()=>onVerifyEvidence(e)}>Approve evidence</button>}</td></tr>)}</tbody></table>{!evidence.length&&<div className="empty">No evidence uploaded yet.</div>}</div>
+  </section>
+ </div>;
 }
 
 function CollectionPanel({ collections, onCreate, onToggle, saving }) {
@@ -207,6 +274,10 @@ function App() {
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
   const [collections, setCollections] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [productSources, setProductSources] = useState([]);
+  const [authenticityEvidence, setAuthenticityEvidence] = useState([]);
   const [mediaAssets, setMediaAssets] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -234,20 +305,28 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c, m, costs] = await Promise.all([
+    const [p, c, m, costs, b, s, ps, ev] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('site_media').select('*').order('slot_key'),
-      supabase.from('product_costs').select('product_id,cost_bdt')
+      supabase.from('product_costs').select('product_id,cost_bdt,purchase_cost,packaging_cost,inbound_shipping_cost,other_cost'),
+      supabase.from('brands').select('*').order('display_order').order('name'),
+      supabase.from('suppliers').select('*').order('supplier_name'),
+      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false}),
+      supabase.from('authenticity_evidence').select('*,products(name,sku)').order('created_at',{ascending:false})
     ]);
     if (p.error) notify('error', p.error.message);
     else {
       if (costs.error) notify('error', 'Product costs: ' + costs.error.message);
-      const costByProduct = new Map((costs.data || []).map(row => [row.product_id, row.cost_bdt]));
-      setProducts((p.data || []).map(product => ({ ...product, cost_bdt: costByProduct.get(product.id) ?? '' })));
+      const costByProduct = new Map((costs.data || []).map(row => [row.product_id, row]));
+      setProducts((p.data || []).map(product => ({ ...product, ...(costByProduct.get(product.id) || {}), cost_bdt: costByProduct.get(product.id)?.cost_bdt ?? '' })));
     }
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
     if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
+    if (b.error) notify('error','Brands: '+b.error.message); else setBrands(b.data||[]);
+    if (s.error) notify('error','Suppliers: '+s.error.message); else setSuppliers(s.data||[]);
+    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);
+    if (ev.error) notify('error','Authenticity evidence: '+ev.error.message); else setAuthenticityEvidence(ev.data||[]);
     setDataLoading(false);
   }, [session]);
 
@@ -267,7 +346,7 @@ function App() {
     setAnalyticsLoading(true);
     const [orderResult, movementResult] = await Promise.all([
       supabase.from('orders')
-        .select('id,status,created_at,source,total_bdt,order_items(product_id,sku_snapshot,name_snapshot,quantity,line_total_bdt)')
+        .select('id,status,created_at,source,total_bdt,order_items(product_id,sku_snapshot,name_snapshot,quantity,line_total_bdt,unit_cost_snapshot,brand_snapshot)')
         .order('created_at', { ascending: false }).limit(5000),
       supabase.from('inventory_movements')
         .select('id,product_id,quantity_delta,reason,reference,created_at,products(name,sku)')
@@ -412,7 +491,7 @@ function App() {
   const saveProduct = async (payload, stock, imageFiles, stockTouched) => {
     setSaving(true);
     try {
-      const { cost_bdt: productCostBdt, ...productPayload } = payload;
+      const { cost_bdt: productCostBdt, purchase_cost, packaging_cost, inbound_shipping_cost, other_cost, ...productPayload } = payload;
       let productId = editor?.id;
       if (productId) {
         const { error } = await supabase.from('products').update(productPayload).eq('id', productId);
@@ -427,7 +506,7 @@ function App() {
         if (costDeleteError) throw costDeleteError;
       } else {
         const { error: costSaveError } = await supabase.from('product_costs').upsert({
-          product_id: productId, cost_bdt: Number(productCostBdt), updated_at: new Date().toISOString()
+          product_id: productId, cost_bdt: Number(productCostBdt), purchase_cost: purchase_cost == null ? null : Number(purchase_cost), packaging_cost: Number(packaging_cost || 0), inbound_shipping_cost: Number(inbound_shipping_cost || 0), other_cost: Number(other_cost || 0), updated_at: new Date().toISOString()
         }, { onConflict: 'product_id' });
         if (costSaveError) throw costSaveError;
       }
@@ -509,6 +588,42 @@ function App() {
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection created.'); }
   };
 
+  const saveAuthenticityEvidence = async (payload,file) => {
+    if(!file || file.size>10*1024*1024 || !['application/pdf','image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error('Evidence must be PDF/JPG/PNG/WebP and no larger than 10 MB.');
+    const path=payload.product_id+'/'+crypto.randomUUID()+'/'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const {error:uploadError}=await supabase.storage.from('authenticity-evidence').upload(path,file,{contentType:file.type,upsert:false});
+    if(uploadError) throw uploadError;
+    const {error}=await supabase.from('authenticity_evidence').insert({...payload,storage_path:path});
+    if(error){await supabase.storage.from('authenticity-evidence').remove([path]);throw error;}
+    await loadData();notify('success','Evidence uploaded to private storage.');
+  };
+  const viewAuthenticityEvidence = async evidence => {
+    const popup=window.open('about:blank','_blank');
+    if(!popup){notify('error','Allow pop-ups to view private evidence.');return;}
+    const {data,error}=await supabase.storage.from('authenticity-evidence').createSignedUrl(evidence.storage_path,60);
+    if(error){popup.close();notify('error',error.message);return;}
+    popup.location.href=data.signedUrl;
+  };
+  const verifyAuthenticityEvidence = async evidence => {
+    if(!window.confirm('Confirm that you reviewed this document and it supports the product authenticity claim?'))return;
+    setSaving(true);
+    try{
+      const now=new Date().toISOString();
+      const {error:evidenceError}=await supabase.from('authenticity_evidence').update({verified_by:session.user.id,verified_at:now}).eq('id',evidence.id);
+      if(evidenceError)throw evidenceError;
+      const {error:productError}=await supabase.from('products').update({authenticity_status:'verified'}).eq('id',evidence.product_id);
+      if(productError)throw productError;
+      await loadData();notify('success','Evidence reviewed and product marked verified.');
+    }catch(e){notify('error',e.message||'Could not verify evidence.');}
+    finally{setSaving(false);}
+  };
+
+  const saveBrand = async payload => { const {error}=await supabase.from('brands').insert(payload); if(error) throw error; await loadData(); notify('success','Brand created.'); };
+  const toggleBrand = async brand => { const {error}=await supabase.from('brands').update({is_active:!brand.is_active,updated_at:new Date().toISOString()}).eq('id',brand.id); if(error)notify('error',error.message);else{await loadData();notify('success','Brand visibility updated.');} };
+  const saveSupplier = async payload => { const {error}=await supabase.from('suppliers').insert(payload); if(error)throw error; await loadData();notify('success','Supplier saved privately.'); };
+  const toggleSupplier = async supplier => { const {error}=await supabase.from('suppliers').update({is_active:!supplier.is_active,updated_at:new Date().toISOString()}).eq('id',supplier.id); if(error)notify('error',error.message);else{await loadData();notify('success','Supplier status updated.');} };
+  const saveProductSource = async payload => { const {error}=await supabase.from('product_sources').upsert({...payload,updated_at:new Date().toISOString()},{onConflict:'product_id,supplier_id'}); if(error)throw error;await loadData();notify('success','Product sourcing link saved.'); };
+
   const toggleCollection = async (collection) => {
     const { error } = await supabase.from('collections').update({ is_active: !collection.is_active }).eq('id', collection.id);
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection updated.'); }
@@ -538,7 +653,7 @@ function App() {
   if (!session || !profile) return <><Login onLogin={signIn} onReset={requestPasswordReset} busy={loginBusy} resetBusy={resetBusy} resetMessage={resetMessage} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
     ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
@@ -562,6 +677,7 @@ function App() {
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
@@ -598,7 +714,7 @@ function App() {
       } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
       finally { setSaving(false); }
     }} />}
-    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
+    {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
   </div>;
 }
 
@@ -612,13 +728,13 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
   const totalUnits = salesLines.reduce((sum,line) => sum + Number(line.quantity || 0),0);
   const knownCostLines = salesLines.filter(line => {
     const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
-    return product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '';
+    return line.unit_cost_snapshot !== null && line.unit_cost_snapshot !== undefined || (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '');
   });
   const costCoverage = salesLines.length ? knownCostLines.length / salesLines.length : 0;
   const knownRevenue = knownCostLines.reduce((sum,line) => sum + Number(line.line_total_bdt || 0),0);
   const knownCost = knownCostLines.reduce((sum,line) => {
     const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
-    return sum + Number(product.cost_bdt || 0) * Number(line.quantity || 0);
+    return sum + Number(line.unit_cost_snapshot ?? product.cost_bdt ?? 0) * Number(line.quantity || 0);
   },0);
   const grossProfit = knownRevenue - knownCost;
   const grossMargin = knownRevenue > 0 ? grossProfit / knownRevenue * 100 : 0;
@@ -645,6 +761,20 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
     productMap.set(key,item);
   }
   const bestsellers = [...productMap.values()].sort((a,b) => b.units-a.units).slice(0,8);
+  const brandMap = new Map();
+  for (const line of salesLines) {
+    const product = productById.get(line.product_id) || productBySku.get(line.sku_snapshot);
+    const brandName = line.brand_snapshot || product?.brand || 'Unassigned / legacy';
+    const row = brandMap.get(brandName) || { brand:brandName, revenue:0, units:0, knownCost:0, knownRevenue:0 };
+    const revenue = Number(line.line_total_bdt || 0);
+    const quantity = Number(line.quantity || 0);
+    row.revenue += revenue; row.units += quantity;
+    if (line.unit_cost_snapshot !== null && line.unit_cost_snapshot !== undefined || (product?.cost_bdt !== null && product?.cost_bdt !== undefined && product?.cost_bdt !== '')) {
+      row.knownCost += Number(line.unit_cost_snapshot ?? product.cost_bdt ?? 0) * quantity; row.knownRevenue += revenue;
+    }
+    brandMap.set(brandName,row);
+  }
+  const brandPerformance = [...brandMap.values()].sort((a,b)=>b.revenue-a.revenue);
   const lowStock = products.filter(product => {
     const inv=product.inventory?.[0];
     return inv?.stock_counted && Number(inv.on_hand || 0)-Number(inv.reserved || 0) <= Number(inv.low_stock_threshold ?? 2);
@@ -676,6 +806,11 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
           {bestsellers.length ? <div className="bestseller-list">{bestsellers.map((item,index)=><div className="bestseller-row" key={item.sku}><span className="bestseller-rank">{index+1}</span><div className="bestseller-info"><strong>{item.name}</strong><small>{item.sku} · {money(item.revenue)}</small></div><b>{item.units} units</b></div>)}</div> : <div className="empty">No order item sales found yet.</div>}
         </section>
       </div>
+      <section className="analytics-card">
+        <div className="analytics-card-head"><div><p className="eyebrow">MERCHANDISING PERFORMANCE</p><h3>Brand-wise sales & margin</h3></div></div>
+        {brandPerformance.length ? <div className="table-wrap"><table><thead><tr><th>Brand / catalogue group</th><th>Units</th><th>Revenue</th><th>Estimated gross profit</th><th>Margin</th></tr></thead><tbody>{brandPerformance.map(row=>{const profit=row.knownRevenue-row.knownCost;const margin=row.knownRevenue?profit/row.knownRevenue*100:null;return <tr key={row.brand}><td><strong>{row.brand}</strong></td><td>{row.units}</td><td>{money(row.revenue)}</td><td>{row.knownRevenue?money(profit):'—'}</td><td>{margin===null?'—':margin.toFixed(1)+'%'}</td></tr>})}</tbody></table></div> : <div className="empty">Brand performance will appear after product sales are recorded.</div>}
+        <p className="tiny muted">Margins use the current landed unit cost and are shown only where cost data exists. Historical accounting cost requires order-item cost snapshots.</p>
+      </section>
       <section className="analytics-card stock-alert-card">
         <div className="analytics-card-head"><div><p className="eyebrow">INVENTORY CONTROL</p><h3>Low-stock alerts <span className="count">{lowStock.length}</span></h3></div></div>
         {lowStock.length ? <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Reserved</th><th>Available</th><th>Threshold</th></tr></thead><tbody>{lowStock.map(product=>{const inv=product.inventory?.[0]||{};const available=Number(inv.on_hand||0)-Number(inv.reserved||0);return <tr key={product.id}><td><strong>{product.name}</strong></td><td>{product.sku}</td><td>{inv.on_hand}</td><td>{inv.reserved}</td><td><span className="status warning">{available}</span></td><td>{inv.low_stock_threshold??2}</td></tr>})}</tbody></table></div> : <div className="empty">No stock-counted products are currently below their alert threshold.</div>}
