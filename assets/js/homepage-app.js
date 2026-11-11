@@ -236,13 +236,13 @@ function renderProducts() {
    FAQ
 ═══════════════════════════════════════ */
 const FAQ_DATA = [
-  { q: 'How does Cash on Delivery work?',        a: 'You place your order, we dispatch it, and you pay only when the package arrives at your door. No advance payment is ever required. Simply inspect your bag when it arrives and pay the courier.' },
-  { q: 'How long does delivery take?',           a: 'Orders are dispatched within 24–48 hours. Dhaka deliveries typically arrive in 1–2 business days. Chittagong and other cities may take 2–4 business days depending on courier service.' },
-  { q: 'What is your exchange policy?',          a: 'We offer a 7-day easy exchange policy. If you receive your bag and find a quality issue or defect, contact us on WhatsApp within 7 days and we\'ll arrange an exchange. The bag must be unused and in its original packaging.' },
-  { q: 'Can I see more photos before ordering?', a: 'Absolutely. WhatsApp us at +8801642779056 and we\'ll send you detailed photos of the exact bag — including hardware close-ups, interior shots, and size reference images. We want you to feel completely confident before ordering.' },
-  { q: 'Are ZARIAH bags good quality?',          a: 'Yes. Every bag is quality-checked by our team before dispatch. We source premium vegan leather and hardware, and stand behind the quality of every piece we sell. With COD, you can inspect before paying — that\'s our guarantee.' },
-  { q: 'Do you deliver outside Dhaka and Chittagong?', a: 'Yes, we deliver across Bangladesh. WhatsApp us with your location and we\'ll confirm the delivery timeline and availability in your area.' },
-  { q: 'How do I choose between collections?',   a: 'Essence is for soft, everyday elegance. Signature is for timeless, confident pieces that define your identity. Noir is for bold, statement-making bags. WhatsApp us and we\'ll help you find the perfect match for your style.' },
+  { q: 'What types of bags does ZARIAH Studio offer?', a: 'Our selection includes bags from distinctive brands and selected independent suppliers. Product listings provide the available brand and product details.' },
+  { q: 'Are all bags from original brands?', a: 'No. Our selection includes branded products as well as unbranded styles from independent suppliers. We identify products clearly and only describe branded merchandise as authentic when verified.' },
+  { q: 'How can I confirm product details?', a: 'Check the individual product listing or contact us on WhatsApp for available information, additional photos and current availability.' },
+  { q: 'How does Cash on Delivery work?', a: 'For eligible orders, you pay the courier when your order is delivered. Payment arrangements are confirmed when your order is placed.' },
+  { q: 'How long does delivery take?', a: 'Delivery timing depends on your location and product availability. Our team will confirm the estimated timeline when confirming your order.' },
+  { q: 'Can I exchange my purchase?', a: 'A 7-day exchange policy applies subject to the published exchange terms and product eligibility. Contact our team within the policy period for assistance.' },
+  { q: 'Can I see more photos before ordering?', a: 'Yes. Contact us on WhatsApp to request additional product photos and available details.' }
 ];
 
 function renderFAQ() {
@@ -922,14 +922,13 @@ function openPModal(id) {
 
   const featuresEl = document.getElementById('pmodalFeatures');
   if (featuresEl) {
-    const materialLabel = p.collection === 'Noir' ? 'Top-grain genuine cowhide' : 'Premium vegan leather';
     featuresEl.innerHTML = `
-      <span class="pfeat">${materialLabel}</span>
-      <span class="pfeat">Gold-tone hardware</span>
-      <span class="pfeat">Interior pockets</span>
+      <span class="pfeat">Brand details shown on listing</span>
+      <span class="pfeat">Product details vary by style</span>
       <span class="pfeat">Checked before dispatch</span>
-      <span class="pfeat">Luxury gift packaging</span>
-      <span class="pfeat">Pay on delivery</span>
+      <span class="pfeat">7-day exchange policy</span>
+      <span class="pfeat">Additional photos on WhatsApp</span>
+      <span class="pfeat">Cash on delivery where available</span>
     `;
   }
 
