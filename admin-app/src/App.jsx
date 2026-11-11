@@ -154,7 +154,9 @@ function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, on
  const [brand,setBrand]=useState({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});
  const [supplier,setSupplier]=useState({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});
  const [source,setSource]=useState({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false,confirm_availability:false});
- const [error,setError]=useState('');\n const [evidenceForm,setEvidenceForm]=useState({product_id:'',evidence_type:'purchase_invoice',reference_number:'',notes:''});\n const [evidenceFile,setEvidenceFile]=useState(null);
+ const [error,setError]=useState('');
+ const [evidenceForm,setEvidenceForm]=useState({product_id:'',evidence_type:'purchase_invoice',reference_number:'',notes:''});
+ const [evidenceFile,setEvidenceFile]=useState(null);
  const field=(label,key,value,setter,type='text')=><label>{label}<input type={type} value={value[key]??''} onChange={e=>setter(v=>({...v,[key]:e.target.value}))}/></label>;
  return <div className="panel-stack">
   <section className="panel"><div className="panel-head"><div><p className="eyebrow">PUBLIC CATALOGUE</p><h2>Brand Directory</h2><p className="muted">Only active brand names and descriptions can appear publicly.</p></div></div>
