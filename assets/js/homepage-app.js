@@ -1227,7 +1227,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
 
   const fullProductText = document.getElementById('oProductName').textContent;
   const price = document.getElementById('oProductPrice').textContent;
-  const parenMatch = fullProductText.match(/^(.+?)\s+\\((.+?)\\)$/);
+  const parenMatch = fullProductText.match(/^(.+?)\s+\((.+?)\)$/);
   const productName = parenMatch ? parenMatch[1].trim() : fullProductText;
   const collection = parenMatch ? parenMatch[2].trim() : '';
   const productObj = PRODUCTS.find(p => p.name === productName && p.collection === collection);
