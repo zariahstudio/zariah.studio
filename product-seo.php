@@ -153,6 +153,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/product-detail-base.css?v=20261111-dynamic-seo">
 <link rel="stylesheet" href="/assets/css/product-detail-experience.css?v=20261109-stablecta">
 <link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109">
 <link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3">
