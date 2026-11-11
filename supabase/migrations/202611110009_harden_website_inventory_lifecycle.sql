@@ -30,7 +30,7 @@ begin
       left join public.inventory i on i.product_id = p.id
       where o.source = 'website'
         and o.order_status in ('pending', 'confirmed', 'processing', 'ready_to_ship', 'shipped')
-        and p.availability_mode <> 'pre_order'
+        and coalesce(p.availability_mode, 'auto') <> 'pre_order'
         and coalesce(i.stock_counted, p.stock_counted, false)
       group by oi.product_id
     )
@@ -59,7 +59,7 @@ join public.products p on p.id = oi.product_id
 left join public.inventory i on i.product_id = p.id
 where o.source = 'website'
   and o.order_status in ('pending', 'confirmed', 'processing', 'ready_to_ship', 'shipped')
-  and p.availability_mode <> 'pre_order'
+  and coalesce(p.availability_mode, 'auto') <> 'pre_order'
   and coalesce(i.stock_counted, p.stock_counted, false)
 group by o.id, oi.product_id
 on conflict (order_id, product_id) do nothing;
@@ -151,7 +151,7 @@ begin
        and r.product_id = oi.product_id
        and r.reservation_status = 'reserved'
       where oi.order_id = new.id
-        and p.availability_mode <> 'pre_order'
+        and coalesce(p.availability_mode, 'auto') <> 'pre_order'
         and coalesce(i.stock_counted, p.stock_counted, false)
       group by oi.product_id, r.quantity
       having coalesce(r.quantity, 0) <> sum(oi.quantity)
@@ -199,7 +199,7 @@ begin
        and r.product_id = oi.product_id
        and r.reservation_status = 'reserved'
       where oi.order_id = new.id
-        and p.availability_mode <> 'pre_order'
+        and coalesce(p.availability_mode, 'auto') <> 'pre_order'
         and coalesce(i.stock_counted, p.stock_counted, false)
       group by oi.product_id, r.quantity
       having coalesce(r.quantity, 0) <> sum(oi.quantity)
