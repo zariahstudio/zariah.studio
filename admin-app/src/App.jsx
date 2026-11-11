@@ -209,20 +209,41 @@ function BrandSupplierPanel({ brands, suppliers, products, sources, evidence, on
  </div>;
 }
 
-function CollectionPanel({ collections, onCreate, onToggle, saving }) {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) {
+  const emptyForm = { name: '', description: '' };
+  const [form, setForm] = useState(emptyForm);
+  const [editing, setEditing] = useState(null);
+  const [error, setError] = useState('');
+  const submit = async e => {
+    e.preventDefault();
+    const name = form.name.trim();
+    if (!name) return;
+    setError('');
+    try {
+      if (editing) await onUpdate(editing.id, name, form.description.trim());
+      else await onCreate(name, form.description.trim());
+      setForm(emptyForm);
+      setEditing(null);
+    } catch (err) { setError(err.message || 'Could not save collection.'); }
+  };
+  const startEdit = collection => {
+    setEditing(collection);
+    setForm({ name: collection.name, description: collection.description || '' });
+    setError('');
+  };
+  const cancelEdit = () => { setEditing(null); setForm(emptyForm); setError(''); };
   return <section className="panel">
-    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create and manage collections without editing website code.</p></div></div>
-    <form className="inline-create" onSubmit={async e => { e.preventDefault(); if (!name.trim()) return; await onCreate(name.trim(), description.trim()); setName(''); setDescription(''); }}>
-      <input required value={name} onChange={e => setName(e.target.value)} placeholder="New collection name"/>
-      <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description (optional)"/>
-      <button className="primary" disabled={saving}><Plus size={16}/> Add collection</button>
+    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create, edit and manage the collections shown in the published catalogue. Hiding a collection does not delete its products.</p></div></div>
+    <form className="inline-create" onSubmit={submit}>
+      <input required maxLength="60" value={form.name} onChange={e => setForm(v => ({...v, name:e.target.value}))} placeholder="Collection name"/>
+      <input maxLength="240" value={form.description} onChange={e => setForm(v => ({...v, description:e.target.value}))} placeholder="Short description (optional)"/>
+      <button className="primary" disabled={saving || !form.name.trim()}>{editing ? <Pencil size={16}/> : <Plus size={16}/>} {editing ? 'Save changes' : 'Add collection'}</button>
+      {editing && <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>}
     </form>
-    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{c.name}</strong><small>{c.slug}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
+    {error && <p className="form-error">{error}</p>}
+    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{c.name}</strong><small>{c.slug}{c.description ? ' · ' + c.description : ''}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => startEdit(c)}><Pencil size={13}/> Edit</button><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
   </section>;
 }
-
 
 const MEDIA_SLOTS = [
   {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
@@ -583,10 +604,27 @@ function App() {
 
   const createCollection = async (name, description) => {
     setSaving(true);
-    const slug = slugify(name);
-    const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length });
-    setSaving(false);
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection created.'); }
+    try {
+      const slug = slugify(name);
+      const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length, sort_order: collections.length });
+      if (error) throw error;
+      await loadData();
+      notify('success', 'Collection created.');
+    } catch (error) { notify('error', error.message || 'Could not create collection.'); }
+    finally { setSaving(false); }
+  };
+  const updateCollection = async (id, name, description) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.from('collections').update({
+        name, slug: slugify(name), description,
+        updated_at: new Date().toISOString()
+      }).eq('id', id);
+      if (error) throw error;
+      await loadData();
+      notify('success', 'Collection details updated.');
+    } catch (error) { notify('error', error.message || 'Could not update collection.'); throw error; }
+    finally { setSaving(false); }
   };
 
   const saveAuthenticityEvidence = async (payload,file) => {
@@ -678,7 +716,7 @@ function App() {
         {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU, brand or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
-        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onUpdate={updateCollection} onToggle={toggleCollection} saving={saving}/>}
         {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onUpdateBrand={updateBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
