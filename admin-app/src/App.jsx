@@ -47,7 +47,7 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
     stock: product.inventory?.[0]?.on_hand ?? 0,
     size: product.specifications?.size || '',
     compare_at_price_bdt: product.compare_at_price_bdt ?? '',
-    cost_bdt: product.cost_bdt ?? ''
+    cost_bdt: product.cost_bdt ?? '', purchase_cost: product.purchase_cost ?? product.cost_bdt ?? '', packaging_cost: product.packaging_cost ?? 0, inbound_shipping_cost: product.inbound_shipping_cost ?? 0, other_cost: product.other_cost ?? 0
   } : emptyProduct);
   const [images, setImages] = useState([]);
   const [processedImages, setProcessedImages] = useState([]);
@@ -82,6 +82,8 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
     if (!form.collection_id) return setError('Select a collection.');
     if (!(form.sku ?? '').trim() || !(form.name ?? '').trim() || Number(form.price_bdt) < 0 || form.price_bdt === '') return setError('SKU, name and a valid price are required.');
     if (images.some(file => !['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 10 * 1024 * 1024)) return setError('Images must be JPG, PNG or WebP and no larger than 10 MB each.');
+    const costParts = ['purchase_cost','packaging_cost','inbound_shipping_cost','other_cost'].map(key => Number(form[key] || 0));
+    const calculatedCost = costParts.some(value => value > 0) ? costParts.reduce((sum,value)=>sum+value,0) : (form.cost_bdt === '' ? null : Number(form.cost_bdt));
     const payload = {
       sku: (form.sku ?? '').trim(), name: (form.name ?? '').trim(),
       slug: (form.slug ?? '').trim() || slugify(form.name ?? ''),
@@ -94,7 +96,7 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
       description: (form.description ?? '').trim() || null,
       specifications: { size: (form.size ?? '').trim() },
       price_bdt: Number(form.price_bdt),
-      cost_bdt: form.cost_bdt === '' ? null : Number(form.cost_bdt),
+      cost_bdt: calculatedCost, purchase_cost: form.purchase_cost === '' ? null : Number(form.purchase_cost), packaging_cost: Number(form.packaging_cost || 0), inbound_shipping_cost: Number(form.inbound_shipping_cost || 0), other_cost: Number(form.other_cost || 0),
       compare_at_price_bdt: form.compare_at_price_bdt === '' ? null : Number(form.compare_at_price_bdt),
       badge: (form.badge ?? '').trim() || null,
       is_featured: Boolean(form.is_featured),
@@ -118,7 +120,11 @@ function ProductEditor({ product, collections, brands, onClose, onSave, saving }
           <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
           <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
           <label>Price (BDT) *<input type="number" min="0" step="1" required value={form.price_bdt} onChange={e => change('price_bdt', e.target.value)}/></label>
-          <label>Product cost (BDT)<input type="number" min="0" step="1" value={form.cost_bdt ?? ''} onChange={e => change('cost_bdt', e.target.value)} placeholder="For internal margin reporting only"/></label>
+          <label>Purchase cost (BDT)<input type="number" min="0" step="1" value={form.purchase_cost ?? ''} onChange={e => change('purchase_cost', e.target.value)} placeholder="Supplier purchase price"/></label>
+          <label>Packaging cost (BDT)<input type="number" min="0" step="1" value={form.packaging_cost ?? 0} onChange={e => change('packaging_cost', e.target.value)}/></label>
+          <label>Inbound shipping (BDT)<input type="number" min="0" step="1" value={form.inbound_shipping_cost ?? 0} onChange={e => change('inbound_shipping_cost', e.target.value)}/></label>
+          <label>Other unit cost (BDT)<input type="number" min="0" step="1" value={form.other_cost ?? 0} onChange={e => change('other_cost', e.target.value)}/></label>
+          <label>Calculated total unit cost (BDT)<input readOnly value={['purchase_cost','packaging_cost','inbound_shipping_cost','other_cost'].reduce((sum,key)=>sum+Number(form[key]||0),0)||form.cost_bdt||0}/></label>
           <label>Compare-at price (BDT)<input type="number" min="0" step="1" value={form.compare_at_price_bdt} onChange={e => change('compare_at_price_bdt', e.target.value)}/></label>
           <label>Colour<input value={form.color || ''} onChange={e => change('color', e.target.value)} placeholder="Black / Taupe"/></label>
           <label>Availability<select value={form.availability_mode || 'auto'} onChange={e => change('availability_mode', e.target.value)}><option value="auto">Automatic (based on inventory)</option><option value="pre_order">Pre-order available</option></select></label>
@@ -289,7 +295,7 @@ function App() {
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('site_media').select('*').order('slot_key'),
-      supabase.from('product_costs').select('product_id,cost_bdt'),
+      supabase.from('product_costs').select('product_id,cost_bdt,purchase_cost,packaging_cost,inbound_shipping_cost,other_cost'),
       supabase.from('brands').select('*').order('display_order').order('name'),
       supabase.from('suppliers').select('*').order('supplier_name'),
       supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false})
@@ -297,8 +303,8 @@ function App() {
     if (p.error) notify('error', p.error.message);
     else {
       if (costs.error) notify('error', 'Product costs: ' + costs.error.message);
-      const costByProduct = new Map((costs.data || []).map(row => [row.product_id, row.cost_bdt]));
-      setProducts((p.data || []).map(product => ({ ...product, cost_bdt: costByProduct.get(product.id) ?? '' })));
+      const costByProduct = new Map((costs.data || []).map(row => [row.product_id, row]));
+      setProducts((p.data || []).map(product => ({ ...product, ...(costByProduct.get(product.id) || {}), cost_bdt: costByProduct.get(product.id)?.cost_bdt ?? '' })));
     }
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
     if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
@@ -469,7 +475,7 @@ function App() {
   const saveProduct = async (payload, stock, imageFiles, stockTouched) => {
     setSaving(true);
     try {
-      const { cost_bdt: productCostBdt, ...productPayload } = payload;
+      const { cost_bdt: productCostBdt, purchase_cost, packaging_cost, inbound_shipping_cost, other_cost, ...productPayload } = payload;
       let productId = editor?.id;
       if (productId) {
         const { error } = await supabase.from('products').update(productPayload).eq('id', productId);
@@ -484,7 +490,7 @@ function App() {
         if (costDeleteError) throw costDeleteError;
       } else {
         const { error: costSaveError } = await supabase.from('product_costs').upsert({
-          product_id: productId, cost_bdt: Number(productCostBdt), updated_at: new Date().toISOString()
+          product_id: productId, cost_bdt: Number(productCostBdt), purchase_cost: purchase_cost == null ? null : Number(purchase_cost), packaging_cost: Number(packaging_cost || 0), inbound_shipping_cost: Number(inbound_shipping_cost || 0), other_cost: Number(other_cost || 0), updated_at: new Date().toISOString()
         }, { onConflict: 'product_id' });
         if (costSaveError) throw costSaveError;
       }
