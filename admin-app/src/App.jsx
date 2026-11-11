@@ -141,6 +141,51 @@ function ProductEditor({ product, collections, onClose, onSave, saving }) {
   </div>;
 }
 
+function BrandSupplierPanel({ brands, suppliers, products, sources, onSaveBrand, onToggleBrand, onSaveSupplier, onToggleSupplier, onSaveSource, saving }) {
+ const [brand,setBrand]=useState({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});
+ const [supplier,setSupplier]=useState({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});
+ const [source,setSource]=useState({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false});
+ const [error,setError]=useState('');
+ const field=(label,key,value,setter,type='text')=><label>{label}<input type={type} value={value[key]??''} onChange={e=>setter(v=>({...v,[key]:e.target.value}))}/></label>;
+ return <div className="panel-stack">
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">PUBLIC CATALOGUE</p><h2>Brand Directory</h2><p className="muted">Only active brand names and descriptions can appear publicly.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveBrand({...brand,slug:brand.name.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''),display_order:brands.length});setBrand({name:'',brand_type:'established',authenticity_policy:'mixed',description:'',website_url:''});}catch(x){setError(x.message);}}}>
+    
+    <label>Brand name *<input required value={brand.name} onChange={e=>setBrand(v=>({...v,name:e.target.value}))}/></label>
+    <label>Brand type<select value={brand.brand_type} onChange={e=>setBrand(v=>({...v,brand_type:e.target.value}))}><option value="established">Established brand</option><option value="zariah_edit">The ZARIAH Edit</option><option value="private_label">Private label</option></select></label>
+    <label>Authenticity policy<select value={brand.authenticity_policy} onChange={e=>setBrand(v=>({...v,authenticity_policy:e.target.value}))}><option value="mixed">Mixed / item-level status</option><option value="verified_only">Verified only</option><option value="not_applicable">Not applicable</option></select></label>
+    <label>Website<input type="url" value={brand.website_url} onChange={e=>setBrand(v=>({...v,website_url:e.target.value}))}/></label>
+    <label className="span-2">Description<textarea rows="2" value={brand.description} onChange={e=>setBrand(v=>({...v,description:e.target.value}))}/></label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!brand.name.trim()}><Plus size={16}/> Create brand</button></div>
+   </form>
+   <div className="collection-list">{brands.map(b=><div className="collection-row" key={b.id}><div><strong>{b.name}</strong><small>{b.brand_type.replaceAll('_',' ')} · {b.authenticity_policy.replaceAll('_',' ')}</small></div><span className={b.is_active?'status live':'status'}>{b.is_active?'Active':'Hidden'}</span><button className="secondary small" onClick={()=>onToggleBrand(b)}>{b.is_active?'Hide':'Activate'}</button></div>)}{!brands.length&&<div className="empty">No brands created. Existing products remain unassigned.</div>}</div>
+  </section>
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">PRIVATE SOURCING</p><h2>Supplier Directory</h2><p className="muted">Supplier identities and contact details are staff-only.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveSupplier(supplier);setSupplier({supplier_name:'',supplier_type:'local',contact_person:'',phone:'',email:'',country:'',internal_notes:''});}catch(x){setError(x.message);}}}>
+    <label>Supplier name *<input required value={supplier.supplier_name} onChange={e=>setSupplier(v=>({...v,supplier_name:e.target.value}))}/></label>
+    <label>Type<select value={supplier.supplier_type} onChange={e=>setSupplier(v=>({...v,supplier_type:e.target.value}))}><option value="local">Local</option><option value="international">International</option><option value="brand_authorized">Brand-authorized</option><option value="other">Other</option></select></label>
+    <label>Contact person<input value={supplier.contact_person} onChange={e=>setSupplier(v=>({...v,contact_person:e.target.value}))}/></label><label>Phone<input value={supplier.phone} onChange={e=>setSupplier(v=>({...v,phone:e.target.value}))}/></label><label>Email<input type="email" value={supplier.email} onChange={e=>setSupplier(v=>({...v,email:e.target.value}))}/></label><label>Country<input value={supplier.country} onChange={e=>setSupplier(v=>({...v,country:e.target.value}))}/></label>
+    <label className="span-2">Internal notes<textarea rows="2" value={supplier.internal_notes} onChange={e=>setSupplier(v=>({...v,internal_notes:e.target.value}))}/></label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!supplier.supplier_name.trim()}><Plus size={16}/> Add supplier</button></div>
+   </form>
+   <div className="collection-list">{suppliers.map(s=><div className="collection-row" key={s.id}><div><strong>{s.supplier_name}</strong><small>{s.supplier_type.replaceAll('_',' ')} · {[s.country,s.phone].filter(Boolean).join(' · ')}</small></div><span className={s.is_active?'status live':'status'}>{s.is_active?'Active':'Inactive'}</span><button className="secondary small" onClick={()=>onToggleSupplier(s)}>{s.is_active?'Deactivate':'Activate'}</button></div>)}</div>
+  </section>
+  <section className="panel"><div className="panel-head"><div><p className="eyebrow">SUPPLIER MAPPING</p><h2>Product Sources</h2><p className="muted">Internal supplier SKU, purchase cost, MOQ and lead time; never exposed to customers.</p></div></div>
+   <form className="form-grid" onSubmit={async e=>{e.preventDefault();setError('');try{await onSaveSource({...source,purchase_cost_bdt:source.purchase_cost_bdt===''?null:Number(source.purchase_cost_bdt),lead_time_days:source.lead_time_days===''?null:Number(source.lead_time_days),minimum_order_quantity:Number(source.minimum_order_quantity)});setSource({product_id:'',supplier_id:'',supplier_sku:'',purchase_cost_bdt:'',lead_time_days:'',minimum_order_quantity:1,is_preferred:false});}catch(x){setError(x.message);}}}>
+    <label>Product *<select required value={source.product_id} onChange={e=>setSource(v=>({...v,product_id:e.target.value}))}><option value="">Choose product</option>{products.map(p=><option key={p.id} value={p.id}>{p.name} · {p.sku}</option>)}</select></label>
+    <label>Supplier *<select required value={source.supplier_id} onChange={e=>setSource(v=>({...v,supplier_id:e.target.value}))}><option value="">Choose supplier</option>{suppliers.filter(s=>s.is_active).map(s=><option key={s.id} value={s.id}>{s.supplier_name}</option>)}</select></label>
+    <label>Supplier SKU<input value={source.supplier_sku} onChange={e=>setSource(v=>({...v,supplier_sku:e.target.value}))}/></label>
+    <label>Purchase cost (BDT)<input type="number" min="0" value={source.purchase_cost_bdt} onChange={e=>setSource(v=>({...v,purchase_cost_bdt:e.target.value}))}/></label>
+    <label>Lead time (days)<input type="number" min="0" value={source.lead_time_days} onChange={e=>setSource(v=>({...v,lead_time_days:e.target.value}))}/></label>
+    <label>MOQ<input type="number" min="1" value={source.minimum_order_quantity} onChange={e=>setSource(v=>({...v,minimum_order_quantity:e.target.value}))}/></label>
+    <label className="check span-2"><input type="checkbox" checked={source.is_preferred} onChange={e=>setSource(v=>({...v,is_preferred:e.target.checked}))}/> Preferred supplier</label>
+    {error&&<p className="form-error span-2">{error}</p>}<div className="span-2"><button className="primary" disabled={saving||!source.product_id||!source.supplier_id}><Plus size={16}/> Save source link</button></div>
+   </form>
+   <div className="table-wrap"><table><thead><tr><th>Product</th><th>Supplier</th><th>SKU</th><th>Cost</th><th>Lead time</th><th>Preferred</th></tr></thead><tbody>{sources.map(s=><tr key={s.id}><td>{s.products?.name||'—'}</td><td>{s.suppliers?.supplier_name||'—'}</td><td>{s.supplier_sku||'—'}</td><td>{s.purchase_cost_bdt==null?'—':money(s.purchase_cost_bdt)}</td><td>{s.lead_time_days==null?'—':s.lead_time_days+' days'}</td><td>{s.is_preferred?'Yes':'No'}</td></tr>)}</tbody></table></div>
+  </section>
+ </div>;
+}
+
 function CollectionPanel({ collections, onCreate, onToggle, saving }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -206,7 +251,7 @@ function App() {
   const [section, setSection] = useState('dashboard');
   const [mobileNav, setMobileNav] = useState(false);
   const [products, setProducts] = useState([]);
-  const [collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState([]);\n  const [brands, setBrands] = useState([]);\n  const [suppliers, setSuppliers] = useState([]);\n  const [productSources, setProductSources] = useState([]);
   const [mediaAssets, setMediaAssets] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -234,11 +279,11 @@ function App() {
   const loadData = useCallback(async () => {
     if (!supabase || !session) return;
     setDataLoading(true);
-    const [p, c, m, costs] = await Promise.all([
+    const [p, c, m, costs, b, s, ps] = await Promise.all([
       supabase.from('products').select('*, collections(name), product_images(*), inventory(on_hand,reserved,stock_counted,low_stock_threshold)').order('display_order').order('created_at', { ascending: false }),
       supabase.from('collections').select('*').order('display_order').order('name'),
       supabase.from('site_media').select('*').order('slot_key'),
-      supabase.from('product_costs').select('product_id,cost_bdt')
+      supabase.from('product_costs').select('product_id,cost_bdt'),\n      supabase.from('brands').select('*').order('display_order').order('name'),\n      supabase.from('suppliers').select('*').order('supplier_name'),\n      supabase.from('product_sources').select('*,products(name,sku),suppliers(supplier_name)').order('created_at',{ascending:false})
     ]);
     if (p.error) notify('error', p.error.message);
     else {
@@ -247,7 +292,7 @@ function App() {
       setProducts((p.data || []).map(product => ({ ...product, cost_bdt: costByProduct.get(product.id) ?? '' })));
     }
     if (c.error) notify('error', c.error.message); else setCollections(c.data || []);
-    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);
+    if (m.error) notify('error', 'Media library: '+m.error.message); else setMediaAssets(m.data || []);\n    if (b.error) notify('error','Brands: '+b.error.message); else setBrands(b.data||[]);\n    if (s.error) notify('error','Suppliers: '+s.error.message); else setSuppliers(s.data||[]);\n    if (ps.error) notify('error','Product sources: '+ps.error.message); else setProductSources(ps.data||[]);
     setDataLoading(false);
   }, [session]);
 
@@ -509,6 +554,12 @@ function App() {
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection created.'); }
   };
 
+  const saveBrand = async payload => { const {error}=await supabase.from('brands').insert(payload); if(error) throw error; await loadData(); notify('success','Brand created.'); };
+  const toggleBrand = async brand => { const {error}=await supabase.from('brands').update({is_active:!brand.is_active,updated_at:new Date().toISOString()}).eq('id',brand.id); if(error)notify('error',error.message);else{await loadData();notify('success','Brand visibility updated.');} };
+  const saveSupplier = async payload => { const {error}=await supabase.from('suppliers').insert(payload); if(error)throw error; await loadData();notify('success','Supplier saved privately.'); };
+  const toggleSupplier = async supplier => { const {error}=await supabase.from('suppliers').update({is_active:!supplier.is_active,updated_at:new Date().toISOString()}).eq('id',supplier.id); if(error)notify('error',error.message);else{await loadData();notify('success','Supplier status updated.');} };
+  const saveProductSource = async payload => { const {error}=await supabase.from('product_sources').upsert({...payload,updated_at:new Date().toISOString()},{onConflict:'product_id,supplier_id'}); if(error)throw error;await loadData();notify('success','Product sourcing link saved.'); };
+
   const toggleCollection = async (collection) => {
     const { error } = await supabase.from('collections').update({ is_active: !collection.is_active }).eq('id', collection.id);
     if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection updated.'); }
@@ -538,7 +589,7 @@ function App() {
   if (!session || !profile) return <><Login onLogin={signIn} onReset={requestPasswordReset} busy={loginBusy} resetBusy={resetBusy} resetMessage={resetMessage} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
     ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
@@ -561,7 +612,7 @@ function App() {
         {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU, brand or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
-        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}
+        {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onToggle={toggleCollection} saving={saving}/>}\n        {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} onSaveBrand={saveBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
