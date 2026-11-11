@@ -610,7 +610,7 @@ function App() {
       if (error) throw error;
       await loadData();
       notify('success', 'Collection created.');
-    } catch (error) { notify('error', error.message || 'Could not create collection.'); }
+    } catch (error) { notify('error', error.message || 'Could not create collection.'); throw error; }
     finally { setSaving(false); }
   };
   const updateCollection = async (id, name, description) => {
