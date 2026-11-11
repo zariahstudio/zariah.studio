@@ -9,7 +9,7 @@ begin
  if not found then return new; end if;
  select pc.cost_bdt,coalesce(pc.purchase_cost,0)+coalesce(pc.packaging_cost,0)+coalesce(pc.inbound_shipping_cost,0)+coalesce(pc.other_cost,0)
  into v_cost,v_total_cost from public.product_costs pc where pc.product_id=new.product_id;
- if new.unit_cost_snapshot is null then new.unit_cost_snapshot:=coalesce(v_cost,v_total_cost,0); end if;
+ if new.unit_cost_snapshot is null then new.unit_cost_snapshot:=coalesce(v_cost,v_total_cost); end if;
  if new.brand_snapshot is null then
   select coalesce(b.name,p.brand) into v_brand from public.products p left join public.brands b on b.id=p.brand_id where p.id=new.product_id;
   new.brand_snapshot:=v_brand;
