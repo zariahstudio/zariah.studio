@@ -35,7 +35,108 @@
 .catalogue-search input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(197,160,106,.12)}
 .catalogue-search span{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:22px;color:var(--gold);pointer-events:none}
 @media(max-width:640px){.toolbar{display:grid;grid-template-columns:1fr;gap:12px}.catalogue-search{order:0;max-width:none;width:100%}.toolbar .controls{display:flex;gap:8px}.toolbar .controls>*{min-width:0;flex:1}.toolbar .controls select{width:100%}}
-</style><link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109"><link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3"><link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2"></head>
+</style><link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109"><link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3"><link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2"><style id="z-allbags-filter-polish-v1">
+/* Mobile-only catalogue controls polish; desktop layout remains untouched. */
+@media(max-width:640px){
+  .catalogue .toolbar{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:13px!important;
+    padding:15px 0 17px!important;
+    margin-bottom:19px!important;
+    align-items:stretch!important;
+  }
+  .catalogue .result-count{
+    font-size:9px!important;
+    letter-spacing:.16em!important;
+    line-height:1.5!important;
+    color:#81776F!important;
+  }
+  .catalogue .toolbar .controls{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+    align-items:stretch!important;
+  }
+  .catalogue .catalogue-search{
+    grid-column:1/-1!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    order:0!important;
+  }
+  .catalogue .catalogue-search input{
+    display:block!important;
+    width:100%!important;
+    height:49px!important;
+    padding:0 44px 0 15px!important;
+    border:1px solid #ded4c9!important;
+    border-radius:2px!important;
+    background:#fffdfa!important;
+    color:#292522!important;
+    font:400 11px Inter,sans-serif!important;
+    letter-spacing:.035em!important;
+    box-shadow:0 2px 8px rgba(41,37,34,.035)!important;
+    -webkit-appearance:none!important;
+    appearance:none!important;
+  }
+  .catalogue .catalogue-search input::placeholder{color:#968b80!important;opacity:1!important}
+  .catalogue .catalogue-search input:focus{
+    outline:none!important;
+    border-color:#B99A70!important;
+    box-shadow:0 0 0 2px rgba(185,154,112,.13)!important;
+  }
+  .catalogue .catalogue-search span{
+    right:15px!important;
+    font-size:23px!important;
+    color:#A98245!important;
+  }
+  .catalogue .toolbar .select-wrap{
+    display:block!important;
+    position:relative!important;
+    width:100%!important;
+    min-width:0!important;
+    flex:none!important;
+  }
+  .catalogue .toolbar .select-wrap:after{
+    right:13px!important;
+    top:50%!important;
+    transform:translateY(-65%)!important;
+    font-size:15px!important;
+    color:#A98245!important;
+  }
+  .catalogue .toolbar .select-wrap select{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    height:47px!important;
+    padding:0 31px 0 12px!important;
+    border:1px solid #ded4c9!important;
+    border-radius:2px!important;
+    background:#F8F3ED!important;
+    color:#625D59!important;
+    font:500 9px Inter,sans-serif!important;
+    letter-spacing:.075em!important;
+    text-transform:uppercase!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important;
+    overflow:hidden!important;
+    box-shadow:0 2px 8px rgba(41,37,34,.025)!important;
+    -webkit-appearance:none!important;
+    appearance:none!important;
+  }
+  .catalogue .toolbar .select-wrap select:focus-visible{
+    outline:2px solid rgba(185,154,112,.45)!important;
+    outline-offset:2px!important;
+  }
+}
+@media(max-width:360px){
+  .catalogue .toolbar .controls{gap:7px!important}
+  .catalogue .toolbar .select-wrap select{font-size:8px!important;padding-left:9px!important}
+}
+</style></head>
 <body>
 <header class="hdr"><div class="hdr-inner">
   <a class="logo" href="/" aria-label="ZARIAH Studio home"><span class="logo-name">Zariah</span><span class="logo-studio">Studio</span></a>
