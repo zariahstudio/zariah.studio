@@ -488,66 +488,7 @@
 @media(min-width:769px){#dfbarBrand{min-width:132px}}
 @media(max-width:768px){.mob-controls-row .mob-ctrl-wrap:has(#mobileBrandSelect){flex:1 0 100%;width:100%}#mobileBrandSelect{width:100%}}
 </style>
-<style id="z-homepage-mobile-header-fix-v2">
-/* Mobile homepage header: logo, search, wishlist and menu. Desktop remains untouched. */
-.z-mobile-search{display:none}
-@media screen and (max-width:768px){
-  header.hdr,header.hdr.scrolled{
-    display:block!important;position:sticky!important;top:30px!important;
-    width:100%!important;height:68px!important;min-height:68px!important;
-    padding:0!important;margin:0!important;background:#fbf7f1!important;
-    border-bottom:1px solid #e8e0d7!important;z-index:500!important;
-  }
-  header.hdr .hdr-inner{
-    display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
-    align-items:center!important;justify-content:space-between!important;
-    gap:12px!important;width:100%!important;max-width:none!important;
-    height:100%!important;min-height:68px!important;padding:8px 18px!important;
-    margin:0!important;box-sizing:border-box!important;
-  }
-  header.hdr .hdr-inner>a.logo{
-    display:flex!important;position:static!important;inset:auto!important;
-    transform:none!important;flex:0 0 auto!important;width:auto!important;
-    max-width:none!important;align-items:flex-start!important;
-    justify-content:center!important;margin:0 auto 0 0!important;padding:0!important;
-    text-align:left!important;
-  }
-  header.hdr .logo-name{font-size:28px!important;line-height:.9!important;letter-spacing:.12em!important}
-  header.hdr .logo-studio{display:block!important;margin:5px 0 0!important;font-size:8px!important;letter-spacing:.4em!important}
-  header.hdr nav[aria-label="Main navigation"]{display:none!important;visibility:hidden!important;width:0!important;height:0!important;overflow:hidden!important}
-  header.hdr .z-mobile-search{
-    display:flex!important;flex:0 0 38px!important;width:38px!important;height:40px!important;
-    align-items:center!important;justify-content:center!important;margin:0 0 0 auto!important;
-    color:#51483f!important;border:1px solid #ded4c9!important;background:transparent!important;
-  }
-  header.hdr .z-mobile-search svg{display:block!important;width:19px!important;height:19px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important}
-  header.hdr .hdr-right{
-    display:flex!important;position:static!important;flex:0 0 auto!important;
-    width:auto!important;max-width:none!important;min-width:0!important;
-    align-items:center!important;justify-content:flex-end!important;
-    gap:8px!important;margin:0!important;padding:0!important;
-  }
-  header.hdr .hdr-right .btn-wa{display:none!important}
-  header.hdr .z-wishlist-trigger{
-    display:inline-flex!important;flex:0 0 38px!important;width:38px!important;
-    min-width:38px!important;height:40px!important;min-height:40px!important;
-    align-items:center!important;justify-content:center!important;gap:0!important;
-    padding:0!important;border:1px solid #ded4c9!important;border-radius:0!important;
-    background:transparent!important;color:#51483f!important;font-size:0!important;
-  }
-  header.hdr .z-wishlist-trigger svg{display:block!important;width:17px!important;height:17px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.6!important}
-  header.hdr .z-wishlist-label,header.hdr #zWishlistCount{display:none!important}
-  header.hdr button.hamburger{
-    display:flex!important;position:static!important;flex:0 0 42px!important;
-    width:42px!important;min-width:42px!important;height:42px!important;
-    flex-direction:column!important;align-items:center!important;justify-content:center!important;
-    gap:5px!important;margin:0!important;padding:0!important;
-    border:1px solid #ded4c9!important;border-radius:0!important;
-    background:transparent!important;visibility:visible!important;opacity:1!important;
-  }
-  header.hdr button.hamburger span{display:block!important;width:17px!important;height:1.5px!important;background:#292522!important;border-radius:1px!important}
-}
-</style></head>
+</head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
 
@@ -584,7 +525,6 @@
       <span class="logo-name">Zariah</span>
       <span class="logo-studio">Studio</span>
     </a>
-    <a class="z-mobile-search" href="/pages/search/" aria-label="Search products"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></a>
     <nav aria-label="Main navigation">
       <ul class="nav-links">
         <li><a href="/collections/">Collections</a></li>
