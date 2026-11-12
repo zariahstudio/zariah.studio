@@ -27,7 +27,7 @@
     }
     if (cachedSelections[config.id]) return cachedSelections[config.id];
     const tagged = PRODUCTS.filter(function (product) {
-      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
       if (config.badge === 'bestseller') {
         return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
       }
