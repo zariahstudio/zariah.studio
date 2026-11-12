@@ -198,6 +198,7 @@
     letter-spacing: .13em;
   }
   .catalogue #productGrid .z-card-add-bag {
+    display: block;
     width: 100%;
     min-height: 43px;
     margin-top: auto;
