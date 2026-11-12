@@ -18,6 +18,36 @@
       ? product.remoteImages.front
       : 'images/products/' + encodeURIComponent(folder) + '/front.webp';
   }
+  let cachedProducts = null;
+  let cachedSelections = {};
+  function selectProducts(config) {
+    if (cachedProducts !== PRODUCTS) {
+      cachedProducts = PRODUCTS;
+      cachedSelections = {};
+    }
+    if (cachedSelections[config.id]) return cachedSelections[config.id];
+    const tagged = PRODUCTS.filter(function (product) {
+      const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+      if (config.badge === 'bestseller') {
+        return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
+      }
+      return product.isFeatured === true ||
+        ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
+    });
+    const taggedIds = new Set(tagged.map(function (product) { return String(product.id); }));
+    const remaining = PRODUCTS.filter(function (product) {
+      return !taggedIds.has(String(product.id));
+    });
+    // Shuffle only the untagged pool; tagged products always retain priority.
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = remaining[i];
+      remaining[i] = remaining[j];
+      remaining[j] = temp;
+    }
+    cachedSelections[config.id] = tagged.concat(remaining).slice(0, 8);
+    return cachedSelections[config.id];
+  }
   function render() {
     if (!desktop.matches || window.location.pathname !== '/' ||
         new URLSearchParams(window.location.search).has('product') ||
@@ -27,14 +57,7 @@
       const section = document.getElementById(config.id);
       const grid = document.getElementById(config.gridId);
       if (!section || !grid) return;
-      const matches = PRODUCTS.filter(function (product) {
-        const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
-        if (config.badge === 'bestseller') {
-          return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
-        }
-        return product.isFeatured === true ||
-          ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
-      }).slice(0, 8);
+      const matches = selectProducts(config);
       section.hidden = matches.length === 0;
       if (!matches.length) { grid.replaceChildren(); return; }
       grid.innerHTML = matches.map(function (product) {
@@ -60,7 +83,7 @@
     });
   }
   document.addEventListener('DOMContentLoaded', render);
-  window.addEventListener('zariah:catalogue-updated', render);
+  window.addEventListener('zariah:catalogue-updated', function () { cachedProducts = null; cachedSelections = {}; render(); });
   window.addEventListener('resize', render);
   render();
 })();
