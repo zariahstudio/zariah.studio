@@ -249,3 +249,130 @@
     transform: none !important;
   }
 }
+
+
+/* All Bags desktop polish — compact single-row header and balanced catalogue rhythm.
+   Desktop-only overrides; mobile layout and storefront behaviour are unchanged. */
+@media (min-width: 1024px) {
+  body:has(.catalogue) header.hdr {
+    position: relative !important;
+    top: auto !important;
+    z-index: 30 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    background: #fbf8f3 !important;
+    border-bottom: 1px solid #e7ded3 !important;
+    box-shadow: 0 5px 22px rgba(48,42,37,.035) !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner {
+    display: grid !important;
+    grid-template-columns: minmax(190px,1fr) auto minmax(210px,1fr) !important;
+    align-items: center !important;
+    gap: clamp(18px,2vw,30px) !important;
+    width: min(1440px,calc(100% - 112px)) !important;
+    max-width: 1440px !important;
+    height: 104px !important;
+    min-height: 104px !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner > .logo {
+    justify-self: start !important;
+    align-items: flex-start !important;
+    margin: 0 !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner > .nav {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: clamp(18px,2vw,28px) !important;
+    width: max-content !important;
+    max-width: none !important;
+    min-width: max-content !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner > .nav a {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    font-size: 9px !important;
+    letter-spacing: .12em !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner > .hdr-right {
+    justify-self: end !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    gap: 16px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+  body:has(.catalogue) .page-intro {
+    width: min(1360px,calc(100% - 112px)) !important;
+    padding: 34px 0 28px !important;
+    text-align: center !important;
+  }
+  body:has(.catalogue) .page-intro .eyebrow {
+    margin-bottom: 8px !important;
+    font-size: 9px !important;
+    letter-spacing: .25em !important;
+  }
+  body:has(.catalogue) .page-intro h1 {
+    font-size: clamp(52px,5vw,68px) !important;
+    line-height: .98 !important;
+    letter-spacing: -.02em !important;
+  }
+  body:has(.catalogue) .catalogue {
+    width: min(1360px,calc(100% - 112px)) !important;
+    padding-bottom: 88px !important;
+  }
+  body:has(.catalogue) .catalogue .toolbar {
+    align-items: center !important;
+    flex-direction: row !important;
+    gap: 22px !important;
+    padding: 16px 0 !important;
+    margin-bottom: 30px !important;
+  }
+  body:has(.catalogue) .catalogue .toolbar .controls {
+    display: grid !important;
+    grid-template-columns: minmax(210px,280px) repeat(3,minmax(135px,160px)) !important;
+    gap: 10px !important;
+    width: auto !important;
+  }
+  body:has(.catalogue) .catalogue #productGrid.grid {
+    grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+    column-gap: 24px !important;
+    row-gap: 42px !important;
+  }
+  body:has(.catalogue) .catalogue #productGrid > .card > .visual {
+    aspect-ratio: 4 / 5 !important;
+    border: 1px solid #e9e1d7 !important;
+    background: #f1ece5 !important;
+  }
+  body:has(.catalogue) .catalogue #productGrid > .card > .visual img {
+    padding: 7% !important;
+    object-fit: contain !important;
+  }
+  body:has(.catalogue) .catalogue #productGrid .card-info {
+    min-height: 136px !important;
+    padding: 14px 2px 0 !important;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1199px) {
+  body:has(.catalogue) header.hdr > .hdr-inner {
+    width: calc(100% - 64px) !important;
+    grid-template-columns: minmax(160px,1fr) auto minmax(190px,1fr) !important;
+    gap: 14px !important;
+  }
+  body:has(.catalogue) header.hdr > .hdr-inner > .nav {
+    gap: 14px !important;
+  }
+  body:has(.catalogue) .catalogue .toolbar .controls {
+    grid-template-columns: minmax(180px,1.35fr) repeat(3,minmax(115px,1fr)) !important;
+  }
+}
