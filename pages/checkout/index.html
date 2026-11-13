@@ -27,6 +27,18 @@ textarea{min-height:88px;resize:vertical}input:focus,textarea:focus,select:focus
 .payment-card{border:1px solid var(--gold);background:#fffdfa;padding:17px;display:flex;gap:12px;align-items:flex-start}
 .payment-card input{width:15px;min-height:15px;margin:2px 0 0;accent-color:var(--gold)}
 .payment-card strong{display:block;font-size:11px;font-weight:500;margin-bottom:5px}.payment-card span{font-size:10px;color:var(--muted);line-height:1.6}
+.payment-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}
+.payment-option{display:flex;align-items:flex-start;gap:10px;min-width:0;padding:13px;border:1px solid #e2d9cf;border-radius:6px;background:#fbfaf7;cursor:pointer}
+.payment-option:has(input:checked){border-color:#b99768;background:#f8f3eb;box-shadow:0 0 0 1px #b9976830}
+.payment-option input{width:16px;min-height:16px;flex:0 0 16px;margin:2px 0 0;accent-color:#98784e}
+.payment-option strong{display:block;margin:0 0 4px;color:#393128;font:500 11px Inter,sans-serif}
+.payment-option small{display:block;color:#81776d;font:400 9px/1.55 Inter,sans-serif}
+.mfs-payment-details{margin-top:12px;padding:15px;border:1px solid #d9c8ae;border-radius:6px;background:#fbf6ee}
+.mfs-payment-details[hidden]{display:none}
+.mfs-payment-number{display:block;margin:6px 0 8px;color:#302a24;font:600 19px Inter,sans-serif;letter-spacing:.04em}
+.mfs-payment-details p{margin:5px 0;color:#74695d;font:400 10px/1.75 Inter,sans-serif}
+.mfs-payment-details .field{margin-top:12px}
+@media(max-width:420px){.payment-options{grid-template-columns:1fr}}
 .summary{background:var(--panel);padding:26px 24px;position:sticky;top:20px}
 .summary h2{font:400 29px 'Cormorant Garamond',serif;margin:0 0 20px}
 .product{display:grid;grid-template-columns:62px 1fr auto;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #ded4c8}
@@ -186,9 +198,20 @@ root.innerHTML=`
 <section class="form-section">
   <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery & Payment</h2><p class="section-caption">Review how your order will reach you.</p></div></div>
   <div class="delivery-method"><span class="method-mark" aria-hidden="true">↗</span><div><strong>Standard Home Delivery</strong><span>Delivery across Bangladesh. Our team will confirm the applicable delivery charge and estimated delivery time with you before dispatch.</span></div></div>
-  <div style="height:12px"></div>
-  <div class="payment-card"><input type="radio" checked disabled aria-label="Cash on Delivery selected"><div><strong>Cash on Delivery</strong><span>Pay when your parcel arrives at your doorstep.</span><span class="payment-tag">No advance payment required</span></div></div>
-  <div class="cod-note"><strong>Shop with confidence.</strong> No advance payment is required for eligible Cash on Delivery orders. Please check your parcel and confirm the order with the delivery representative.</div>
+  <div class="payment-options" role="radiogroup" aria-label="Choose payment method">
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span><strong>Cash on Delivery</strong><small>Pay when your parcel arrives.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span><strong>bKash</strong><small>Mobile financial service</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span><strong>Nagad</strong><small>Mobile financial service</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span><strong>Rocket</strong><small>Mobile financial service</small></span></label>
+  </div>
+  <div id="mfsPaymentDetails" class="mfs-payment-details" hidden>
+    <p><strong>Payment number</strong></p>
+    <span class="mfs-payment-number">01642779056</span>
+    <p>Our team will confirm your final payable amount, including delivery charge, before you send payment. Please wait for confirmation before transferring money.</p>
+    <div class="field"><label for="paymentReference">Transaction ID (if already paid)</label><input id="paymentReference" name="paymentReference" autocomplete="off" maxlength="40" placeholder="Enter transaction ID (optional)"></div>
+    <p>Payment is marked pending until our team verifies it. Never share your PIN or OTP.</p>
+  </div>
+  <div id="codNote" class="cod-note"><strong>Cash on Delivery.</strong> Pay when your parcel arrives. Our team will confirm the delivery charge before dispatch.</div>
 </section>
 <button class="submit" type="submit">Place Order Securely&nbsp; →</button>
 <p class="hint">By placing your order, you confirm that the contact and delivery information above is accurate. Our team may contact you to verify availability and delivery details.</p>
@@ -204,6 +227,19 @@ root.innerHTML=`
   <a class="back" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
+const paymentChoices=[...document.querySelectorAll('input[name="paymentMethod"]')];
+const mfsDetails=document.getElementById('mfsPaymentDetails');
+const codNote=document.getElementById('codNote');
+function refreshPaymentChoice(){
+ const selected=document.querySelector('input[name="paymentMethod"]:checked')?.value||'cash_on_delivery';
+ mfsDetails.hidden=selected==='cash_on_delivery';
+ codNote.hidden=selected!=='cash_on_delivery';
+ document.querySelectorAll('.payment-option').forEach(card=>{
+   card.classList.toggle('is-selected',card.querySelector('input')?.checked===true);
+ });
+}
+paymentChoices.forEach(input=>input.addEventListener('change',refreshPaymentChoice));
+refreshPaymentChoice();
 document.getElementById('guestCheckout').addEventListener('submit',async function(e){
  e.preventDefault();
  const form=e.currentTarget;
@@ -239,7 +275,9 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      district:String(data.get('district')||'').trim(),
      area:String(data.get('area')||'').trim(),
      address:String(data.get('address')||'').trim(),
-     notes:String(data.get('notes')||'').trim()
+     notes:String(data.get('notes')||'').trim(),
+     payment_method:String(data.get('paymentMethod')||'cash_on_delivery'),
+     payment_reference:String(data.get('paymentReference')||'').trim()
    };
    const items=cart.map(item=>({sku:String(item.id||'').trim(),quantity:Number(item.qty)||1}));
    const gatewayResponse=await fetch(cfg.url+'/functions/v1/zariah-public-orders',{
@@ -258,13 +296,17 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
    try{window.ZariahCart.clear();}catch(_){}
    try{sessionStorage.removeItem('zariah_checkout_idempotency_v1');}catch(_){}
    document.body.classList.add('z-order-complete');
+   const paymentLabels={cash_on_delivery:'Cash on Delivery',bkash:'bKash',nagad:'Nagad',rocket:'Rocket'};
+   const selectedPayment=paymentLabels[order.payment_method||customer.payment_method]||'Cash on Delivery';
    root.innerHTML=`<section class="empty order-success-panel" role="status" aria-live="polite" style="max-width:620px;margin:28px auto">
      <p style="letter-spacing:.18em;font-size:10px;color:#9b7a4e">ZARIAH STUDIO</p>
      <h2>Thank You. Your Order Is Received.</h2>
      <p>Your order has been saved successfully. Our team will review it and contact you if any delivery details need confirmation.</p>
      <p style="font-weight:600;color:#292522;margin:20px 0 6px">Order Number</p>
      <p style="font-size:20px;font-weight:600;color:#292522;margin:0">${order.order_number}</p>
-     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt ?? order.total_bdt)}</strong> · Delivery charge confirmed before dispatch · Cash on Delivery</p>
+     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt ?? order.total_bdt)}</strong> · Delivery charge confirmed before dispatch</p>
+     <p style="margin:8px 0">Selected payment method: <strong>${selectedPayment}</strong></p>
+     <p style="font-size:10px;color:#786f65">Any mobile payment remains pending until verified by our team. We will confirm the final amount before payment.</p>
      <div class="order-success-actions">
        <a class="order-success-action order-success-track" href="/pages/track-order/">Track Your Order</a>
        <a class="order-success-action order-success-continue" href="/collections/all-bags/">Continue Shopping</a>
