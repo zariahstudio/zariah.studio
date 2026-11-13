@@ -26,6 +26,9 @@ REQUIRED_FILES=(
   "zariah-cart.js"
   "zariah-supabase-loader.js"
   "zariah-analytics-loader.js"
+  "product-seo.php"
+  "sitemap.php"
+  "robots.txt"
 )
 
 # These are the actual storefront directories present in the GitHub main branch.
