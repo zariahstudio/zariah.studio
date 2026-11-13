@@ -71,8 +71,8 @@ Deno.serve(async (req) => {
 
   try {
     if (body.action === "first_order_offer") {
-      const phone = String(body.phone ?? "").replace(/[\\s()-]/g, "");
-      if (!/^(?:\\+?88)?01[3-9]\\d{8}$/.test(phone)) {
+      const phone = String(body.phone ?? "").replace(/[\s()-]/g, "");
+      if (!/^(?:\+?88)?01[3-9]\d{8}$/.test(phone)) {
         return response({ error: "invalid_phone" }, 400, origin);
       }
       if (!(await checkLimit("first_order_offer_ip", ipHash, 600, 20)) ||
