@@ -235,7 +235,7 @@ function renderProducts() {
         e.stopPropagation();
         const result = addToBag();
         if (result.ok) {
-          if (typeof window.ZARIAH_TRACK_EVENT === 'function') window.ZARIAH_TRACK_EVENT('cart_add', p.sku || p.id);
+          zTrackVisitorEvent('cart_add', p.sku || p.id);
           window.dispatchEvent(new CustomEvent('zariah:open-cart'));
         }
         else window.alert('This item could not be added right now. Please try again.');
@@ -913,16 +913,24 @@ function filterCollection(coll) {
 /* ═══════════════════════════════════════
    PRODUCT MODAL
 ═══════════════════════════════════════ */
+function zTrackVisitorEvent(type, slug) {
+  if (typeof window.ZARIAH_TRACK_EVENT === 'function') {
+    window.ZARIAH_TRACK_EVENT(type, slug);
+    return;
+  }
+  // Analytics bootstrap is intentionally deferred; preserve early interactions.
+  window.ZARIAH_PENDING_TRACK_EVENTS = window.ZARIAH_PENDING_TRACK_EVENTS || [];
+  window.ZARIAH_PENDING_TRACK_EVENTS.push({ type, slug: String(slug || '').slice(0, 160) });
+}
+
 function openPModal(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p) return;
 
   // First-party visitor analytics: homepage product cards open an in-page modal,
   // so record the interaction directly instead of relying on a URL change.
-  if (typeof window.ZARIAH_TRACK_EVENT === 'function') {
-    window.ZARIAH_TRACK_EVENT('product_click', p.sku || p.id);
-    window.ZARIAH_TRACK_EVENT('product_view', p.sku || p.id);
-  }
+  zTrackVisitorEvent('product_click', p.sku || p.id);
+  zTrackVisitorEvent('product_view', p.sku || p.id);
 
   /* ── Analytics: ViewContent (fires reliably on every path) ── */
   if (typeof fbq !== 'undefined') {
