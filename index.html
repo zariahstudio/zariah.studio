@@ -506,7 +506,9 @@
   }
   .ann-ticker,.ann-track{height:34px!important;min-height:34px!important;align-items:center!important}
   .ann-track{line-height:34px!important}
-  .hdr,.hdr.scrolled{
+  /* Higher-specificity override is required because unified-premium-header.css
+     otherwise changes this header back to sticky top:0 on small screens. */
+  body:not(.admin-body) header#hdr:not(.zbag-head){
     position:fixed!important;top:34px!important;left:0!important;right:0!important;
     width:100%!important;height:76px!important;min-height:76px!important;
     padding:0 max(16px,env(safe-area-inset-left)) 0 max(16px,env(safe-area-inset-right))!important;
@@ -515,8 +517,9 @@
     background:rgba(251,248,243,.98)!important;
     border-bottom:1px solid #e8e0d7!important;
     box-shadow:0 3px 14px rgba(41,37,34,.045)!important;
-    z-index:200!important;
+    z-index:203!important;
   }
+  body:not(.admin-body) header#hdr.scrolled:not(.zbag-head){top:0!important}
   .hdr-inner{
     display:flex!important;align-items:center!important;justify-content:space-between!important;
     width:100%!important;height:100%!important;min-height:0!important;
