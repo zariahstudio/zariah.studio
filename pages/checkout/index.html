@@ -285,8 +285,8 @@ const firstOrderDiscountDisplay=document.getElementById('firstOrderDiscountDispl
 let firstOrderDiscount=0, checkedOfferPhone='', offerTimer=null, offerRequest=0;
 async function checkFirstOrderOffer(){
  const phoneInput=document.getElementById('phone');
- const phone=String(phoneInput.value||'').replace(/[\\s()-]/g,'');
- if(!/^(?:\\+?88)?01[3-9]\\d{8}$/.test(phone))return false;
+ const phone=String(phoneInput.value||'').replace(/[\s()-]/g,'');
+ if(!/^(?:\+?88)?01[3-9]\d{8}$/.test(phone))return false;
  if(checkedOfferPhone===phone)return true;
  const requestId=++offerRequest;
  try{
@@ -297,7 +297,7 @@ async function checkFirstOrderOffer(){
    body:JSON.stringify({action:'first_order_offer',phone})
   });
   const payload=await res.json().catch(()=>({}));
-  if(requestId!==offerRequest||phone!==String(phoneInput.value||'').replace(/[\\s()-]/g,''))return false;
+  if(requestId!==offerRequest||phone!==String(phoneInput.value||'').replace(/[\s()-]/g,''))return false;
   if(!res.ok||!payload.offer)throw new Error('offer check unavailable');
   firstOrderDiscount=payload.offer.eligible?Math.min(Number(payload.offer.discount_bdt)||200,subtotal):0;
   checkedOfferPhone=phone;
@@ -313,8 +313,8 @@ const phoneOfferInput=document.getElementById('phone');
 phoneOfferInput.addEventListener('input',()=>{
  clearTimeout(offerTimer);offerRequest++;checkedOfferPhone='';firstOrderDiscount=0;
  firstOrderDiscountDisplay.textContent='Enter phone to check';calculateDelivery();
- const digits=String(phoneOfferInput.value||'').replace(/[\\s()-]/g,'');
- if(/^(?:\\+?88)?01[3-9]\\d{8}$/.test(digits))offerTimer=setTimeout(checkFirstOrderOffer,650);
+ const digits=String(phoneOfferInput.value||'').replace(/[\s()-]/g,'');
+ if(/^(?:\+?88)?01[3-9]\d{8}$/.test(digits))offerTimer=setTimeout(checkFirstOrderOffer,650);
 });
 phoneOfferInput.addEventListener('blur',checkFirstOrderOffer);
 function selectedDeliveryZone(){return document.querySelector('input[name="deliveryZone"]:checked')?.value||''}
