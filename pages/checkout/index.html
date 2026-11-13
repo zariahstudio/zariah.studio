@@ -45,6 +45,100 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 body.z-order-complete .z-floating-bag{display:none!important}
 @media(max-width:600px){.order-success-panel .order-success-actions{flex-direction:column;gap:10px;width:100%}.order-success-panel a.order-success-action{width:min(100%,280px)!important;min-width:0!important}}
 @media(max-width:760px){header{height:auto;padding:16px;display:block;text-align:center}.brand{font-size:27px}nav{justify-content:center;flex-wrap:wrap;gap:12px 17px;margin-top:14px;font-size:9px}main{padding:30px 16px 60px}.layout{grid-template-columns:1fr;gap:28px}.summary{position:static;grid-row:1}.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.summary{padding:22px 18px}}
+
+/* ZARIAH Studio checkout refinement — isolated to the guest checkout page. */
+:root{--paper:#f7f3ed;--ink:#302a24;--muted:#786f65;--gold:#b99768;--line:#e5dbcf;--panel:#fffdf9;--sage:#65745f}
+body{background:linear-gradient(180deg,#f8f5ef 0%,#f4efe8 100%);font-weight:400}
+.announcement{background:#eae2d7;color:#8d704d;font-weight:500;letter-spacing:.18em}
+header{background:rgba(255,253,249,.92);backdrop-filter:blur(12px);border-bottom:1px solid #e8dfd4}
+.brand{color:#302a24}
+main{max-width:1200px;padding:38px 28px 80px}
+.crumb{letter-spacing:.13em}
+.checkout-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:18px 0 28px}
+.checkout-heading h1{margin:0;color:#302a24;font-size:clamp(38px,5vw,54px)}
+.checkout-heading .intro{margin:9px 0 0;line-height:1.7}
+.checkout-assurance{font:500 9px/1.5 Inter,sans-serif;letter-spacing:.12em;color:#8a7557;text-transform:uppercase;white-space:nowrap}
+.checkout-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 28px}
+.checkout-step{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#f0e9df;border:1px solid #e5dbcf;color:#81766a;font:500 9px/1.3 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.checkout-step span{display:grid;place-items:center;width:23px;height:23px;flex:0 0 23px;border:1px solid #c5a77f;border-radius:50%;color:#8b704c;font-size:10px}
+.checkout-step.is-active{background:#fffdf9;border-color:#c7ad89;color:#554638}
+.layout{grid-template-columns:minmax(0,1.2fr) minmax(320px,.8fr);gap:30px}
+#guestCheckout{min-width:0}
+.form-section{padding:23px 24px 25px;margin:0 0 16px;border:1px solid var(--line);border-radius:8px;background:#fffdf9;box-shadow:0 5px 20px rgba(58,45,31,.035)}
+.section-heading{display:flex;align-items:center;gap:12px;margin:0 0 19px}
+.section-number{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border:1px solid #d6c4a8;border-radius:50%;color:#96784f;font:400 13px Georgia,serif}
+.section-title{margin:0;font:400 25px/1.1 'Cormorant Garamond',Georgia,serif;color:#332c25}
+.section-caption{margin:5px 0 0;color:#898075;font:400 10px/1.6 Inter,sans-serif}
+.fields{gap:14px}
+.field{gap:7px}
+label{font-size:9px;letter-spacing:.1em;color:#74695d;font-weight:600}
+input,textarea,select{border:1px solid #e2d9cf;background:#fbfaf7;border-radius:5px;padding:14px 14px;min-height:49px;font:400 12px Inter,sans-serif}
+textarea{min-height:94px}
+input:focus,textarea:focus,select:focus{border-color:#b99768;box-shadow:0 0 0 3px rgba(185,151,104,.12)}
+.hint{font-size:10px;line-height:1.75;color:#81776d}
+.delivery-method,.payment-card{display:flex;align-items:flex-start;gap:13px;padding:16px;border:1px solid #dcd3c8;border-radius:6px;background:#fbfaf7}
+.delivery-method{border-color:#c8b28e;background:#f8f4ed}
+.method-mark{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:#eee4d5;color:#96764b;font-size:17px}
+.delivery-method strong,.payment-card strong{display:block;margin:1px 0 5px;color:#393128;font:500 12px Inter,sans-serif}
+.delivery-method span,.payment-card span{display:block;color:#81776d;font:400 10px/1.7 Inter,sans-serif}
+.payment-card{border-color:#b9c3ae;background:#f6f8f2}
+.payment-card input{width:17px;min-height:17px;margin:2px 0 0;accent-color:#687a60}
+.payment-card .payment-tag{display:inline-block;margin-top:5px;padding:4px 7px;background:#e7eee2;color:#586b50;font:600 8px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.cod-note{margin:13px 0 0;padding:13px 15px;border:1px solid #e6d8b9;border-radius:6px;background:#fbf6e9;color:#76613e;font:400 10px/1.8 Inter,sans-serif}
+.cod-note strong{font-weight:600}
+.summary{position:sticky;top:18px;padding:24px 22px;background:#fffdf9;border:1px solid #e4d9cc;border-radius:8px;box-shadow:0 8px 26px rgba(58,45,31,.055)}
+.summary h2{margin:0 0 4px;font:400 28px 'Cormorant Garamond',Georgia,serif}
+.summary-subtitle{margin:0 0 14px;color:#8b8176;font:400 10px/1.6 Inter,sans-serif}
+.product{grid-template-columns:66px 1fr auto;gap:12px;padding:14px 0;border-bottom:1px solid #eee7de}
+.product img{width:66px;height:78px;object-fit:contain;border:1px solid #eee7de;border-radius:4px;background:#f5f0e9}
+.product-name{font:400 17px/1.2 'Cormorant Garamond',Georgia,serif}
+.product-meta{font-size:9px}
+.product-price{font-size:10px;font-weight:500;color:#51483e}
+.row{font-size:10px;margin:13px 0;color:#7d746a}
+.row.total{align-items:flex-start;padding-top:16px;border-top:1px solid #e5dbcf;font-size:12px;color:#302a24}
+.row.total strong:last-child{font-size:17px;color:#302a24}
+.delivery-pending{color:#8b704c;text-align:right;font-size:9px}
+.summary-note{margin:15px 0 0;padding:12px;border-radius:5px;background:#f4f0e9;color:#7c7164;font:400 9px/1.7 Inter,sans-serif}
+.submit{min-height:54px;margin-top:5px;border:1px solid #302a24;border-radius:4px;background:#302a24;color:#fff;font-weight:500;letter-spacing:.14em;transition:background .2s ease}
+.submit:hover{background:#4a4035}
+.submit:disabled{opacity:.55}
+.secure-note{font-size:9px;line-height:1.8}
+.checkout-trust{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:17px 0 0;padding:14px 12px;border:1px solid #e5dbcf;border-radius:6px;background:#faf8f3}
+.checkout-trust span{display:flex;align-items:center;gap:6px;color:#6f7564;font:500 8px/1.5 Inter,sans-serif}
+.checkout-trust b{font-size:13px;color:#8b704c}
+.back{color:#786d60}
+footer{background:#f8f5ef}
+@media(max-width:760px){
+ header{height:auto;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;text-align:left}
+ .brand{font-size:26px}
+ nav{justify-content:flex-end;gap:10px 13px;margin:0;font-size:8px}
+ nav a:nth-child(1),nav a:nth-child(2){display:none}
+ main{padding:24px 14px 54px}
+ .checkout-heading{display:block;margin:15px 0 20px}
+ .checkout-heading h1{font-size:40px}
+ .checkout-assurance{display:block;margin-top:9px}
+ .checkout-steps{gap:5px;margin-bottom:17px}
+ .checkout-step{justify-content:center;gap:6px;padding:9px 4px;font-size:7px;letter-spacing:.035em}
+ .checkout-step span{width:20px;height:20px;flex-basis:20px;font-size:9px}
+ .layout{grid-template-columns:1fr;gap:15px}
+ .summary{grid-row:1;position:static;padding:19px 16px}
+ .summary h2{font-size:25px}
+ .form-section{padding:19px 15px 21px;margin-bottom:12px;border-radius:7px}
+ .section-title{font-size:24px}
+ .fields{grid-template-columns:1fr;gap:12px}
+ .field.full{grid-column:auto}
+ input,textarea,select{min-height:50px;font-size:13px}
+ .delivery-method,.payment-card{padding:14px 12px}
+ .submit{min-height:56px;font-size:10px}
+ .checkout-trust{grid-template-columns:1fr;gap:9px;padding:13px}
+ .checkout-trust span{font-size:9px}
+}
+@media(max-width:360px){
+ .checkout-step{font-size:6.5px}
+ .checkout-step span{width:18px;height:18px;flex-basis:18px}
+}
+@media(prefers-reduced-motion:reduce){.submit{transition:none}}
+
 </style>
 <link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109"><link rel="stylesheet" href="/assets/css/mobile-navigation-refinement.css?v=20261110-mobile-ux2"><link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3"><link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2">  <link rel="stylesheet" href="/assets/css/unified-premium-header.css?v=20261113-v1">
 </head>
@@ -53,7 +147,8 @@ body.z-order-complete .z-floating-bag{display:none!important}
 <header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/">Your Bag</a><a href="/pages/search/" aria-label="Search">Search</a></nav></header>
 <main>
 <div class="crumb"><a href="/">Home</a> / <a href="/pages/cart/">Your Bag</a> / Checkout</div>
-<h1>Guest Checkout</h1><p class="intro">Enter your details to place your order securely.</p>
+<div class="checkout-heading"><div><h1>Complete Your Order</h1><p class="intro">A few details, and your selected piece is on its way.</p></div><span class="checkout-assurance">Private · Secure · Guest Checkout</span></div>
+<div class="checkout-steps" aria-label="Checkout steps"><div class="checkout-step is-active"><span>1</span> Your Bag</div><div class="checkout-step is-active"><span>2</span> Delivery Details</div><div class="checkout-step"><span>3</span> Order Confirmation</div></div>
 <div id="checkoutRoot"></div>
 </main>
 <footer>© ZARIAH Studio · Curated in Bangladesh · Delivered Nationwide</footer>
@@ -71,37 +166,42 @@ root.innerHTML=`
 <div class="layout">
 <form id="guestCheckout" novalidate>
 <section class="form-section">
-<h2 class="section-title">Contact Information</h2>
-<div class="fields">
-<div class="field full"><label for="fullName">Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name" required maxlength="80"></div>
-<div class="field"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required maxlength="16"></div>
-<div class="field"><label for="email">Email Address (Optional)</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></div>
-</div><p class="hint">We will use your phone number to contact you about order confirmation and delivery.</p>
+  <div class="section-heading"><span class="section-number">01</span><div><h2 class="section-title">Contact Information</h2><p class="section-caption">How can we reach you about your order?</p></div></div>
+  <div class="fields">
+    <div class="field full"><label for="fullName">Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Enter your full name" required maxlength="80"></div>
+    <div class="field"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required maxlength="16"></div>
+    <div class="field"><label for="email">Email Address (Optional)</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></div>
+  </div>
+  <p class="hint">Your phone number will be used for order confirmation and delivery coordination.</p>
 </section>
 <section class="form-section">
-<h2 class="section-title">Delivery Address</h2>
-<div class="fields">
-<div class="field"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
-<div class="field"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
-<div class="field full"><label for="address">Full Address *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House, road, building, landmark..." required maxlength="400"></textarea></div>
-<div class="field full"><label for="notes">Order Notes (Optional)</label><textarea id="notes" name="notes" placeholder="Any delivery instructions?" maxlength="300"></textarea></div>
-</div>
+  <div class="section-heading"><span class="section-number">02</span><div><h2 class="section-title">Delivery Information</h2><p class="section-caption">Where should we deliver your order?</p></div></div>
+  <div class="fields">
+    <div class="field"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
+    <div class="field"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
+    <div class="field full"><label for="address">Full Delivery Address *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House / Flat, Road, Building, Area and a nearby landmark" required maxlength="400"></textarea></div>
+    <div class="field full"><label for="notes">Special Delivery Instructions (Optional)</label><textarea id="notes" name="notes" placeholder="Anything our delivery team should know?" maxlength="300"></textarea></div>
+  </div>
 </section>
 <section class="form-section">
-<h2 class="section-title">Payment Method</h2>
-<div class="payment-card"><input type="radio" checked disabled aria-label="Cash on delivery selected"><div><strong>Cash on Delivery</strong><span>Pay when your order is delivered. Any delivery charge will be confirmed before dispatch.</span></div></div>
+  <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery & Payment</h2><p class="section-caption">Review how your order will reach you.</p></div></div>
+  <div class="delivery-method"><span class="method-mark" aria-hidden="true">↗</span><div><strong>Standard Home Delivery</strong><span>Delivery across Bangladesh. Our team will confirm the applicable delivery charge and estimated delivery time with you before dispatch.</span></div></div>
+  <div style="height:12px"></div>
+  <div class="payment-card"><input type="radio" checked disabled aria-label="Cash on Delivery selected"><div><strong>Cash on Delivery</strong><span>Pay when your parcel arrives at your doorstep.</span><span class="payment-tag">No advance payment required</span></div></div>
+  <div class="cod-note"><strong>Shop with confidence.</strong> No advance payment is required for eligible Cash on Delivery orders. Please check your parcel and confirm the order with the delivery representative.</div>
 </section>
-<button class="submit" type="submit">Place Order Securely</button>
-<p class="hint">Your order will be saved securely. Our team will contact you if availability or delivery details need confirmation.</p>
+<button class="submit" type="submit">Place Order Securely&nbsp; →</button>
+<p class="hint">By placing your order, you confirm that the contact and delivery information above is accurate. Our team may contact you to verify availability and delivery details.</p>
+<div class="checkout-trust"><span><b>◇</b> Curated Selection</span><span><b>✓</b> Order Confirmation</span><span><b>↗</b> Nationwide Delivery</span></div>
 </form>
 <aside class="summary">
-<h2>Order Summary</h2>
-<div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta">Qty: ${Number(item.qty)||1}</div></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
-<div class="row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
-<div class="row"><span>Delivery</span><span>To be confirmed</span></div>
-<div class="row total"><strong>Estimated Total</strong><strong>${money(subtotal)}</strong></div>
-<p class="secure-note">Guest checkout · No account required<br>Delivery charge will be confirmed by our team.</p>
-<a class="back" href="/pages/cart/">Return to Bag</a>
+  <h2>Your Order</h2><p class="summary-subtitle">${cart.length} ${cart.length===1?'item':'items'} selected · Review before placing your order</p>
+  <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta">Quantity: ${Number(item.qty)||1}</div></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
+  <div class="row"><span>Product Subtotal</span><strong>${money(subtotal)}</strong></div>
+  <div class="row"><span>Delivery Charge</span><span class="delivery-pending">Confirmed before dispatch</span></div>
+  <div class="row total"><strong>Product Total</strong><strong>${money(subtotal)}</strong></div>
+  <p class="summary-note">Delivery charge is not included in this product subtotal. Our team will confirm the final payable amount before dispatch.</p>
+  <a class="back" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
 document.getElementById('guestCheckout').addEventListener('submit',async function(e){
