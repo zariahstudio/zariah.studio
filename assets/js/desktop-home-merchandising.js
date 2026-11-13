@@ -53,7 +53,7 @@
       if (!section || !grid) return;
       const matches = selectProducts(config);
       const taggedIdsForSection = new Set(PRODUCTS.filter(function (product) {
-        const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+        const badge = String(product.badge || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
         return config.badge === 'bestseller'
           ? product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers'
           : product.isFeatured === true || ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
