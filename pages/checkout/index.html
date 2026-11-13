@@ -85,8 +85,8 @@ root.innerHTML=`
 <h2 class="section-title">Payment Method</h2>
 <div class="payment-card"><input type="radio" checked disabled aria-label="Cash on delivery selected"><div><strong>Cash on Delivery</strong><span>Pay when your order is delivered. Any delivery charge will be confirmed before dispatch.</span></div></div>
 </section>
-<button class="submit" type="submit">Continue to WhatsApp to Confirm Order</button>
-<p class="hint">Your order request is saved securely first. Our team will confirm availability and delivery charge with you on WhatsApp.</p>
+<button class="submit" type="submit">Place Order</button>
+<p class="hint">Your order will be submitted securely. Our team will contact you by phone to confirm availability and delivery charge.</p>
 </form>
 <aside class="summary">
 <h2>Order Summary</h2>
@@ -142,33 +142,16 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
    if(error)throw error;
    if(!order?.success||!order?.order_number)throw new Error('Order confirmation could not be received.');
 
-   const serverLines=cart.map((item,i)=>`${i+1}. ${item.name} (${item.id}) × ${item.qty}`);
-   const message=[
-     'Hello ZARIAH Studio, I have submitted my website order.',
-     `Order Number: ${order.order_number}`,'',
-     'CUSTOMER DETAILS',
-     `Name: ${customer.full_name}`,`Phone: ${customer.phone}`,
-     `Email: ${customer.email||'Not provided'}`,
-     `District/City: ${customer.district}`,`Area/Thana: ${customer.area}`,
-     `Address: ${customer.address}`,`Notes: ${customer.notes||'None'}`,'',
-     'ORDER ITEMS',...serverLines,'',
-     `Database-verified subtotal: ${money(order.subtotal_bdt)}`,
-     'Delivery: To be confirmed by ZARIAH Studio',
-     'Payment: Cash on Delivery','',
-     'Please confirm availability and final delivery charge.'
-   ].join('\n');
-   try{window.ZariahCart.clear();}catch(_){}
-   try{sessionStorage.removeItem('zariah_checkout_idempotency_v1');}catch(_){}
-   const wa='https://wa.me/8801642779056?text='+encodeURIComponent(message);
-   window.location.href=wa;
+   try{sessionStorage.setItem('zariah_checkout_success_v1',JSON.stringify({order_number:order.order_number,subtotal_bdt:order.subtotal_bdt}));}catch(_){}
+   window.location.href='/pages/order-success/?order='+encodeURIComponent(order.order_number);
  }catch(err){
    console.error('[ZARIAH checkout]',err);
    const message=String(err?.message||'').includes('create_website_order')
-     ? 'Secure checkout is not active yet. Please contact our team on WhatsApp.'
+     ? 'Secure checkout is not active yet. Please try again. If the problem continues, contact Customer Support.'
      : (err?.message||'We could not submit your order. Please try again.');
    alert(message);
    button.disabled=false;
-   button.textContent='Continue to WhatsApp to Confirm Order';
+   button.textContent='Place Order';
  }
 });
 })();
