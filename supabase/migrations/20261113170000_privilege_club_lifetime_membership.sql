@@ -51,7 +51,7 @@ set points_balance=excluded.points_balance,
     lifetime_spend_bdt=excluded.lifetime_spend_bdt,
     tier=case
       when (case public.customer_loyalty_accounts.tier when 'platinum' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
-         > (case excluded.tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+         > (case excluded.tier when 'platinum' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
       then public.customer_loyalty_accounts.tier
       else excluded.tier
     end,
@@ -149,8 +149,8 @@ begin
   end;
 
   -- Keep the highest tier ever achieved, even if later qualifying spend is reversed.
-  if (case v_old_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
-     > (case v_new_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end) then
+  if (case v_old_tier when 'platinum' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+     > (case v_new_tier when 'platinum' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end) then
     v_new_tier := v_old_tier;
   end if;
 
