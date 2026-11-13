@@ -1580,6 +1580,7 @@ function renderProductDetailsPage(id){
  const host=document.getElementById('zProductPage');if(!host)return;
  if(!p){host.hidden=true;document.body.classList.remove('z-product-route');zRenderRecentlyViewed();return;}
  zTrackRecentlyViewed(p);
+ zQueueVisitorEvent('product_view',p.sku||p.id);
  const imgs=getGalleryImages(p).filter(Boolean);
  const unique=[...new Set(imgs)];
   const gallery='<div class="z-gallery-stage"><img id="zGalleryImage" src="'+zEscape(unique[0]||'')+'" alt="'+zEscape(p.name)+' — Front view" loading="eager" decoding="async"></div>'+(unique.length>1?'<button class="z-gallery-arrow prev" id="zGalleryPrev" type="button" aria-label="Previous product image">‹</button><button class="z-gallery-arrow next" id="zGalleryNext" type="button" aria-label="Next product image">›</button><span class="z-gallery-count" id="zGalleryCount">1 / '+unique.length+'</span><div class="z-gallery-dots" id="zGalleryDots" aria-label="Choose product image">'+unique.map((_,i)=>'<button type="button" class="z-gallery-dot'+(i===0?' active':'')+'" data-gallery-index="'+i+'" aria-label="Show image '+(i+1)+'"></button>').join('')+'</div>':'');
@@ -1611,7 +1612,20 @@ function renderProductDetailsPage(id){
  if(typeof gtag!=='undefined')gtag('event','view_item',{currency:'BDT',value:parsePrice(p.price),items:[{item_id:p.id,item_name:p.name,item_category:p.collection,price:parsePrice(p.price)}]});
  document.title=p.name+' | ZARIAH Studio';
 }
-function navigateToProduct(id){history.pushState({zProduct:id},'',location.pathname+'?product='+encodeURIComponent(id));renderProductDetailsPage(id);}
+function zQueueVisitorEvent(type,productId){
+ const slug=String(productId||'').trim().toLowerCase();
+ if(!slug)return;
+ if(typeof window.ZARIAH_TRACK_EVENT==='function')window.ZARIAH_TRACK_EVENT(type,slug);
+ else{
+  window.ZARIAH_PENDING_TRACK_EVENTS=window.ZARIAH_PENDING_TRACK_EVENTS||[];
+  window.ZARIAH_PENDING_TRACK_EVENTS.push({type:type,slug:slug});
+ }
+}
+function navigateToProduct(id){
+ zQueueVisitorEvent('product_click',id);
+ history.pushState({zProduct:id},'',location.pathname+'?product='+encodeURIComponent(id));
+ renderProductDetailsPage(id);
+}
 function zCollectionSlug(value){
  return String(value||'').toLowerCase().trim().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 }
