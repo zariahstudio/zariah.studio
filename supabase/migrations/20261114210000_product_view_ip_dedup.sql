@@ -1,20 +1,20 @@
 -- Deduplicate product views by a server-derived, keyed IP hash for 24 hours.
 -- Raw IP addresses are never stored. Existing visitor_events rows remain untouched.
 
-create schema if not exists private;
-revoke all on schema private from public, anon, authenticated;
-grant usage on schema private to service_role;
+create schema if not exists visitor_intelligence_private;
+revoke all on schema visitor_intelligence_private from public, anon, authenticated;
+grant usage on schema visitor_intelligence_private to service_role;
 
-create table if not exists private.visitor_product_view_dedup (
+create table if not exists visitor_intelligence_private.product_view_ip_dedup (
   ip_hash text not null check (ip_hash ~ '^[0-9a-f]{64}$'),
   product_slug text not null check (char_length(product_slug) between 1 and 160),
   last_viewed_at timestamptz not null default now(),
   primary key (ip_hash, product_slug)
 );
 
-alter table private.visitor_product_view_dedup enable row level security;
-revoke all on table private.visitor_product_view_dedup from public, anon, authenticated;
-grant select, insert, update, delete on table private.visitor_product_view_dedup to service_role;
+alter table visitor_intelligence_private.product_view_ip_dedup enable row level security;
+revoke all on table visitor_intelligence_private.product_view_ip_dedup from public, anon, authenticated;
+grant select, insert, update, delete on table visitor_intelligence_private.product_view_ip_dedup to service_role;
 
 -- Product views must use the server-side endpoint so clients cannot bypass IP deduplication.
 create or replace function public.record_visitor_event(
@@ -95,11 +95,11 @@ begin
   if v_recent_count >= 30 then return false; end if;
 
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_ip_hash || ':' || p_product_slug, 1));
-  insert into private.visitor_product_view_dedup(ip_hash,product_slug,last_viewed_at)
+  insert into visitor_intelligence_private.product_view_ip_dedup(ip_hash,product_slug,last_viewed_at)
   values(p_ip_hash,p_product_slug,now())
   on conflict (ip_hash,product_slug) do update
     set last_viewed_at=excluded.last_viewed_at
-    where private.visitor_product_view_dedup.last_viewed_at <= now() - interval '24 hours'
+    where visitor_intelligence_private.product_view_ip_dedup.last_viewed_at <= now() - interval '24 hours'
   returning true into v_recorded;
 
   if not coalesce(v_recorded,false) then return false; end if;
@@ -110,6 +110,8 @@ begin
     nullif(left(regexp_replace(coalesce(p_referrer_host,''),'[^a-zA-Z0-9.:-]','','g'),255),''),
     p_device_type,p_product_slug
   );
+  delete from visitor_intelligence_private.product_view_ip_dedup
+   where last_viewed_at < now() - interval '30 days';
   return true;
 end;
 $function$;
