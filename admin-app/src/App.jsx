@@ -711,7 +711,7 @@ function App() {
 
   const nav = [
     ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
-    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Fraud & Risk Center',ShieldCheck],['payments','Payments',CreditCard]
+    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Visitor Intelligence',Eye],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
 
@@ -747,7 +747,7 @@ function App() {
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
-        {section === 'fraud' && <FraudRiskPanel orders={orders} onRefresh={loadOrders} loading={dataLoading} />}
+        {section === 'fraud' && <FraudRiskPanel />}
 
       </div>
     </main>
@@ -1078,26 +1078,13 @@ function paidTotal(order) {
 }
 
 
-function FraudRiskPanel({ orders, onRefresh }) {
-  const [view, setView] = useState('courier');
-  const [phone, setPhone] = useState('');
+function FraudRiskPanel() {
+  const [view, setView] = useState('summary');
   const [visitorEvents, setVisitorEvents] = useState([]);
   const [visitorLoading, setVisitorLoading] = useState(false);
   const [visitorError, setVisitorError] = useState('');
   const [range, setRange] = useState('7');
   const [search, setSearch] = useState('');
-  const normalized = value => String(value || '').replace(/\\D/g, '').replace(/^88/, '');
-  const matchingOrders = phone.trim() ? orders.filter(order => normalized(order.customers?.phone).includes(normalized(phone))) : [];
-  const customersWithOrders = new Map();
-  orders.forEach(order => {
-    const key = normalized(order.customers?.phone);
-    if (!key) return;
-    if (!customersWithOrders.has(key)) customersWithOrders.set(key, []);
-    customersWithOrders.get(key).push(order);
-  });
-  const reviewCases = [...customersWithOrders.entries()].map(([key, rows]) => ({
-    key, rows, cancelled: rows.filter(o => ['cancelled','returned'].includes(o.status)), latest: rows[0]
-  })).filter(x => x.cancelled.length >= 2).sort((a,b) => b.cancelled.length-a.cancelled.length);
   const loadVisitorEvents = async () => {
     setVisitorLoading(true); setVisitorError('');
     let query = supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').order('created_at',{ascending:false}).limit(500);
@@ -1107,30 +1094,34 @@ function FraudRiskPanel({ orders, onRefresh }) {
     else setVisitorEvents(data || []);
     setVisitorLoading(false);
   };
-  useEffect(() => { if (view === 'visitors') loadVisitorEvents(); }, [view, range]);
+  useEffect(() => { loadVisitorEvents(); }, [range]);
   const uniqueVisitors = new Set(visitorEvents.map(e=>e.visitor_id)).size;
-  const productViews = visitorEvents.filter(e=>e.event_type==='product_view').length;
-  const checkoutViews = visitorEvents.filter(e=>e.event_type==='checkout_view').length;
-  const referrers = Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const filteredEvents = visitorEvents.filter(e=>[e.page_path,e.referrer_host,e.event_type,e.device_type,e.product_slug].join(' ').toLowerCase().includes(search.toLowerCase()));
-  return <section className="panel fraud-risk-panel">
-    <div className="panel-head split"><div><p className="eyebrow">STORE PROTECTION</p><h2>Fraud &amp; Risk Center</h2><p className="muted">Internal order-history signals and first-party visitor activity.</p></div><button className="secondary" onClick={view==='visitors'?loadVisitorEvents:onRefresh}><RefreshCw size={15}/> Refresh</button></div>
-    <div className="fraud-tabs"><button className={view==='courier'?'active':''} onClick={()=>setView('courier')}><ShieldCheck size={15}/> Customer Order Check</button><button className={view==='visitors'?'active':''} onClick={()=>setView('visitors')}><Eye size={15}/> Visitor Intelligence</button></div>
-    {view==='courier' ? <>
-      <div className="fraud-kpis"><article><small>Unique phone numbers</small><strong>{customersWithOrders.size}</strong></article><article><small>Cancelled / returned orders</small><strong>{orders.filter(o=>['cancelled','returned'].includes(o.status)).length}</strong></article><article><small>Customers needing review</small><strong>{reviewCases.length}</strong></article></div>
-      <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter customer phone number"/></div></div>
-      {phone.trim() ? <div className="fraud-results"><h3>Matching order history</h3>{matchingOrders.length ? <><p className="muted">{matchingOrders[0].customers?.full_name || 'Customer'} · {matchingOrders[0].customers?.phone} · {matchingOrders.length} order(s)</p><div className="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Order status</th><th>Payment</th></tr></thead><tbody>{matchingOrders.map(o=><tr key={o.id}><td><strong>{o.order_number}</strong></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${['cancelled','returned'].includes(o.status)?'warning':o.status==='delivered'?'live':''}`}>{o.status}</span></td><td>{o.payment_status || '—'}</td></tr>)}</tbody></table></div></>:<div className="empty">No matching customer order history found.</div>}</div>:<div className="fraud-review-list"><h3>Repeated cancellation / return history</h3>{reviewCases.length?<div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Total orders</th><th>Cancelled / returned</th><th>Latest order</th></tr></thead><tbody>{reviewCases.map(x=><tr key={x.key}><td>{x.latest.customers?.full_name||'—'}</td><td>{x.latest.customers?.phone||'—'}</td><td>{x.rows.length}</td><td><span className="status warning">{x.cancelled.length}</span></td><td>{x.latest.order_number}</td></tr>)}</tbody></table></div>:<div className="empty">No customers currently meet this review rule.</div>}<p className="fraud-disclaimer">Two or more cancelled/returned orders trigger a manual review signal only; this is not proof of fraud.</p></div>}
-    </> : <>
-      <div className="visitor-toolbar"><div className="visitor-range">{[['1','Today'],['7','7 Days'],['30','30 Days'],['all','All Time']].map(([v,label])=><button key={v} className={range===v?'active':''} onClick={()=>setRange(v)}>{label}</button>)}</div><button className="secondary small" onClick={loadVisitorEvents} disabled={visitorLoading}><RefreshCw size={14}/> Refresh logs</button></div>
-      {visitorError ? <div className="visitor-empty"><AlertTriangle size={24}/><h3>Visitor tracking is awaiting database setup</h3><p>{visitorError.includes('visitor_events')?'Apply the visitor-intelligence migration before visitor data can appear.':visitorError}</p><small>No existing visitor data has been changed.</small></div> : <>
-        <div className="fraud-kpis visitor-kpis"><article><small>Unique visitors</small><strong>{uniqueVisitors.toLocaleString()}</strong></article><article><small>Tracked events</small><strong>{visitorEvents.length.toLocaleString()}</strong></article><article><small>Product views</small><strong>{productViews.toLocaleString()}</strong></article><article><small>Checkout page visits</small><strong>{checkoutViews.toLocaleString()}</strong></article></div>
-        <div className="visitor-sources"><div className="panel-head"><h3>Top referring sources</h3><small>Based on recorded events</small></div>{referrers.length?referrers.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count}</strong></div>):<p className="muted">No referrer data in this period.</p>}</div>
-        <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search path, referrer, event or product"/></div><span className="muted tiny">Latest 500 events</span></div>
-        {visitorLoading?<Loading/>:<div className="table-wrap"><table><thead><tr><th>Visitor</th><th>Page / Product</th><th>Referrer</th><th>Device</th><th>Event</th><th>Timestamp</th></tr></thead><tbody>{filteredEvents.map(e=><tr key={e.id}><td><code>{e.visitor_id.slice(0,8)}…</code></td><td><strong>{e.page_path}</strong>{e.product_slug&&<small className="muted" style={{display:'block'}}>{e.product_slug}</small>}</td><td>{e.referrer_host||'Direct / None'}</td><td><span className="status">{e.device_type}</span></td><td>{e.event_type.replace('_',' ')}</td><td>{new Date(e.created_at).toLocaleString('en-GB')}</td></tr>)}</tbody></table>{filteredEvents.length===0&&<div className="empty">No visitor events found for this filter.</div>}</div>}
-        <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and not linked to customer identities.</p>
+  const productEvents = visitorEvents.filter(e=>e.event_type==='product_view');
+  const checkoutEvents = visitorEvents.filter(e=>e.event_type==='checkout_view');
+  const referrers = Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const topProducts = Object.entries(productEvents.reduce((acc,e)=>{const key=e.product_slug||e.page_path;acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const devices = Object.entries(visitorEvents.reduce((acc,e)=>{acc[e.device_type]=(acc[e.device_type]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]);
+  const filteredEvents = visitorEvents.filter(e=>[e.visitor_id,e.page_path,e.referrer_host,e.event_type,e.device_type,e.product_slug].join(' ').toLowerCase().includes(search.toLowerCase()));
+  const ranges=[['1','Today'],['7','7 Days'],['30','30 Days'],['all','All Time']];
+  return <section className="panel fraud-risk-panel visitor-intelligence-panel">
+    <div className="panel-head split"><div><p className="eyebrow">STORE ANALYTICS</p><h2>Visitor Intelligence &amp; Trackers</h2><p className="muted">First-party visitor activity, page engagement and checkout visits.</p></div><button className="secondary" onClick={loadVisitorEvents} disabled={visitorLoading}><RefreshCw size={15}/> Refresh logs</button></div>
+    <div className="visitor-topbar"><div className="visitor-tabs"><button className={view==='summary'?'active':''} onClick={()=>setView('summary')}><TrendingUp size={15}/> Executive Summary</button><button className={view==='checkout'?'active':''} onClick={()=>setView('checkout')}><ShoppingBag size={15}/> Checkout Activity</button><button className={view==='logs'?'active':''} onClick={()=>setView('logs')}><Eye size={15}/> All Visitor Logs ({visitorEvents.length})</button></div><div className="visitor-range">{ranges.map(([v,label])=><button key={v} className={range===v?'active':''} onClick={()=>setRange(v)}>{label}</button>)}</div></div>
+    {visitorError ? <div className="visitor-empty"><AlertTriangle size={24}/><h3>Visitor tracking is awaiting database setup</h3><p>{visitorError.includes('visitor_events')?'Apply the visitor-intelligence migration before visitor data can appear.':visitorError}</p><small>No existing visitor data has been changed.</small></div> : <>
+      {view==='summary' && <>
+        <div className="fraud-kpis visitor-kpis"><article><small>Unique visitors / sessions</small><strong>{uniqueVisitors.toLocaleString()}</strong><span>{visitorEvents.length.toLocaleString()} tracked events</span></article><article><small>Product views</small><strong>{productEvents.length.toLocaleString()}</strong><span>Product detail page visits</span></article><article><small>Checkout visits</small><strong>{checkoutEvents.length.toLocaleString()}</strong><span>Checkout page views</span></article><article><small>Mobile sessions</small><strong>{visitorEvents.filter(e=>e.device_type==='mobile').length.toLocaleString()}</strong><span>Recorded mobile events</span></article></div>
+        <div className="visitor-summary-grid"><section className="visitor-sources"><div className="panel-head"><h3>Customer Acquisition Sources</h3><small>Top channels</small></div>{referrers.length?referrers.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count} events</strong></div>):<p className="muted">No referrer data in this period.</p>}</section><section className="visitor-sources"><div className="panel-head"><h3>Most Viewed Products</h3><small>Trending</small></div>{topProducts.length?topProducts.map(([name,count],i)=><div className="visitor-source-row" key={name}><span>#{i+1} {name}</span><strong>{count} views</strong></div>):<p className="muted">No product views recorded yet.</p>}</section></div>
+        <section className="visitor-sources"><div className="panel-head"><h3>Device Breakdown</h3><small>Recorded events</small></div>{devices.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count}</strong></div>)}</section>
       </>}
+      {view==='checkout' && <><div className="fraud-kpis visitor-kpis"><article><small>Checkout page visits</small><strong>{checkoutEvents.length}</strong></article><article><small>Unique checkout sessions</small><strong>{new Set(checkoutEvents.map(e=>e.visitor_id)).size}</strong></article><article><small>Mobile checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='mobile').length}</strong></article><article><small>Desktop checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='desktop').length}</strong></article></div><p className="fraud-disclaimer">These are checkout page visits, not confirmed abandoned carts or identified leads. No customer form data is collected by this tracker.</p><VisitorEventTable events={checkoutEvents} search={search} setSearch={setSearch}/></>}
+      {view==='logs' && <VisitorEventTable events={filteredEvents} search={search} setSearch={setSearch}/>}
+      {visitorLoading && <div className="visitor-loading"><Loading/></div>}
+      <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and are not linked to customer identities. Showing up to the latest 500 events.</p>
     </>}
   </section>;
+}
+
+function VisitorEventTable({ events, search, setSearch }) {
+  return <><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by visitor, page, referrer, device or product"/></div><span className="muted tiny">{events.length} events</span></div><div className="table-wrap"><table><thead><tr><th>Visitor / Session</th><th>Page / Product</th><th>Referrer</th><th>Device</th><th>Event</th><th>Timestamp</th></tr></thead><tbody>{events.map(e=><tr key={e.id}><td><code>{e.visitor_id.slice(0,8)}…</code></td><td><strong>{e.page_path}</strong>{e.product_slug&&<small className="muted" style={{display:'block'}}>{e.product_slug}</small>}</td><td>{e.referrer_host||'Direct / None'}</td><td><span className="status">{e.device_type}</span></td><td>{e.event_type.replace('_',' ')}</td><td>{new Date(e.created_at).toLocaleString('en-GB')}</td></tr>)}</tbody></table>{events.length===0&&<div className="empty">No visitor events found for this period.</div>}</div></>;
 }
 
 function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt, onReviewPayment, saving }) {
