@@ -61,6 +61,7 @@ begin
     if nullif(btrim(coalesce(v_payment.reference,'')), '') is null then
       raise exception 'Transaction reference is required before verification.' using errcode = '22023';
     end if;
+    perform pg_advisory_xact_lock(hashtextextended(lower(btrim(v_payment.reference)), 0));
     if exists (
       select 1 from public.payments p
       where p.id <> v_payment.id
