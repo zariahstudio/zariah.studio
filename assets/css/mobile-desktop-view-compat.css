@@ -1,0 +1,149 @@
+/* ZARIAH — narrow desktop-site viewport compatibility.
+   Scoped only to 769–1023 CSS px; normal mobile and full desktop breakpoints are untouched. */
+@media (min-width:769px) and (max-width:1023px) {
+  .hdr {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 12px 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .hdr-inner {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) auto !important;
+    grid-template-areas:
+      "brand brand"
+      "nav actions" !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    gap: 10px 16px !important;
+    width: calc(100% - 32px) !important;
+    max-width: 960px !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 8px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .hdr-inner > .logo {
+    grid-area: brand !important;
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    justify-self: center !important;
+    align-items: center !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .hdr-inner > nav[aria-label="Main navigation"] {
+    grid-area: nav !important;
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links {
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px 14px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: normal !important;
+    list-style: none !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links > li {
+    display: block !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links a {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 34px !important;
+    font-size: 9px !important;
+    line-height: 1.3 !important;
+    letter-spacing: .07em !important;
+    white-space: nowrap !important;
+  }
+
+  .hdr-inner > .hdr-right {
+    grid-area: actions !important;
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    display: flex !important;
+    flex-flow: row wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .hdr-right > * {
+    position: static !important;
+    transform: none !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .z-wishlist-trigger,
+  .btn-wa {
+    min-height: 36px !important;
+    height: auto !important;
+    padding: 0 9px !important;
+    font-size: 8px !important;
+    letter-spacing: .06em !important;
+  }
+}
+
+@media (min-width:769px) and (max-width:850px) {
+  .hdr-inner {
+    grid-template-columns: minmax(0,1fr) !important;
+    grid-template-areas:
+      "brand"
+      "nav"
+      "actions" !important;
+    gap: 8px !important;
+  }
+
+  .hdr-inner > nav[aria-label="Main navigation"] {
+    justify-content: center !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links {
+    justify-content: center !important;
+    gap: 5px 12px !important;
+  }
+
+  .hdr-inner > .hdr-right {
+    justify-content: center !important;
+  }
+}
