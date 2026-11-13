@@ -27,7 +27,14 @@
   var device=/ipad|tablet/i.test(ua)?'tablet':/mobile|android|iphone/i.test(ua)?'mobile':'desktop';
   var referrerHost='';
   try{if(d.referrer){var u=new URL(d.referrer);if(u.origin!==w.location.origin)referrerHost=u.hostname;}}catch(e){}
-  var sent=false, activeRecord=null, queuedProductClicks=[];
+  var sent=false, activeRecord=null, queuedEvents=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
+  w.ZARIAH_TRACK_EVENT=function(type,slug){
+    if(!/^(product_click|cart_add)$/.test(type))return false;
+    var item={type:type,slug:String(slug||'').slice(0,160)};
+    if(activeRecord){activeRecord(item.type,item.slug).catch(function(){});}
+    else queuedEvents.push(item);
+    return true;
+  };
   function send(){
     if(sent)return;
     sent=true;
@@ -47,7 +54,7 @@
         try{w.sessionStorage.setItem('zariah_visitor_started_v1','1');}catch(e){}
         chain=record('session_start');
       }
-      return chain.then(function(){return record(eventType);}).then(function(){var clicks=queuedProductClicks.splice(0);return clicks.reduce(function(p,slug){return p.then(function(){return record('product_click',slug);});},Promise.resolve());});
+      return chain.then(function(){return record(eventType);}).then(function(){var events=queuedEvents.splice(0);return events.reduce(function(p,item){return p.then(function(){return record(item.type,item.slug);});},Promise.resolve());});
     }).catch(function(){});
   }
 
@@ -60,8 +67,7 @@
     var match=(link.getAttribute('href')||'').match(/(?:^|\/)products\/([^/?#]+)/i);
     if(!match)return;
     var slug=match[1].slice(0,160);
-    if(activeRecord){activeRecord('product_click',slug).catch(function(){});}
-    else queuedProductClicks.push(slug);
+    w.ZARIAH_TRACK_EVENT('product_click',slug);
   },true);
 
   // Privilege Club conversion prompt: 60 seconds of visible, recently active time.
