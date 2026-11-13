@@ -164,7 +164,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/product-detail-base.css?v=20261111-dynamic-seo">
-<link rel="stylesheet" href="/assets/css/product-detail-experience.css?v=20261109-stablecta">
+<link rel="stylesheet" href="/assets/css/product-detail-experience.css?v=20261113-dynamic-buynow">
 <link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109">
 <link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3">
 <link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2">
@@ -204,6 +204,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <button class="order-btn disabled" type="button" disabled>Currently unavailable</button>
 <?php else: ?>
 <button class="order-btn z-add-cart" type="button" data-product-id="<?= z_escape($sku) ?>" data-product-name="<?= z_escape($name) ?>" data-product-price="<?= $price ?>" data-product-image="<?= z_escape($primaryImage) ?>">ADD TO BAG</button>
+<button class="order-btn z-buy-now z-product-buy-now" type="button">BUY NOW</button>
 <?php endif; ?>
 <a class="order-btn z-wa-enquire" style="background:transparent;color:var(--ink);border:1px solid var(--line);margin-top:10px" href="https://wa.me/8801642779056?text=<?= rawurlencode('Hello ZARIAH Studio, I would like to enquire about ' . $name . '.') ?>">Enquire on WhatsApp</a>
 <p class="note">For more product details, colour availability or ordering assistance, contact our team.</p>
@@ -216,7 +217,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <script src="/assets/js/product-related-cards.js?v=20261109-stablecta" defer></script>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/zariah-product-gallery.js" defer></script>
-<script src="/assets/js/zariah-product-add-to-bag.js" defer></script>
+<script src="/assets/js/zariah-product-add-to-bag.js?v=20261113-dynamic-buynow" defer></script>
 <style>.z-cart-nav{white-space:nowrap}.z-cart-count{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:50%;background:#c5a06a;color:#fff;font-size:10px;margin-left:4px;padding:0 4px}.z-add-cart{width:100%;border:0;cursor:pointer;font:inherit;letter-spacing:.15em}.z-floating-bag{position:fixed!important;right:18px!important;bottom:20px!important;z-index:99999!important;display:flex!important;align-items:center!important;gap:9px!important;padding:13px 17px!important;background:#292522!important;color:#fff!important;border:1px solid #c5a06a!important;box-shadow:0 5px 22px #0002!important;text-decoration:none!important;font:500 9px/1 Inter,Arial,sans-serif!important;letter-spacing:.14em!important}.z-floating-bag-count{display:inline-grid!important;place-items:center!important;min-width:19px!important;height:19px!important;padding:0 5px!important;border-radius:50%!important;background:#c5a06a!important;color:#fff!important;font-size:9px!important;letter-spacing:0!important}@media(max-width:600px){.z-floating-bag{right:12px!important;bottom:14px!important;padding:12px 14px!important}}</style>
 <a class="z-floating-bag" href="/pages/cart/" aria-label="Open shopping bag"><span aria-hidden="true">♧</span><span>YOUR BAG</span><span class="z-floating-bag-count" data-cart-count>0</span></a>
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
