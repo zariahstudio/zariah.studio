@@ -22,15 +22,52 @@
     text-align:left !important;
   }
 
+  /* Existing HTML places Bag inside nav, after the menu list.
+     Use two columns so Bag stays on the same navigation row. */
   .hdr-inner > nav[aria-label="Main navigation"] {
-    justify-content:flex-start !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
+    align-items:center !important;
+    column-gap:12px !important;
+    justify-content:stretch !important;
+    min-width:0 !important;
     border-top:1px solid #e8e0d7 !important;
     padding-top:7px !important;
   }
 
   .hdr nav[aria-label="Main navigation"] .nav-links {
+    display:flex !important;
+    flex-flow:row nowrap !important;
+    align-items:center !important;
     justify-content:flex-start !important;
-    gap:5px clamp(10px,1.8vw,18px) !important;
+    gap:5px clamp(8px,1.4vw,16px) !important;
+    width:auto !important;
+    min-width:0 !important;
+    white-space:nowrap !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links > li {
+    flex:0 0 auto !important;
+    min-width:0 !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] .nav-links a {
+    font-size:clamp(8px,.92vw,9px) !important;
+    letter-spacing:.045em !important;
+    white-space:nowrap !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] > .z-cart-nav {
+    display:inline-flex !important;
+    position:static !important;
+    inset:auto !important;
+    transform:none !important;
+    grid-column:2 !important;
+    justify-self:end !important;
+    align-items:center !important;
+    white-space:nowrap !important;
+    margin:0 !important;
+    padding:0 0 0 8px !important;
   }
 
   .hdr-inner > .hdr-right {
