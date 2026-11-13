@@ -256,4 +256,14 @@ populateBrandFilter();populateStyleFilter();render();window.ZARIAH_LOAD_SUPABASE
 </style>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
+
+<style id="zariah-buy-now-visibility-fix">
+/* Keep both card actions visible and legible across mobile and desktop. */
+#productGrid .z-card-actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;width:100%!important;margin-top:12px!important;}
+#productGrid .z-card-actions button{display:flex!important;align-items:center!important;justify-content:center!important;visibility:visible!important;opacity:1!important;position:relative!important;width:100%!important;min-width:0!important;min-height:44px!important;padding:11px 6px!important;border:1px solid #292522!important;border-radius:0!important;font:500 9px/1.2 Inter,Arial,sans-serif!important;letter-spacing:.08em!important;text-align:center!important;text-transform:uppercase!important;white-space:normal!important;}
+#productGrid .z-card-add-bag{background:#FBF7F1!important;color:#292522!important;}
+#productGrid .z-card-buy-now{background:#292522!important;color:#FFFFFF!important;border-color:#292522!important;}
+#productGrid .z-card-actions button:focus-visible{outline:2px solid #B99768!important;outline-offset:3px!important;}
+@media(max-width:360px){#productGrid .z-card-actions{gap:5px!important}#productGrid .z-card-actions button{font-size:8px!important;letter-spacing:.04em!important;padding:10px 3px!important}}
+</style>
 </body></html>
