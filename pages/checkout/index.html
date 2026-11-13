@@ -264,7 +264,7 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      <p>Your order has been saved successfully. Our team will review it and contact you if any delivery details need confirmation.</p>
      <p style="font-weight:600;color:#292522;margin:20px 0 6px">Order Number</p>
      <p style="font-size:20px;font-weight:600;color:#292522;margin:0">${order.order_number}</p>
-     <p style="margin:12px 0">Order Total: <strong>${money(order.total_bdt)}</strong> · Cash on Delivery</p>
+     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt ?? order.total_bdt)}</strong> · Delivery charge confirmed before dispatch · Cash on Delivery</p>
      <div class="order-success-actions">
        <a class="order-success-action order-success-track" href="/pages/track-order/">Track Your Order</a>
        <a class="order-success-action order-success-continue" href="/collections/all-bags/">Continue Shopping</a>
