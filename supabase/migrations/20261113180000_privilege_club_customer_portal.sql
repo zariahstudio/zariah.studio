@@ -82,14 +82,19 @@ begin
   where customer_id=v_customer_id;
 
   select coalesce(jsonb_agg(jsonb_build_object(
-    'date',lt.created_at,
-    'points',case when lt.status='earned' then lt.points_delta else -abs(lt.points_delta) end,
-    'spend_bdt',lt.spend_delta_bdt,
-    'status',lt.status
-  ) order by lt.created_at desc),'[]'::jsonb)
+    'date',activity.created_at,
+    'points',case when activity.status='earned' then activity.points_delta else -abs(activity.points_delta) end,
+    'spend_bdt',activity.spend_delta_bdt,
+    'status',activity.status
+  ) order by activity.created_at desc),'[]'::jsonb)
   into v_transactions
-  from public.loyalty_transactions lt
-  where lt.customer_id=v_customer_id;
+  from (
+    select lt.created_at,lt.points_delta,lt.spend_delta_bdt,lt.status
+    from public.loyalty_transactions lt
+    where lt.customer_id=v_customer_id
+    order by lt.created_at desc
+    limit 30
+  ) activity;
 
   return jsonb_build_object(
     'found',true,
