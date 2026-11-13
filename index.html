@@ -1634,6 +1634,50 @@ const OverlayManager = (function() {
 .z-detail-add-bag:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:768px){.z-detail-add-bag{display:block}}
 </style>
+<style id="zariah-product-card-purchase-actions">
+/* Product-card purchase actions: paired Add to Cart + Buy Now controls. */
+#prodGrid .pcard-actions{
+  display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);
+  gap:8px;width:100%;margin-top:12px;
+}
+#prodGrid .pcard-actions button{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:0;min-height:42px;padding:10px 9px;
+  border:1px solid #302b26;border-radius:3px;
+  font:600 9px/1.2 Inter,Arial,sans-serif;
+  letter-spacing:.095em;text-transform:uppercase;
+  cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease;
+}
+#prodGrid .pcard-actions .btn-add-cart{
+  background:#302b26;color:#fff;border-color:#302b26;
+}
+#prodGrid .pcard-actions .btn-buy-now{
+  background:#c5a06a;color:#fff;border-color:#c5a06a;
+}
+@media(hover:hover) and (pointer:fine){
+  #prodGrid .pcard-actions button:hover{transform:translateY(-1px)}
+  #prodGrid .pcard-actions .btn-add-cart:hover{background:#4b4034;border-color:#4b4034}
+  #prodGrid .pcard-actions .btn-buy-now:hover{background:#a9824f;border-color:#a9824f}
+}
+#prodGrid .pcard-actions button:focus-visible{
+  outline:2px solid #b99562;outline-offset:3px;
+}
+#prodGrid .pcard-actions button:active{transform:translateY(0)}
+@media(max-width:768px){
+  #prodGrid .pcard-actions{gap:6px;margin-top:10px}
+  #prodGrid .pcard-actions button{
+    min-height:40px;padding:9px 5px;border-radius:3px;
+    font-size:8px;letter-spacing:.055em;
+  }
+}
+@media(max-width:360px){
+  #prodGrid .pcard-actions{gap:5px}
+  #prodGrid .pcard-actions button{font-size:7.5px;letter-spacing:.025em}
+}
+@media(prefers-reduced-motion:reduce){
+  #prodGrid .pcard-actions button{transition:none}
+}
+</style>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
 </body>
