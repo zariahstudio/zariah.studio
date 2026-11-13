@@ -128,3 +128,12 @@
 .order-filter-fields{display:flex;gap:8px;flex-wrap:wrap}
 .order-filter-fields select{width:auto;min-width:145px}
 @media(max-width:760px){.order-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.order-kpis article{padding:12px}.order-toolbar{align-items:stretch}.order-toolbar .searchbox{width:100%}.order-filter-fields{width:100%}.order-filter-fields select{flex:1;min-width:0}}
+
+
+/* Phase 2B payment verification */
+.payment-review{border:1px solid var(--line);background:#fbf8f3;border-radius:5px;padding:20px;margin:18px 0 24px}
+.payment-review .panel-head{margin-bottom:12px}
+.payment-review .panel-head h2{font-size:24px}
+.payment-review-actions{display:grid;grid-template-columns:minmax(130px,1fr) auto auto;gap:6px;min-width:320px}
+.payment-review-actions input{min-width:0;padding:8px;font-size:11px}
+@media(max-width:760px){.payment-review{padding:14px}.payment-review-actions{grid-template-columns:1fr 1fr;min-width:230px}.payment-review-actions input{grid-column:span 2}}
