@@ -341,4 +341,84 @@ populateBrandFilter();populateStyleFilter();render();window.ZARIAH_LOAD_SUPABASE
   .page-intro h1 {margin:0!important}
 }
 </style>
+
+<style id="z-all-bags-compact-header-final">
+/* Compact, single-row desktop header. Scoped to All Bags; mobile rules remain unchanged. */
+@media (min-width:901px) {
+  body:not(.admin-body) header.hdr {
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:0!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner {
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:minmax(180px,220px) minmax(0,1fr) auto!important;
+    grid-template-areas:"brand nav actions"!important;
+    align-items:center!important;
+    justify-content:initial!important;
+    column-gap:clamp(16px,2vw,28px)!important;
+    width:min(1440px,calc(100% - 80px))!important;
+    max-width:1440px!important;
+    min-height:74px!important;
+    height:74px!important;
+    margin:0 auto!important;
+    padding:0!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner > .logo {
+    grid-area:brand!important;
+    justify-self:start!important;
+    align-self:center!important;
+    margin:0!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner > nav.nav {
+    grid-area:nav!important;
+    justify-self:stretch!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:clamp(16px,1.8vw,25px)!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner > nav.nav > a {
+    display:inline-flex!important;
+    flex:0 0 auto!important;
+    align-items:center!important;
+    min-height:36px!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner > .hdr-right {
+    grid-area:actions!important;
+    justify-self:end!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:10px!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+  }
+  body:not(.admin-body) header.hdr > .hdr-inner > .mobile-search-toggle {
+    display:none!important;
+  }
+  .page-intro {
+    padding:16px 28px 10px!important;
+  }
+  .page-intro h1 {
+    margin:0!important;
+  }
+}
+</style>
 </body></html>
