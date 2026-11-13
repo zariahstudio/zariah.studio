@@ -214,6 +214,9 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <section class="more"><div class="eyebrow">Continue exploring</div><h2>Discover More Bags</h2><a href="/collections/all-bags/">View All Bags →</a></section>
 </main>
 <footer>© ZARIAH Studio · Curated in Bangladesh · Delivered Nationwide<div style="margin-top:10px"><a href="/pages/privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp; <a href="/pages/terms-of-service/">Terms of Service</a></div></footer>
+<!-- First-party visitor tracking bootstrap; keeps the existing product UI unchanged. -->
+<script src="/zariah-supabase-loader.js"></script>
+<script src="/zariah-analytics-loader.js"></script>
 <script src="/assets/js/product-related-cards.js?v=20261109-stablecta" defer></script>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/zariah-product-gallery.js" defer></script>
