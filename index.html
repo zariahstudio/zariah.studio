@@ -749,6 +749,100 @@
   @media(max-width:380px){.z-next-benefit-grid{grid-template-columns:1fr}}
 </style>
 
+<style id="z-brand-directory-responsive-premium">
+/* Discover Handbag Brands — responsive luxury refinement; isolated to this section. */
+#zBrandDirectory{
+  position:relative;
+  padding:clamp(54px,6vw,78px) 0 clamp(58px,6.5vw,82px);
+  background:linear-gradient(135deg,#f0ebe3 0%,#ebe4da 52%,#f1ece5 100%);
+  border-top:1px solid rgba(166,139,101,.12);
+  border-bottom:1px solid rgba(166,139,101,.12);
+}
+#zBrandDirectory .z-next-wrap{width:min(1220px,calc(100% - 64px))}
+#zBrandDirectory .z-next-section-head{max-width:720px}
+#zBrandDirectory .z-next-eyebrow{
+  display:flex;align-items:center;gap:12px;
+  color:#9a7950;font-size:9px;letter-spacing:.22em;
+}
+#zBrandDirectory .z-next-eyebrow:after{
+  content:"";display:block;width:38px;height:1px;background:#c7ad88;opacity:.8
+}
+#zBrandDirectory .z-next-section-head h2{
+  margin:12px 0 8px;color:#302820;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(34px,4vw,48px);line-height:1.06;
+  letter-spacing:-.035em;font-weight:400;
+}
+#zBrandDirectory .z-next-section-head p{
+  margin:0;color:#766d62;font:400 12px/1.7 Inter,Arial,sans-serif;
+  letter-spacing:.015em;
+}
+#zBrandDirectory .z-brand-directory-grid{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:13px;margin-top:32px;
+}
+#zBrandDirectory .z-brand-directory-item{
+  position:relative;isolation:isolate;overflow:hidden;
+  min-height:88px;padding:17px 12px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid #d8cdbf;border-radius:5px;
+  background:linear-gradient(145deg,#fffdf9 0%,#f8f4ed 100%);
+  color:#3c332a;text-align:center;
+  font:400 clamp(16px,1.35vw,19px)/1.2 Georgia,"Times New Roman",serif;
+  letter-spacing:.015em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),
+             inset 0 -1px 0 rgba(177,147,105,.10),
+             0 3px 10px rgba(57,45,32,.035);
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease;
+}
+#zBrandDirectory .z-brand-directory-item:before{
+  content:"";position:absolute;left:50%;top:12px;transform:translateX(-50%);
+  width:18px;height:1px;background:#b99768;opacity:.68;
+}
+#zBrandDirectory .z-brand-directory-item:after{
+  content:"";position:absolute;left:18px;right:18px;bottom:0;height:2px;
+  background:linear-gradient(90deg,transparent,#b99768 50%,transparent);
+  opacity:.58;
+}
+#zBrandDirectory .z-brand-directory-item:nth-child(3n){font-style:italic}
+@media(hover:hover) and (pointer:fine){
+  #zBrandDirectory .z-brand-directory-item:hover{
+    transform:translateY(-3px);border-color:#b99b72;
+    background:linear-gradient(145deg,#fffefa 0%,#f5eee4 100%);
+    box-shadow:inset 0 1px 0 #fff,0 10px 22px rgba(57,45,32,.085);
+  }
+}
+@media(max-width:1024px){
+  #zBrandDirectory .z-next-wrap{width:calc(100% - 48px)}
+  #zBrandDirectory .z-brand-directory-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+}
+@media(max-width:760px){
+  #zBrandDirectory{padding:42px 0 46px}
+  #zBrandDirectory .z-next-wrap{width:calc(100% - 32px)}
+  #zBrandDirectory .z-next-section-head h2{margin-top:9px;font-size:clamp(29px,8vw,36px);line-height:1.08}
+  #zBrandDirectory .z-next-section-head p{max-width:300px;font-size:11px;line-height:1.65}
+  #zBrandDirectory .z-brand-directory-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;margin-top:22px;
+  }
+  #zBrandDirectory .z-brand-directory-item{
+    min-height:68px;padding:17px 8px 13px;border-radius:5px;
+    font-size:clamp(15px,4vw,17px);letter-spacing:.005em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 2px 8px rgba(57,45,32,.045);
+  }
+  #zBrandDirectory .z-brand-directory-item:before{top:9px;width:14px}
+  #zBrandDirectory .z-brand-directory-item:after{left:14px;right:14px}
+}
+@media(max-width:360px){
+  #zBrandDirectory .z-next-wrap{width:calc(100% - 26px)}
+  #zBrandDirectory .z-brand-directory-grid{gap:7px}
+  #zBrandDirectory .z-brand-directory-item{min-height:64px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  #zBrandDirectory .z-brand-directory-item{transition:none}
+}
+</style>
+
 
 <div id="zProductPage" class="z-product-page" hidden aria-live="polite"></div><div class="z-wishlist-panel" id="zWishlistPanel" aria-hidden="true"><section class="z-wishlist-drawer" role="dialog" aria-modal="true" aria-labelledby="zWishlistTitle"><div class="z-wishlist-head"><h2 id="zWishlistTitle">Your Wishlist</h2><button class="z-wishlist-close" id="zWishlistClose" type="button" aria-label="Close wishlist">×</button></div><div id="zWishlistItems"></div></section></div>
 
