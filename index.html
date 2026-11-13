@@ -736,121 +736,23 @@
 <div id="zProductPage" class="z-product-page" hidden aria-live="polite"></div><div class="z-wishlist-panel" id="zWishlistPanel" aria-hidden="true"><section class="z-wishlist-drawer" role="dialog" aria-modal="true" aria-labelledby="zWishlistTitle"><div class="z-wishlist-head"><h2 id="zWishlistTitle">Your Wishlist</h2><button class="z-wishlist-close" id="zWishlistClose" type="button" aria-label="Close wishlist">×</button></div><div id="zWishlistItems"></div></section></div>
 
 <!-- ZARIAH HOMEPAGE: post-Best Seller editorial modules -->
-<style id="z-homepage-lower-refresh">
-  .z-home-refresh{color:#342e28;background:#fbf8f3}
-  .z-home-refresh *{box-sizing:border-box}
-  .z-home-refresh .zhr-wrap{width:min(1180px,calc(100% - 40px));margin:0 auto}
-  .z-home-refresh .zhr-kicker{display:block;color:#9b805d;font:600 10px/1.4 Inter,Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase}
-  .z-home-refresh h2{margin:8px 0 10px;color:#302a25;font:400 clamp(26px,3vw,38px)/1.12 Georgia,serif;letter-spacing:-.025em}
-  .z-home-refresh p{color:#766c62}
-  .zhr-services{padding:46px 0 54px;background:#f5f0e9}
-  .zhr-services-head{text-align:center;margin-bottom:24px}
-  .zhr-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-  .zhr-service{min-height:116px;padding:22px;border:1px solid #e8dfd4;background:#fffdfa;border-radius:3px;display:flex;gap:15px;align-items:flex-start}
-  .zhr-service-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:50%;background:#f1e8dc;color:#9b805d;font-size:17px}
-  .zhr-service h3{margin:2px 0 6px;font:600 14px/1.3 Inter,Arial,sans-serif;color:#3b342d}
-  .zhr-service p{margin:0;font:400 12px/1.65 Inter,Arial,sans-serif}
-  .zhr-collections{padding:54px 0 58px;background:#eee6dc}
-  .zhr-collections-head{text-align:center;margin-bottom:26px}
-  .zhr-collection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-  .zhr-collection{min-height:164px;padding:26px 24px;display:flex;flex-direction:column;justify-content:flex-end;text-decoration:none;color:#302a25;background:linear-gradient(145deg,#fffdfa,#e8ded1);border:1px solid #e1d5c7;transition:transform .2s ease,border-color .2s ease}
-  .zhr-collection:nth-child(2){background:linear-gradient(145deg,#f8f3eb,#ded0bf)}
-  .zhr-collection:nth-child(3){background:linear-gradient(145deg,#e9e0d5,#cbbba8)}
-  .zhr-collection:hover{transform:translateY(-3px);border-color:#b99a70}
-  .zhr-collection small{font:600 9px/1.4 Inter,Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#927754}
-  .zhr-collection strong{margin-top:8px;font:400 27px/1.1 Georgia,serif}
-  .zhr-collection span{margin-top:10px;font:500 10px/1.4 Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
-  .zhr-center{padding:64px 0;background:#fbf8f3}
-  .zhr-center-card{display:grid;grid-template-columns:1fr .9fr;overflow:hidden;background:#e9e0d5;border:1px solid #dcd0c1}
-  .zhr-center-copy{padding:clamp(26px,5vw,56px)}
-  .zhr-center-copy h2{margin:10px 0 14px}
-  .zhr-center-copy>p{max-width:480px;font:400 13px/1.8 Inter,Arial,sans-serif}
-  .zhr-meta{display:grid;gap:15px;margin:25px 0}
-  .zhr-meta-item{display:flex;gap:12px;align-items:flex-start}
-  .zhr-meta-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px;background:#f8f4ee;color:#98764c}
-  .zhr-meta-item strong{display:block;margin-bottom:4px;color:#88704f;font:600 9px/1.4 Inter,Arial,sans-serif;letter-spacing:.15em;text-transform:uppercase}
-  .zhr-meta-item span{display:block;color:#4f463d;font:400 12px/1.65 Inter,Arial,sans-serif}
-  .zhr-map-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 22px;background:#a9875c;color:#fff;text-decoration:none;font:600 10px/1 Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
-  .zhr-map-panel{min-height:340px;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;background:linear-gradient(135deg,#d7c8b5,#eee6dc)}
-  .zhr-map-pin{width:76px;height:76px;margin:0 auto 18px;display:grid;place-items:center;border:1px solid rgba(151,117,75,.45);border-radius:50%;color:#94744e;font-size:30px}
-  .zhr-map-panel strong{display:block;font:400 25px/1.2 Georgia,serif;color:#463b30}
-  .zhr-map-panel span{display:block;margin-top:8px;color:#76695b;font:500 10px/1.5 Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
-  .zhr-benefits{padding:54px 0 62px;background:#f3eee7}
-  .zhr-benefits-head{text-align:center;margin-bottom:30px}
-  .zhr-benefit-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
-  .zhr-benefit{padding:8px 0 8px 16px;border-left:2px solid #b69a74}
-  .zhr-benefit b{display:block;margin-bottom:10px;color:#a1845e;font:400 22px/1 Georgia,serif}
-  .zhr-benefit h3{margin:0 0 8px;color:#3c352e;font:600 13px/1.4 Inter,Arial,sans-serif}
-  .zhr-benefit p{margin:0;font:400 11px/1.7 Inter,Arial,sans-serif}
-  /* Legacy lower-page blocks are visually replaced; their DOM remains for existing script compatibility. */
-  .trust,.why,.process,.testi,.faq{display:none!important}
-  @media(max-width:760px){
-    .z-home-refresh .zhr-wrap{width:calc(100% - 28px)}
-    .zhr-services{padding:36px 0 40px}
-    .zhr-service-grid{grid-template-columns:1fr;gap:10px}
-    .zhr-service{min-height:88px;padding:17px}
-    .zhr-collections{padding:40px 0 44px}
-    .zhr-collection-grid{grid-template-columns:1fr;gap:10px}
-    .zhr-collection{min-height:126px;padding:21px}
-    .zhr-center{padding:42px 0}
-    .zhr-center-card{grid-template-columns:1fr}
-    .zhr-center-copy{padding:26px 22px}
-    .zhr-map-panel{min-height:210px}
-    .zhr-benefits{padding:40px 0 46px}
-    .zhr-benefit-grid{grid-template-columns:1fr 1fr;gap:22px 14px}
-    .zhr-benefit{padding-left:12px}
+<style id="z-homepage-lower-content-visibility">
+  /* Homepage ends after Best Sellers. Keep catalogue markup in the DOM for product-card,
+     filtering and detail-route compatibility; suppress lower-page content on the homepage only. */
+  body.z-homepage-route #products,
+  body.z-homepage-route .trust,
+  body.z-homepage-route .why,
+  body.z-homepage-route .process,
+  body.z-homepage-route .testi,
+  body.z-homepage-route .story,
+  body.z-homepage-route .editorial,
+  body.z-homepage-route .faq,
+  body.z-homepage-route footer {
+    display: none !important;
   }
-  @media(max-width:380px){.zhr-benefit-grid{grid-template-columns:1fr}}
 </style>
-<div class="z-home-refresh" aria-label="Discover more about ZARIAH Studio">
-  <section class="zhr-services" aria-labelledby="zhr-services-title">
-    <div class="zhr-wrap">
-      <header class="zhr-services-head"><span class="zhr-kicker">A considered experience</span><h2 id="zhr-services-title">Here for Every Step.</h2></header>
-      <div class="zhr-service-grid">
-        <article class="zhr-service"><span class="zhr-service-icon" aria-hidden="true">◇</span><div><h3>Order Assistance</h3><p>Explore with ease and place your order directly through our website.</p></div></article>
-        <article class="zhr-service"><span class="zhr-service-icon" aria-hidden="true">♡</span><div><h3>Customer Support</h3><p>Need help choosing? Our team is here to answer your questions.</p></div></article>
-        <article class="zhr-service"><span class="zhr-service-icon" aria-hidden="true">↗</span><div><h3>Delivery Across Bangladesh</h3><p>We deliver your selected pieces to your doorstep nationwide.</p></div></article>
-      </div>
-    </div>
-  </section>
-  <section class="zhr-collections" aria-labelledby="zhr-collections-title">
-    <div class="zhr-wrap">
-      <header class="zhr-collections-head"><span class="zhr-kicker">The ZARIAH edit</span><h2 id="zhr-collections-title">Explore by Collection</h2><p>Find the silhouette that feels unmistakably yours.</p></header>
-      <div class="zhr-collection-grid">
-        <a class="zhr-collection" href="#products" onclick="filterCollection('Essence')"><small>Everyday essentials</small><strong>Essence</strong><span>Explore collection →</span></a>
-        <a class="zhr-collection" href="#products" onclick="filterCollection('Signature')"><small>Quiet sophistication</small><strong>Signature</strong><span>Explore collection →</span></a>
-        <a class="zhr-collection" href="#products" onclick="filterCollection('Noir')"><small>Statement pieces</small><strong>Noir</strong><span>Explore collection →</span></a>
-      </div>
-    </div>
-  </section>
-  <section class="zhr-center" aria-labelledby="zhr-center-title">
-    <div class="zhr-wrap">
-      <div class="zhr-center-card">
-        <div class="zhr-center-copy">
-          <span class="zhr-kicker">Visit us in person</span><h2 id="zhr-center-title">Experience ZARIAH Studio.</h2>
-          <p>Step inside, explore our selected pieces, and experience the collection in person.</p>
-          <div class="zhr-meta">
-            <div class="zhr-meta-item"><span class="zhr-meta-icon" aria-hidden="true">⌖</span><div><strong>Address</strong><span>ZARIAH Studio, 18/B, 2nd Floor, System Imperial Complex, Chawkbazar, Telepotti Mor, Chattogram.</span></div></div>
-            <div class="zhr-meta-item"><span class="zhr-meta-icon" aria-hidden="true">◷</span><div><strong>Opening Hours</strong><span>Saturday – Thursday: 12:00 PM – 9:00 PM<br>Friday: Closed</span></div></div>
-          </div>
-          <a class="zhr-map-link" href="https://www.google.com/maps/search/?api=1&amp;query=ZARIAH+Studio%2C+18%2FB%2C+2nd+Floor%2C+System+Imperial+Complex%2C+Chawkbazar%2C+Telepotti+Mor%2C+Chattogram" target="_blank" rel="noopener noreferrer">Get Directions on Map&nbsp; ↗</a>
-        </div>
-        <div class="zhr-map-panel" aria-label="ZARIAH Studio location preview"><div><div class="zhr-map-pin" aria-hidden="true">⌖</div><strong>ZARIAH Studio</strong><span>System Imperial Complex · Chattogram</span></div></div>
-      </div>
-    </div>
-  </section>
-  <section class="zhr-benefits" aria-labelledby="zhr-benefits-title">
-    <div class="zhr-wrap">
-      <header class="zhr-benefits-head"><span class="zhr-kicker">The ZARIAH promise</span><h2 id="zhr-benefits-title">A Better Way to Carry.</h2></header>
-      <div class="zhr-benefit-grid">
-        <article class="zhr-benefit"><b>01</b><h3>Order Online</h3><p>A smooth, straightforward shopping experience from browsing to checkout.</p></article>
-        <article class="zhr-benefit"><b>02</b><h3>Cash on Delivery</h3><p>Pay for your order when it arrives at your doorstep.</p></article>
-        <article class="zhr-benefit"><b>03</b><h3>Quality Checked</h3><p>Every selected piece is checked before it is dispatched.</p></article>
-        <article class="zhr-benefit"><b>04</b><h3>Here to Help</h3><p>Reach our customer support team whenever you need assistance.</p></article>
-      </div>
-    </div>
-  </section>
-</div>
+
+
 
 <!-- PRODUCTS -->
 <section class="products" id="products" aria-labelledby="products-heading">
