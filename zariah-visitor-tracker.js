@@ -70,6 +70,26 @@
       return result;
     });
   }
+
+  function recordProductView(slug,eventPath){
+    var config=w.ZARIAH_SUPABASE_CONFIG||{};
+    if(!config.url||!config.publishableKey) return Promise.reject(new Error('Supabase tracking configuration is incomplete'));
+    return w.fetch(config.url+'/functions/v1/record-product-view',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':config.publishableKey},
+      body:JSON.stringify({
+        visitor_id:visitorId,
+        product_slug:slug,
+        page_path:(eventPath||path).slice(0,500),
+        referrer_host:referrerHost||null,
+        device_type:device
+      }),
+      keepalive:true
+    }).then(function(response){
+      if(!response.ok)throw new Error('Product view endpoint returned HTTP '+response.status);
+      return response.json();
+    });
+  }
   function flush(){
     if(flushing){flushAgain=true;return Promise.resolve();}
     flushing=true;
@@ -83,12 +103,15 @@
         });
       }
       if(pagePending){
-        chain=chain.then(function(){return record(eventType,productSlug,path);}).then(function(){pagePending=false;});
+        chain=chain.then(function(){
+          return eventType==='product_view'?recordProductView(productSlug,path):record(eventType,productSlug,path);
+        }).then(function(){pagePending=false;});
       }
       function drain(){
         if(!queue.length)return Promise.resolve();
         var item=queue[0];
-        return record(item.type,item.slug,item.path).then(function(){
+        var delivery=item.type==='product_view'?recordProductView(item.slug,item.path):record(item.type,item.slug,item.path);
+        return delivery.then(function(){
           queue.shift();
           return drain();
         });
