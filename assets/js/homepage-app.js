@@ -203,9 +203,9 @@ function renderProducts() {
         fbTrack('Contact', { content_name: 'Notify Me — ' + p.name, content_category: 'Back In Stock' });
         fbTrackCustom('WhatsAppClick', { location: 'notify_btn', product: p.name, collection: p.collection });
         if (typeof gtag !== 'undefined') {
-          gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.collection });
+          gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.brand || p.type });
         }
-        const msg = encodeURIComponent(`Hello ZARIAH Studio! 🌿\n\nI'd like to be notified when the *${p.name}* (${p.collection} Collection) is back in stock.\n\nPlease let me know as soon as it's available. Thank you!`);
+        const msg = encodeURIComponent(`Hello ZARIAH Studio!\n\nI'd like to be notified when the *${p.name}* (${p.brand || 'brand to be confirmed'}) is back in stock.\n\nPlease let me know as soon as it's available. Thank you!`);
         window.open(`https://wa.me/8801642779056?text=${msg}`, '_blank', 'noopener,noreferrer');
       });
     } else {
@@ -230,7 +230,7 @@ const FAQ_DATA = [
   { q: 'Can I see more photos before ordering?', a: 'Absolutely. WhatsApp us at +8801642779056 and we\'ll send you detailed photos of the exact bag — including hardware close-ups, interior shots, and size reference images. We want you to feel completely confident before ordering.' },
   { q: 'Are ZARIAH bags good quality?',          a: 'Yes. Every bag is quality-checked by our team before dispatch. We source premium vegan leather and hardware, and stand behind the quality of every piece we sell. With COD, you can inspect before paying — that\'s our guarantee.' },
   { q: 'Do you deliver outside Dhaka and Chittagong?', a: 'Yes, we deliver across Bangladesh. WhatsApp us with your location and we\'ll confirm the delivery timeline and availability in your area.' },
-  { q: 'How do I choose between collections?',   a: 'Essence is for soft, everyday elegance. Signature is for timeless, confident pieces that define your identity. Noir is for bold, statement-making bags. WhatsApp us and we\'ll help you find the perfect match for your style.' },
+  { q: 'How do I choose a brand?', a: 'Explore our curated selection of handbag labels and use the brand and style filters to find a bag that suits you.' },
 ];
 
 function renderFAQ() {
@@ -883,7 +883,7 @@ function openPModal(id) {
       content_ids: [p.id],
       content_name: p.name,
       content_type: 'product',
-      content_category: p.collection + ' > ' + p.type,
+      content_category: p.brand || p.type + ' > ' + p.type,
       value: parsePrice(p.price),
       currency: 'BDT'
     });
@@ -902,7 +902,7 @@ function openPModal(id) {
   const imgs = getGalleryImages(p);
   const labels = ['Front','Side','Back','Detail','Lifestyle','Inside'];
 
-  document.getElementById('pmodalColl').textContent = p.collection + ' Collection';
+  document.getElementById('pmodalColl').textContent = p.brand || p.type || 'Handbag';
   document.getElementById('pmodalName').textContent = p.name;
   document.getElementById('pmodalType').textContent = p.type;
   document.getElementById('pmodalPrice').textContent = p.price;
@@ -925,7 +925,7 @@ function openPModal(id) {
 
   const featuresEl = document.getElementById('pmodalFeatures');
   if (featuresEl) {
-    const materialLabel = p.collection === 'Noir' ? 'Top-grain genuine cowhide' : 'Premium vegan leather';
+    const materialLabel = p.material || 'Material details available on request';
     featuresEl.innerHTML = `
       <span class="pfeat">${materialLabel}</span>
       <span class="pfeat">Gold-tone hardware</span>
@@ -980,7 +980,7 @@ function openPModal(id) {
       const message = encodeURIComponent(
         `Hello ZARIAH Studio! 🌿\n\nI have a question about this bag:\n\n` +
         `📦 Product: ${p.name}\n` +
-        `🏷 Collection: ${p.collection}\n` +
+        `🏷 Brand: ${p.brand || 'Not specified'}\n` +
         `🔖 Code: ${p.id}\n` +
         `🎨 Color: ${p.color || 'Please advise'}\n` +
         `💰 Price: ${p.price}\n\n` +
@@ -1063,7 +1063,7 @@ function openOModal(id, fromPModal) {
     });
   }
 
-  document.getElementById('oProductName').textContent = `${p.name} (${p.collection})`;
+  document.getElementById('oProductName').textContent = `${p.name} (${p.brand || p.type || 'Handbag'})`;
   document.getElementById('oProductPrice').textContent = p.price;
   ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
   const orderError = document.getElementById('oCheckoutError');
@@ -1277,7 +1277,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
       `Hello ZARIAH Studio! 🌿\n\nI'd like to confirm my order:\n\n` +
       `🧾 Order: ${order.order_number}\n` +
       `📦 Product: ${productName}\n` +
-      `🏷 Collection: ${collection}\n` +
+      `🏷 Brand: ${productObj?.brand || 'Not specified'}\n` +
       `🔖 Code: ${productCode}\n` +
       `💰 Price: ${price}\n` +
       `🔢 Quantity: ${qty}\n\n` +
@@ -1307,7 +1307,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
         deliveryLine.style.cssText = 'opacity:.6;font-size:11px';
         deliveryLine.textContent = 'Delivery to: ' + address.substring(0,60) + (address.length > 60 ? '...' : '');
         detail.append(orderLine, document.createElement('br'), productLine);
-        detail.append(document.createTextNode(' · ' + collection + ' Collection'), document.createElement('br'));
+        detail.append(document.createTextNode(' · ' + (productObj?.brand || 'Handbag')), document.createElement('br'));
         detail.append(document.createTextNode(price + ' · Qty: ' + qty), document.createElement('br'), deliveryLine);
       }
     }
@@ -1767,7 +1767,9 @@ async function loadPublishedProductsFromSupabase() {
         brand: row.brand || '',
         brandId: row.brand_id || null,
         authenticityStatus: row.authenticity_status || 'not_yet_verified',
-        collection: row.collection_name,
+        collection: 'All Bags',
+        brand: row.brand || '',
+        authenticityStatus: row.authenticity_status || 'not_yet_verified',
         type: row.product_type || 'Shoulder Bag',
         color: row.color || '',
         desc: row.description || '',
