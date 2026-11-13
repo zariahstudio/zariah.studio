@@ -63,25 +63,18 @@
       grid.innerHTML = matches.map(function (product) {
         const name = escapeHtml(product.name);
         const id = escapeHtml(product.id);
+      const href = escapeHtml('/products/' + encodeURIComponent(String(product.id || product.sku || '').toLowerCase()) + '/');
         const image = escapeHtml(productImage(product));
         const price = escapeHtml(product.price);
         const soldOut = Boolean(product.soldOut);
-        return '<button class="z-mobile-home-card" type="button" data-z-mobile-product="' + id + '" aria-label="View ' + name + '">' +
+        return '<a class="z-mobile-home-card" href="' + href + '" aria-label="View ' + name + '">' +
           '<span class="z-mobile-home-media"><span class="z-mobile-home-badge">' +
           (soldOut ? 'Sold Out' : escapeHtml(config.label)) + '</span><img src="' + image +
           '" alt="' + name + '" loading="lazy" decoding="async"></span>' +
           '<span class="z-mobile-home-name">' + name + '</span>' +
           '<span class="z-mobile-home-price">' + price + '</span></button>';
       }).join('');
-      grid.querySelectorAll('[data-z-mobile-product]').forEach(function (card) {
-        card.addEventListener('click', function () {
-          const id = card.getAttribute('data-z-mobile-product');
-          if (typeof window.navigateToProduct === 'function') window.navigateToProduct(id);
-          else window.location.href = window.location.pathname + '?product=' + encodeURIComponent(id);
-        });
-      });
-    });
-  }
+    }
   document.addEventListener('DOMContentLoaded', render);
   window.addEventListener('zariah:catalogue-updated', function () { cachedProducts = null; cachedSelections = {}; render(); });
   window.addEventListener('resize', render);
