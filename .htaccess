@@ -3,6 +3,9 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Redirect the retired Collections landing page to the active catalogue.
+RewriteRule ^collections/?$ /collections/all-bags/ [R=301,L]
+
 # Route product URLs before Apache/LiteSpeed resolves existing product folders
 # and their static index.html files. Query parameters (UTM etc.) are preserved.
 RewriteRule ^products/([A-Za-z0-9-]+)/?$ product-seo.php?slug=$1 [L,QSA]
