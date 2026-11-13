@@ -90,7 +90,7 @@ $brand = trim((string)($product['brand'] ?? $product['brand_name'] ?? ''));
 $type = (string)($product['product_type'] ?? 'Handbag');
 $description = trim((string)($product['description'] ?? ''));
 $seoTitle = trim((string)($product['seo_title'] ?? '')) ?: ($name . ' | ZARIAH Studio Bangladesh');
-$seoDescription = trim((string)($product['seo_description'] ?? '')) ?: ('Shop ' . $name . ' at ZARIAH Studio. Discover selected handbags from local and international brands. Delivery across Bangladesh.');
+$seoDescription = trim((string)($product['seo_description'] ?? '')) ?: ('Shop ' . $name . ' at ZARIAH Studio. Explore carefully selected handbags with delivery across Bangladesh.');
 $canonical = ZARIAH_SITE_URL . '/products/' . rawurlencode($slug) . '/';
 $price = (int)($product['price_bdt'] ?? 0);
 $comparePrice = isset($product['compare_at_price_bdt']) ? (int)$product['compare_at_price_bdt'] : null;
@@ -127,6 +127,16 @@ $schema = [
 ]; 
 if ($brand !== '') { $schema['brand'] = ['@type' => 'Brand', 'name' => $brand]; }
 $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+$breadcrumbSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => ZARIAH_SITE_URL . '/'],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'All Bags', 'item' => ZARIAH_SITE_URL . '/collections/all-bags/'],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $name, 'item' => $canonical]
+    ]
+];
+$breadcrumbSchemaJson = json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 $specs = [
     'Brand' => $brand,
     'Style' => $type,
@@ -170,9 +180,10 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2">
 <link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2">
 <script type="application/ld+json"><?= $schemaJson ?></script>
+<script type="application/ld+json"><?= $breadcrumbSchemaJson ?></script>
 </head>
 <body>
-<div class="ann">ZARIAH STUDIO · LOCAL & INTERNATIONAL HANDBAG BRANDS</div>
+<div class="ann">ZARIAH STUDIO · CURATED HANDBAGS</div>
 <header>
 <a class="brand" href="/">ZARIAH<small>STUDIO</small></a>
 <nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/collections/all-bags/">Shop by Brand</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a></nav>
