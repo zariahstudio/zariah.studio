@@ -123,3 +123,16 @@ body:has(.product-layout) .pd-discover-cta:hover span{color:#e1c18f}
  body:has(.product-layout) .pd-discover-cta{min-height:46px;padding:0 22px;font-size:8px}
 }
 @media(prefers-reduced-motion:reduce){body:has(.product-layout) .pd-related-image img,body:has(.product-layout) .pd-discover-cta{transition:none}}
+
+
+/* Product detail Buy Now CTA: directly beneath Add to Bag */
+body:has(.product-layout) .z-product-buy-now{
+  display:block!important;width:100%!important;min-height:54px!important;
+  margin:10px 0 0!important;padding:16px 20px!important;
+  border:1px solid #B99768!important;border-radius:0!important;
+  background:#B99768!important;color:#fff!important;
+  font:500 10px Inter,sans-serif!important;letter-spacing:.15em!important;
+  text-align:center!important;text-transform:uppercase!important;cursor:pointer!important;
+}
+body:has(.product-layout) .z-product-buy-now:hover{background:#A98254!important;border-color:#A98254!important}
+body:has(.product-layout) .z-product-buy-now:focus-visible{outline:2px solid #292522!important;outline-offset:3px!important}
