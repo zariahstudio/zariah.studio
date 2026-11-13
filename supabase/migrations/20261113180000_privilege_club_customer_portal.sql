@@ -73,7 +73,7 @@ begin
       if (
         case
           when left(regexp_replace(coalesce((select c.phone from public.customers c where c.id=v_customer_id),''),'[^0-9]','','g'),5)='00880'
-            then substr(regexp_replace((select c.phone from public.customers c where c.id=v_customer_id),'[^0-9]','','g'),3)
+            then '0'||substr(regexp_replace((select c.phone from public.customers c where c.id=v_customer_id),'[^0-9]','','g'),6)
           else regexp_replace((select c.phone from public.customers c where c.id=v_customer_id),'[^0-9]','','g')
         end
       ) is distinct from v_digits then
@@ -84,7 +84,7 @@ begin
       from public.customers c
       where case
         when left(regexp_replace(coalesce(c.phone,''),'[^0-9]','','g'),5)='00880'
-          then substr(regexp_replace(c.phone,'[^0-9]','','g'),3)
+          then '0'||substr(regexp_replace(c.phone,'[^0-9]','','g'),6)
         when left(regexp_replace(coalesce(c.phone,''),'[^0-9]','','g'),3)='880'
           then '0'||substr(regexp_replace(c.phone,'[^0-9]','','g'),4)
         else regexp_replace(coalesce(c.phone,''),'[^0-9]','','g')
