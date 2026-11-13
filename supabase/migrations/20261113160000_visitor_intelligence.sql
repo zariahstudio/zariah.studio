@@ -53,9 +53,16 @@ begin
       min(created_at) as first_seen, max(created_at) as last_seen
     from filtered group by visitor_id
   ),
+  session_first_touch as (
+    select distinct on (visitor_id) visitor_id,
+      coalesce(referrer_host,'Direct / None') as referrer_name,
+      device_type
+    from filtered
+    order by visitor_id, created_at asc
+  ),
   referrer_rows as (
-    select coalesce(referrer_host,'Direct / None') as name,count(*)::bigint as count
-    from filtered group by coalesce(referrer_host,'Direct / None') order by count desc limit 8
+    select referrer_name as name,count(*)::bigint as count
+    from session_first_touch group by referrer_name order by count desc limit 8
   ),
   product_rows as (
     select coalesce(product_slug,page_path) as name,count(*)::bigint as count
@@ -64,7 +71,7 @@ begin
   ),
   device_rows as (
     select device_type as name,count(*)::bigint as count
-    from filtered group by device_type order by count desc
+    from session_first_touch group by device_type order by count desc
   )
   select jsonb_build_object(
     'total_events',(select count(*) from filtered),
