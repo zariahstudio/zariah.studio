@@ -64,6 +64,16 @@ if (!preg_match('/^[a-z0-9-]{1,100}$/', $slug)) {
 
 $product = z_rpc('get_product_seo_page', ['p_slug' => $slug]);
 if (!is_array($product) || empty($product['slug'])) {
+    // Keep the existing static product page and cart available if the SEO RPC
+    // is unavailable or the product has not yet been published to the catalogue.
+    $staticProductPage = __DIR__ . '/products/' . $slug . '/index.html';
+    if (is_file($staticProductPage) && is_readable($staticProductPage)) {
+        header('Content-Type: text/html; charset=UTF-8');
+        header('X-Robots-Tag: index, follow');
+        readfile($staticProductPage);
+        exit;
+    }
+
     http_response_code(404);
     header('X-Robots-Tag: noindex, nofollow');
     header('Content-Type: text/html; charset=UTF-8');
