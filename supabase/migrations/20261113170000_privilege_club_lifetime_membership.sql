@@ -49,7 +49,12 @@ on conflict(customer_id) do update
 set points_balance=excluded.points_balance,
     lifetime_points=greatest(public.customer_loyalty_accounts.lifetime_points,excluded.lifetime_points),
     lifetime_spend_bdt=excluded.lifetime_spend_bdt,
-    tier=excluded.tier,
+    tier=case
+      when (case public.customer_loyalty_accounts.tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+         > (case excluded.tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+      then public.customer_loyalty_accounts.tier
+      else excluded.tier
+    end,
     updated_at=now();
 
 create or replace function public.sync_customer_loyalty_for_order(p_order_id uuid)
