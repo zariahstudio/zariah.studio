@@ -38,13 +38,7 @@
     const remaining = PRODUCTS.filter(function (product) {
       return !taggedIds.has(String(product.id));
     });
-    // Shuffle only the untagged pool; tagged products always retain priority.
-    for (let i = remaining.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = remaining[i];
-      remaining[i] = remaining[j];
-      remaining[j] = temp;
-    }
+    // Stable catalogue order prevents the homepage from reshuffling on refresh.
     cachedSelections[config.id] = tagged.concat(remaining).slice(0, 8);
     return cachedSelections[config.id];
   }
@@ -58,6 +52,12 @@
       const grid = document.getElementById(config.gridId);
       if (!section || !grid) return;
       const matches = selectProducts(config);
+      const taggedIdsForSection = new Set(PRODUCTS.filter(function (product) {
+        const badge = String(product.badge || '').trim().toLowerCase().replace(/[\\s_-]+/g, '');
+        return config.badge === 'bestseller'
+          ? product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers'
+          : product.isFeatured === true || ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
+      }).map(function (product) { return String(product.id); }));
       section.hidden = matches.length === 0;
       if (!matches.length) { grid.replaceChildren(); return; }
       grid.innerHTML = matches.map(function (product) {
@@ -69,10 +69,10 @@
         const soldOut = Boolean(product.soldOut);
         return '<a class="z-mobile-home-card" href="' + href + '" aria-label="View ' + name + '">' +
           '<span class="z-mobile-home-media"><span class="z-mobile-home-badge">' +
-          (soldOut ? 'Sold Out' : escapeHtml(config.label)) + '</span><img src="' + image +
+          (soldOut ? 'Sold Out' : (taggedIdsForSection.has(String(product.id)) ? escapeHtml(config.label) : 'Explore More')) + '</span><img src="' + image +
           '" alt="' + name + '" loading="lazy" decoding="async"></span>' +
           '<span class="z-mobile-home-name">' + name + '</span>' +
-          '<span class="z-mobile-home-price">' + price + '</span></button>';
+          '<span class="z-mobile-home-price">' + price + '</span></a>';
       }).join('');
     }
   document.addEventListener('DOMContentLoaded', render);
