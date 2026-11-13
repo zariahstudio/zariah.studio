@@ -86,7 +86,7 @@ header('Cache-Control: public, max-age=60, s-maxage=60');
 header('Vary: Accept-Encoding');
 
 $name = (string)($product['name'] ?? 'Handbag');
-$brand = trim((string)($product['brand'] ?? '')) ?: 'Brand to be confirmed';
+$collection = (string)($product['collection_name'] ?? 'Collection');
 $type = (string)($product['product_type'] ?? 'Handbag');
 $description = trim((string)($product['description'] ?? ''));
 $seoTitle = trim((string)($product['seo_title'] ?? '')) ?: ($name . ' | ZARIAH Studio Bangladesh');
@@ -115,7 +115,7 @@ $schema = [
     'image' => array_values(array_filter(array_map(function($image) {
         return is_array($image) ? ($image['url'] ?? null) : null;
     }, $images))),
-    'brand' => ['@type' => 'Brand', 'name' => $brand],
+    'brand' => ['@type' => 'Brand', 'name' => 'ZARIAH Studio'],
     'offers' => [
         '@type' => 'Offer',
         'url' => $canonical,
@@ -128,7 +128,7 @@ $schema = [
 ];
 $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 $specs = [
-    'Brand' => $brand,
+    'Collection' => $collection,
     'Style' => $type,
     'Available colours' => (string)($product['color'] ?? ''),
     'Approx. dimensions' => (string)($product['size_text'] ?? '')
@@ -175,10 +175,10 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <div class="ann">ZARIAH STUDIO · QUIET LUXURY, BEAUTIFULLY CARRIED</div>
 <header>
 <a class="brand" href="/">ZARIAH<small>STUDIO</small></a>
-<nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a></nav>
+<nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/collections/">Collections</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a></nav>
 </header>
 <main>
-<div class="breadcrumb"><a href="/">Home</a> / <a href="/collections/all-bags/">All Bags</a> / <?= z_escape($name) ?></div>
+<div class="breadcrumb"><a href="/">Home</a> / <a href="/collections/">Collections</a> / <a href="/collections/<?= z_escape(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $collection))) ?>/"><?= z_escape($collection) ?></a> / <?= z_escape($name) ?></div>
 <section class="product-layout">
 <div class="gallery">
 <div class="main-image">
@@ -192,7 +192,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 </div>
 </div>
 <div class="product-copy">
-<span class="eyebrow"><?= z_escape($brand) ?> · <?= z_escape($type) ?></span>
+<span class="eyebrow"><?= z_escape($collection) ?> Collection · <?= z_escape($type) ?></span>
 <h1><?= z_escape($name) ?></h1>
 <div class="price">৳<?= number_format($price) ?><?php if ($comparePrice && $comparePrice > $price): ?> <del>৳<?= number_format($comparePrice) ?></del><?php endif; ?></div>
 <p class="description"><?= z_escape($description) ?></p>
@@ -207,7 +207,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <?php endif; ?>
 <a class="order-btn z-wa-enquire" style="background:transparent;color:var(--ink);border:1px solid var(--line);margin-top:10px" href="https://wa.me/8801642779056?text=<?= rawurlencode('Hello ZARIAH Studio, I would like to enquire about ' . $name . '.') ?>">Enquire on WhatsApp</a>
 <p class="note">For more product details, colour availability or ordering assistance, contact our team.</p>
-<a class="back-link" href="/collections/all-bags/">← Browse All Bags</a>
+<a class="back-link" href="/collections/<?= z_escape(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $collection))) ?>/">← Explore <?= z_escape($collection) ?> Collection</a>
 </div>
 </section>
 <section class="more"><div class="eyebrow">Continue exploring</div><h2>Discover More Bags</h2><a href="/collections/all-bags/">View All Bags →</a></section>
