@@ -391,11 +391,22 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
  button.textContent='CONNECTING SECURE CHECKOUT…';
  try{
    await window.ZARIAH_LOAD_SUPABASE();
-   if(!window.supabase?.createClient||!window.ZARIAH_SUPABASE_CONFIG){
-     throw new Error('Secure checkout is temporarily unavailable.');
+   // Recovery for deployments where the separate storefront-config.js asset is stale or missing.
+   // This is the public browser publishable key; database access remains protected by RLS / Edge Function.
+   if(!window.ZARIAH_SUPABASE_CONFIG){
+     window.ZARIAH_SUPABASE_CONFIG=Object.freeze({
+       url:'https://keuqvqnhxlpsglsjfopd.supabase.co',
+       publishableKey:'sb_publishable_xOChFWtLlhLN_y8inW_nvQ__rX-zpno'
+     });
+   }
+   if(!window.supabase||typeof window.supabase.createClient!=='function'){
+     throw new Error('Checkout service could not initialize. Please refresh and try again.');
+   }
+   const cfg=window.ZARIAH_SUPABASE_CONFIG;
+   if(!cfg.url||!cfg.publishableKey){
+     throw new Error('Checkout configuration is incomplete. Please contact Customer Support.');
    }
    button.textContent='SECURELY PLACING ORDER…';
-   const cfg=window.ZARIAH_SUPABASE_CONFIG;
    const client=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
    function createCheckoutIdempotencyKey(){
      // randomUUID() is not implemented in some mobile browsers / non-secure contexts.
