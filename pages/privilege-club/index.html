@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privilege Club | ZARIAH Studio</title>
+<meta name="description" content="Access your ZARIAH Studio Privilege Club membership, tier and rewards points using your verified mobile number.">
+<link rel="canonical" href="https://www.zariahstudio.com/pages/privilege-club/"><base href="/">
+<link rel="icon" href="/images/brand/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="/zariah-supabase-loader.js"></script><script src="/storefront-config.js"></script>
+<style>
+:root{--paper:#f8f5ef;--ink:#2c2824;--muted:#81786e;--gold:#b99a6a;--line:#e6ded3;--cream:#fffdfa;--taupe:#817b74}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;font-weight:300}a{color:inherit;text-decoration:none}
+.announcement{background:var(--taupe);color:#f1dfc2;text-align:center;padding:10px;font-size:9px;letter-spacing:.18em}
+header{height:78px;padding:0 clamp(18px,5vw,70px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.brand{font:500 29px 'Cormorant Garamond',serif;letter-spacing:.15em;text-align:center}.brand small{display:block;font:8px Inter,sans-serif;letter-spacing:.35em}
+nav{display:flex;gap:24px;font-size:9px;letter-spacing:.13em;text-transform:uppercase}
+main{max-width:1050px;margin:auto;padding:50px 22px 85px}.intro{text-align:center;margin:0 auto 34px;max-width:680px}.eyebrow{font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase}
+h1{font:400 clamp(44px,7vw,68px)/1 'Cormorant Garamond',serif;margin:13px 0}.intro p{font-size:11px;line-height:1.9;color:var(--muted)}
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:28px 0 32px}.tier{background:var(--cream);border:1px solid var(--line);padding:17px 14px;text-align:center}.tier strong{display:block;font:400 25px 'Cormorant Garamond',serif}.tier small{display:block;font-size:9px;color:var(--muted);margin-top:5px}
+.login,.member{max-width:620px;margin:0 auto;background:var(--cream);border:1px solid var(--line);padding:clamp(22px,5vw,38px);box-shadow:0 16px 48px #493a250a}
+.login h2,.member h2{font:400 31px 'Cormorant Garamond',serif;margin:0 0 8px}.hint{font-size:10px;line-height:1.8;color:var(--muted);margin:0 0 22px}
+.field{margin:15px 0}.field label{display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}.field input{width:100%;min-height:49px;border:1px solid #ddd3c7;background:#fff;padding:13px;font:12px Inter,sans-serif;border-radius:0}.field input:focus{outline:1px solid var(--gold);border-color:var(--gold)}
+button{border:0;cursor:pointer}.action{width:100%;min-height:50px;background:var(--ink);color:white;font:500 9px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;padding:14px}.action:disabled{opacity:.5;cursor:wait}
+.message{display:none;margin-top:15px;padding:13px;background:#f5f0e8;border-left:2px solid var(--gold);font-size:10px;line-height:1.7;color:#675d52}.message.show{display:block}
+.member{display:none}.member.show{display:block}.member-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:19px}.member-id{font-size:9px;letter-spacing:.12em;color:var(--muted);margin-top:6px}.tier-pill{display:inline-block;padding:8px 12px;background:#f2e7d2;color:#795a31;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.member-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.stat{background:#f7f3ed;padding:15px 12px}.stat small{display:block;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.stat strong{display:block;font:400 23px 'Cormorant Garamond',serif;margin-top:6px}
+.progress{margin:20px 0;padding:17px;background:#faf7f2}.progress-label{display:flex;justify-content:space-between;gap:12px;font-size:9px;color:var(--muted);margin-bottom:9px}.bar{height:5px;background:#e8e0d5}.bar span{display:block;height:100%;background:var(--gold);width:0}.history{margin-top:23px}.history h3{font:400 25px 'Cormorant Garamond',serif}.history table{width:100%;border-collapse:collapse;font-size:9px}.history th,.history td{text-align:left;padding:11px 7px;border-bottom:1px solid var(--line)}.history th{font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.signout{margin-top:22px;background:transparent;border:1px solid var(--line);padding:11px 15px;font:9px Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size:9px;color:var(--muted)}
+@media(max-width:700px){header{height:auto;min-height:72px;display:block;padding:12px;text-align:center}nav{justify-content:center;gap:14px;margin-top:10px;flex-wrap:wrap}.tiers{grid-template-columns:repeat(2,1fr)}.member-stats{grid-template-columns:1fr 1fr}.member-stats .stat:last-child{grid-column:1/-1}.member-head{align-items:center}.history{overflow-x:auto}.history table{min-width:420px}}
+</style>
+</head>
+<body>
+<div class="announcement">A MORE PERSONAL WAY TO SHOP · ZARIAH PRIVILEGE CLUB</div>
+<header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/collections/all-bags/">Shop Bags</a><a href="/pages/track-order/">Track Order</a><a href="/pages/contact/">Contact</a></nav></header>
+<main>
+<section class="intro"><div class="eyebrow">ZARIAH STUDIO MEMBERSHIP</div><h1>Privilege Club</h1><p>Every completed purchase brings you closer to a higher membership. Sign in with the mobile number used for your ZARIAH orders to view your membership card, qualifying spend and points.</p></section>
+<section class="tiers" aria-label="Membership tiers">
+<div class="tier"><strong>Bronze</strong><small>Starting tier</small><small>৳0+</small></div>
+<div class="tier"><strong>Silver</strong><small>Lifetime tier</small><small>৳5,000+</small></div>
+<div class="tier"><strong>Gold</strong><small>Lifetime tier</small><small>৳15,000+</small></div>
+<div class="tier"><strong>VIP</strong><small>Lifetime tier</small><small>৳30,000+</small></div>
+</section>
+<section class="login" id="loginPanel">
+<h2>Access your membership</h2><p class="hint">Enter the Bangladesh mobile number used when placing your order. We will send a one-time verification code. Your membership details are shown only after the number is verified.</p>
+<div class="field"><label for="phone">Mobile number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="16"></div>
+<button class="action" id="sendOtp">Send verification code</button>
+<div id="otpWrap" hidden><div class="field"><label for="otp">6-digit verification code</label><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"></div><button class="action" id="verifyOtp">Verify & view membership</button></div>
+<div class="message" id="message" role="status" aria-live="polite"></div>
+</section>
+<section class="member" id="memberPanel" aria-live="polite">
+<div class="member-head"><div><div class="eyebrow">ZARIAH STUDIO · PRIVILEGE CLUB</div><h2 id="memberName">Member</h2><div class="member-id" id="memberId"></div></div><span class="tier-pill" id="memberTier">Bronze</span></div>
+<div class="member-stats"><div class="stat"><small>Available points</small><strong id="points">0</strong></div><div class="stat"><small>Lifetime points earned</small><strong id="lifetimePoints">0</strong></div><div class="stat"><small>Qualifying spend</small><strong id="spend">৳0</strong></div></div>
+<div class="progress"><div class="progress-label"><span id="progressLabel">Next tier</span><strong id="progressValue">৳0 / ৳5,000</strong></div><div class="bar"><span id="progressBar"></span></div></div>
+<div class="history"><h3>Points activity</h3><table><thead><tr><th>Date</th><th>Qualifying spend</th><th>Points</th><th>Status</th></tr></thead><tbody id="historyRows"><tr><td colspan="4">No activity yet.</td></tr></tbody></table></div>
+<button class="signout" id="signOut">Sign out</button>
+</section>
+</main>
+<footer>© ZARIAH Studio — a brand of InsightBridge</footer>
+<script>
+(function(){
+'use strict';
+var client=null, session=null;
+var $=function(id){return document.getElementById(id)};
+var showMessage=function(text){$('message').textContent=text;$('message').classList.add('show')};
+var clearMessage=function(){$('message').textContent='';$('message').classList.remove('show')};
+var normalisePhone=function(value){var digits=String(value||'').replace(/[^0-9]/g,'');if(digits.indexOf('00880')===0)digits=digits.slice(2);if(digits.indexOf('880')===0)digits=digits.slice(3);if(digits.length===10&&digits.charAt(0)==='1')digits='0'+digits;return digits};
+var toE164=function(value){var digits=normalisePhone(value);return /^01[3-9][0-9]{8}$/.test(digits)?'+88'+digits:null};
+var money=function(value){return '৳'+Number(value||0).toLocaleString('en-BD')};
+var tiers=[{key:'bronze',label:'Bronze',next:5000},{key:'silver',label:'Silver',next:15000},{key:'gold',label:'Gold',next:30000},{key:'vip',label:'VIP',next:null}];
+function render(data){
+if(!data||!data.found){$('loginPanel').style.display='block';$('memberPanel').classList.remove('show');showMessage(data&&data.message?data.message:'No matching membership profile was found. Use the mobile number from your order or contact support.');return}
+$('loginPanel').style.display='none';$('memberPanel').classList.add('show');
+$('memberName').textContent=data.member_name||'ZARIAH Member';$('memberId').textContent='MEMBER ID · '+data.member_id;
+$('memberTier').textContent=(data.tier||'bronze').toUpperCase();$('points').textContent=Number(data.points_balance||0).toLocaleString('en-BD');$('lifetimePoints').textContent=Number(data.lifetime_points||0).toLocaleString('en-BD');$('spend').textContent=money(data.qualifying_spend_bdt);
+var current=tiers.findIndex(t=>t.key===data.tier);if(current<0)current=0;var next=tiers[current+1];var spend=Number(data.qualifying_spend_bdt||0);
+$('progressLabel').textContent=next?'Progress to '+next.label:'Highest membership tier achieved';
+$('progressValue').textContent=next?money(spend)+' / '+money(next.next):'VIP · Lifetime tier';
+$('progressBar').style.width=next?Math.min(100,spend/next.next*100)+'%':'100%';
+var rows=(data.transactions||[]).slice(0,20);
+$('historyRows').innerHTML=rows.length?rows.map(function(tx){var date=new Date(tx.date).toLocaleDateString('en-GB');var pts=Number(tx.points||0);return '<tr><td>'+date+'</td><td>'+money(tx.spend_bdt)+'</td><td>'+(pts>0?'+':'')+pts+'</td><td>'+(tx.status==='earned'?'Earned':'Reversed')+'</td></tr>'}).join(''):'<tr><td colspan="4">No points activity yet.</td></tr>';
+}
+async function loadClient(){if(client)return client;var cfg=window.ZARIAH_SUPABASE_CONFIG||{};if(!cfg.url||!cfg.publishableKey)throw new Error('Membership access is not configured yet. Please contact support.');var sdk=await window.ZARIAH_LOAD_SUPABASE();client=sdk.createClient(cfg.url,cfg.publishableKey);return client}
+$('sendOtp').addEventListener('click',async function(){clearMessage();var phone=toE164($('phone').value);if(!phone){showMessage('Enter a valid Bangladesh mobile number, for example 01XXXXXXXXX.');return}var button=$('sendOtp');button.disabled=true;button.textContent='Sending code…';try{var db=await loadClient();var result=await db.auth.signInWithOtp({phone:phone});if(result.error)throw result.error;$('otpWrap').hidden=false;showMessage('A verification code has been requested for '+phone+'. Enter the code to continue.')}catch(error){showMessage(error.message||'Unable to send the code. Please try again later.')}finally{button.disabled=false;button.textContent='Send verification code'}});
+$('verifyOtp').addEventListener('click',async function(){clearMessage();var phone=toE164($('phone').value),token=$('otp').value.replace(/[^0-9]/g,'');if(!phone||!/^[0-9]{6}$/.test(token)){showMessage('Enter the 6-digit code sent to your mobile number.');return}var button=$('verifyOtp');button.disabled=true;button.textContent='Verifying…';try{var db=await loadClient();var verified=await db.auth.verifyOtp({phone:phone,token:token,type:'sms'});if(verified.error)throw verified.error;session=verified.data.session;var profile=await db.rpc('get_my_privilege_club');if(profile.error)throw profile.error;render(profile.data)}catch(error){showMessage(error.message||'Verification failed. Check the code and try again.')}finally{button.disabled=false;button.textContent='Verify & view membership'}});
+$('signOut').addEventListener('click',async function(){if(client)await client.auth.signOut();session=null;$('memberPanel').classList.remove('show');$('loginPanel').style.display='block';$('otpWrap').hidden=true;$('otp').value='';clearMessage()});
+})();
+</script>
+</body></html>
