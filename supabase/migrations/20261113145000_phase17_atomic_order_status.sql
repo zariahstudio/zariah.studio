@@ -1,6 +1,15 @@
 -- Phase 1: atomic order status, customer tracking, history and activity update.
+-- Expand the tracking-event constraint to match the already-supported order status.
 -- Additive RPC. The existing orders sync and inventory transition triggers remain authoritative.
 begin;
+
+alter table public.order_tracking_events
+  drop constraint if exists order_tracking_events_status_check;
+alter table public.order_tracking_events
+  add constraint order_tracking_events_status_check
+  check (status = any (array[
+    'new','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned'
+  ]::text[]));
 
 create or replace function public.update_order_status(
   p_order_id uuid,
@@ -22,7 +31,7 @@ begin
   if auth.uid() is null or not public.is_staff_or_admin() then
     raise exception 'You are not authorised to update orders.' using errcode = '42501';
   end if;
-  if p_order_id is null or p_new_status not in
+  if p_order_id is null or p_new_status is null or p_new_status not in
     ('new','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned') then
     raise exception 'Invalid order status update.' using errcode = '22023';
   end if;
