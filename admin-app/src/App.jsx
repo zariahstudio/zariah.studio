@@ -746,7 +746,8 @@ function App() {
         {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} onReviewPayment={reviewPayment} saving={saving} /> }
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
-        {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}\n        {section === 'fraud' && <FraudRiskPanel orders={orders} onRefresh={loadOrders} loading={dataLoading} />}
+        {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
+        {section === 'fraud' && <FraudRiskPanel orders={orders} onRefresh={loadOrders} loading={dataLoading} />}
 
       </div>
     </main>
