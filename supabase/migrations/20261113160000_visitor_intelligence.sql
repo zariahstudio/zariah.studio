@@ -52,6 +52,7 @@ begin
     raise exception 'Invalid visitor event.' using errcode='22023';
   end if;
 
+  perform pg_advisory_xact_lock(hashtextextended(p_visitor_id::text, 0));
   select count(*) into v_recent_count
   from public.visitor_events
   where visitor_id=p_visitor_id
