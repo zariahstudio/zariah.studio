@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, Layers3, Warehouse, ShoppingBag, Users,
   CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus,
   RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload, Receipt,
-  Printer, MessageCircle, Award, TrendingUp, ShieldCheck, Eye, AlertTriangle
+  Printer, MessageCircle, Award, TrendingUp, Eye, AlertTriangle
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
 import { processImageFile } from './imageProcessing';
