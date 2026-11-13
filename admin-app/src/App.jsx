@@ -1078,13 +1078,16 @@ function paidTotal(order) {
 }
 
 
-function FraudRiskPanel({ orders, onRefresh, loading }) {
+function FraudRiskPanel({ orders, onRefresh }) {
   const [view, setView] = useState('courier');
   const [phone, setPhone] = useState('');
+  const [visitorEvents, setVisitorEvents] = useState([]);
+  const [visitorLoading, setVisitorLoading] = useState(false);
+  const [visitorError, setVisitorError] = useState('');
+  const [range, setRange] = useState('7');
+  const [search, setSearch] = useState('');
   const normalized = value => String(value || '').replace(/\\D/g, '').replace(/^88/, '');
-  const matchingOrders = phone.trim()
-    ? orders.filter(order => normalized(order.customers?.phone).includes(normalized(phone)))
-    : [];
+  const matchingOrders = phone.trim() ? orders.filter(order => normalized(order.customers?.phone).includes(normalized(phone))) : [];
   const customersWithOrders = new Map();
   orders.forEach(order => {
     const key = normalized(order.customers?.phone);
@@ -1092,25 +1095,40 @@ function FraudRiskPanel({ orders, onRefresh, loading }) {
     if (!customersWithOrders.has(key)) customersWithOrders.set(key, []);
     customersWithOrders.get(key).push(order);
   });
-  const reviewCases = [...customersWithOrders.entries()].map(([key, rows]) => {
-    const cancelled = rows.filter(o => ['cancelled','returned'].includes(o.status));
-    return { key, rows, cancelled, latest: rows[0] };
-  }).filter(x => x.cancelled.length >= 2)
-    .sort((a,b) => b.cancelled.length-a.cancelled.length);
-  const totalCancelled = orders.filter(o => ['cancelled','returned'].includes(o.status)).length;
-  const uniquePhones = customersWithOrders.size;
-  const formatPhone = value => value || 'Phone unavailable';
+  const reviewCases = [...customersWithOrders.entries()].map(([key, rows]) => ({
+    key, rows, cancelled: rows.filter(o => ['cancelled','returned'].includes(o.status)), latest: rows[0]
+  })).filter(x => x.cancelled.length >= 2).sort((a,b) => b.cancelled.length-a.cancelled.length);
+  const loadVisitorEvents = async () => {
+    setVisitorLoading(true); setVisitorError('');
+    const since = new Date(Date.now() - Number(range)*86400000).toISOString();
+    const { data, error } = await supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').gte('created_at',since).order('created_at',{ascending:false}).limit(500);
+    if (error) { setVisitorError(error.message || 'Visitor event data is unavailable.'); setVisitorEvents([]); }
+    else setVisitorEvents(data || []);
+    setVisitorLoading(false);
+  };
+  useEffect(() => { if (view === 'visitors') loadVisitorEvents(); }, [view, range]);
+  const uniqueVisitors = new Set(visitorEvents.map(e=>e.visitor_id)).size;
+  const productViews = visitorEvents.filter(e=>e.event_type==='product_view').length;
+  const checkoutViews = visitorEvents.filter(e=>e.event_type==='checkout_view').length;
+  const referrers = Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const filteredEvents = visitorEvents.filter(e=>[e.page_path,e.referrer_host,e.event_type,e.device_type,e.product_slug].join(' ').toLowerCase().includes(search.toLowerCase()));
   return <section className="panel fraud-risk-panel">
-    <div className="panel-head split"><div><p className="eyebrow">STORE PROTECTION</p><h2>Fraud &amp; Risk Center</h2><p className="muted">Internal order-history signals for staff review. No automatic order blocking.</p></div><button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh</button></div>
-    <div className="fraud-tabs"><button className={view==='courier'?'active':''} onClick={()=>setView('courier')}><ShieldCheck size={15}/> Customer / Courier Check</button><button className={view==='visitors'?'active':''} onClick={()=>setView('visitors')}><Eye size={15}/> Visitor Intelligence</button></div>
+    <div className="panel-head split"><div><p className="eyebrow">STORE PROTECTION</p><h2>Fraud &amp; Risk Center</h2><p className="muted">Internal order-history signals and first-party visitor activity.</p></div><button className="secondary" onClick={view==='visitors'?loadVisitorEvents:onRefresh}><RefreshCw size={15}/> Refresh</button></div>
+    <div className="fraud-tabs"><button className={view==='courier'?'active':''} onClick={()=>setView('courier')}><ShieldCheck size={15}/> Customer Order Check</button><button className={view==='visitors'?'active':''} onClick={()=>setView('visitors')}><Eye size={15}/> Visitor Intelligence</button></div>
     {view==='courier' ? <>
-      <div className="fraud-kpis"><article><small>Unique phone numbers</small><strong>{uniquePhones}</strong></article><article><small>Cancelled / returned orders</small><strong>{totalCancelled}</strong></article><article><small>Customers needing review</small><strong>{reviewCases.length}</strong></article></div>
+      <div className="fraud-kpis"><article><small>Unique phone numbers</small><strong>{customersWithOrders.size}</strong></article><article><small>Cancelled / returned orders</small><strong>{orders.filter(o=>['cancelled','returned'].includes(o.status)).length}</strong></article><article><small>Customers needing review</small><strong>{reviewCases.length}</strong></article></div>
       <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter customer phone number"/></div></div>
-      {phone.trim() ? <div className="fraud-results">
-        <h3>Matching order history</h3>
-        {matchingOrders.length ? <><p className="muted">{matchingOrders[0].customers?.full_name || 'Customer'} · {formatPhone(matchingOrders[0].customers?.phone)} · {matchingOrders.length} order(s)</p><div className="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Order status</th><th>Payment</th></tr></thead><tbody>{matchingOrders.map(o=><tr key={o.id}><td><strong>{o.order_number}</strong></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${['cancelled','returned'].includes(o.status)?'warning':['delivered'].includes(o.status)?'live':''}`}>{o.status}</span></td><td>{o.payment_status || '—'}</td></tr>)}</tbody></table></div><p className="fraud-disclaimer">This is ZARIAH's internal order history only. It does not include external courier delivery records or a third-party fraud score.</p></> : <div className="empty">No matching customer order history found.</div>}
-      </div> : <div className="fraud-review-list"><h3>Repeated cancellation / return history</h3>{reviewCases.length ? <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Total orders</th><th>Cancelled / returned</th><th>Latest order</th></tr></thead><tbody>{reviewCases.map(x=><tr key={x.key}><td>{x.latest.customers?.full_name || '—'}</td><td>{x.latest.customers?.phone || '—'}</td><td>{x.rows.length}</td><td><span className="status warning">{x.cancelled.length}</span></td><td>{x.latest.order_number}</td></tr>)}</tbody></table></div>:<div className="empty">No customers currently meet this review rule.</div>}<p className="fraud-disclaimer">Review rule: at least 2 orders with status cancelled or returned. This is a review signal, not proof of fraud.</p></div>}
-    </> : <div className="visitor-placeholder"><Eye size={28}/><h3>Visitor tracking is not connected yet</h3><p>There is no dedicated visitor/session event table in the current production schema. This panel will show real visitor metrics only after a privacy-conscious tracking pipeline and retention policy are implemented.</p><ul><li>Unique visitors and sessions</li><li>Referrer, device category and viewed products</li><li>Abandoned checkout events</li><li>Suspicious repeated activity signals</li></ul><span className="status warning">Not collecting visitor data yet</span></div>}
+      {phone.trim() ? <div className="fraud-results"><h3>Matching order history</h3>{matchingOrders.length ? <><p className="muted">{matchingOrders[0].customers?.full_name || 'Customer'} · {matchingOrders[0].customers?.phone} · {matchingOrders.length} order(s)</p><div className="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Order status</th><th>Payment</th></tr></thead><tbody>{matchingOrders.map(o=><tr key={o.id}><td><strong>{o.order_number}</strong></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${['cancelled','returned'].includes(o.status)?'warning':o.status==='delivered'?'live':''}`}>{o.status}</span></td><td>{o.payment_status || '—'}</td></tr>)}</tbody></table></div></>:<div className="empty">No matching customer order history found.</div>}</div>:<div className="fraud-review-list"><h3>Repeated cancellation / return history</h3>{reviewCases.length?<div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Total orders</th><th>Cancelled / returned</th><th>Latest order</th></tr></thead><tbody>{reviewCases.map(x=><tr key={x.key}><td>{x.latest.customers?.full_name||'—'}</td><td>{x.latest.customers?.phone||'—'}</td><td>{x.rows.length}</td><td><span className="status warning">{x.cancelled.length}</span></td><td>{x.latest.order_number}</td></tr>)}</tbody></table></div>:<div className="empty">No customers currently meet this review rule.</div>}<p className="fraud-disclaimer">Two or more cancelled/returned orders trigger a manual review signal only; this is not proof of fraud.</p></div>}
+    </> : <>
+      <div className="visitor-toolbar"><div className="visitor-range">{[['1','Today'],['7','7 Days'],['30','30 Days'],['all','All Time']].map(([v,label])=><button key={v} className={range===v?'active':''} onClick={()=>setRange(v)}>{label}</button>)}</div><button className="secondary small" onClick={loadVisitorEvents} disabled={visitorLoading}><RefreshCw size={14}/> Refresh logs</button></div>
+      {visitorError ? <div className="visitor-empty"><AlertTriangle size={24}/><h3>Visitor tracking is awaiting database setup</h3><p>{visitorError.includes('visitor_events')?'Apply the visitor-intelligence migration before visitor data can appear.':visitorError}</p><small>No existing visitor data has been changed.</small></div> : <>
+        <div className="fraud-kpis visitor-kpis"><article><small>Unique visitors</small><strong>{uniqueVisitors.toLocaleString()}</strong></article><article><small>Tracked events</small><strong>{visitorEvents.length.toLocaleString()}</strong></article><article><small>Product views</small><strong>{productViews.toLocaleString()}</strong></article><article><small>Checkout page visits</small><strong>{checkoutViews.toLocaleString()}</strong></article></div>
+        <div className="visitor-sources"><div className="panel-head"><h3>Top referring sources</h3><small>Based on recorded events</small></div>{referrers.length?referrers.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count}</strong></div>):<p className="muted">No referrer data in this period.</p>}</div>
+        <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search path, referrer, event or product"/></div><span className="muted tiny">Latest 500 events</span></div>
+        {visitorLoading?<Loading/>:<div className="table-wrap"><table><thead><tr><th>Visitor</th><th>Page / Product</th><th>Referrer</th><th>Device</th><th>Event</th><th>Timestamp</th></tr></thead><tbody>{filteredEvents.map(e=><tr key={e.id}><td><code>{e.visitor_id.slice(0,8)}…</code></td><td><strong>{e.page_path}</strong>{e.product_slug&&<small className="muted" style={{display:'block'}}>{e.product_slug}</small>}</td><td>{e.referrer_host||'Direct / None'}</td><td><span className="status">{e.device_type}</span></td><td>{e.event_type.replace('_',' ')}</td><td>{new Date(e.created_at).toLocaleString('en-GB')}</td></tr>)}</tbody></table>{filteredEvents.length===0&&<div className="empty">No visitor events found for this filter.</div>}</div>}
+        <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and not linked to customer identities.</p>
+      </>}
+    </>}
   </section>;
 }
 
