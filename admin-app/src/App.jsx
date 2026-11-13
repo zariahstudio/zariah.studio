@@ -1100,8 +1100,9 @@ function FraudRiskPanel({ orders, onRefresh }) {
   })).filter(x => x.cancelled.length >= 2).sort((a,b) => b.cancelled.length-a.cancelled.length);
   const loadVisitorEvents = async () => {
     setVisitorLoading(true); setVisitorError('');
-    const since = new Date(Date.now() - Number(range)*86400000).toISOString();
-    const { data, error } = await supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').gte('created_at',since).order('created_at',{ascending:false}).limit(500);
+    let query = supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').order('created_at',{ascending:false}).limit(500);
+    if (range !== 'all') query = query.gte('created_at', new Date(Date.now() - Number(range)*86400000).toISOString());
+    const { data, error } = await query;
     if (error) { setVisitorError(error.message || 'Visitor event data is unavailable.'); setVisitorEvents([]); }
     else setVisitorEvents(data || []);
     setVisitorLoading(false);
