@@ -152,7 +152,9 @@ footer{background:#f8f5ef}
 @media(prefers-reduced-motion:reduce){.submit{transition:none}}
 
  
-/* Kinbo-style checkout composition: delivery choice, payment, then delivery details. */
+.row.first-order-discount-row{color:#286b48}
+.row.first-order-discount-row strong{color:#286b48}
+\n/* Kinbo-style checkout composition: delivery choice, payment, then delivery details. */
 .delivery-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .delivery-choice{position:relative;display:flex;align-items:center;gap:12px;min-height:82px;padding:15px 14px;border:1px solid #dce2e7;border-radius:14px;background:#f7fafc;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s}
 .delivery-choice input{width:18px;min-height:18px;flex:0 0 18px;margin:0;accent-color:#216b49}
@@ -268,6 +270,7 @@ root.innerHTML=`
   <h2>Your Order</h2><p class="summary-subtitle">${cart.length} ${cart.length===1?'item':'items'} selected · Review before placing your order</p>
   <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta">Quantity: ${Number(item.qty)||1}</div></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
   <div class="row"><span>Product Subtotal</span><strong>${money(subtotal)}</strong></div>
+  <div class="row first-order-discount-row"><span>First Order Discount</span><strong id="firstOrderDiscountDisplay">Check with phone number</strong></div>
   <div class="row"><span>Delivery Charge</span><strong id="deliveryFeeDisplay">Select location</strong></div>
   <div class="row total"><strong>Total Payable</strong><strong id="checkoutTotalDisplay">${money(subtotal)}</strong></div>
   <p class="summary-note" id="deliverySummaryNote">Select your delivery location to calculate the delivery charge. Orders of ৳2,500 or more get free delivery.</p>
@@ -278,13 +281,49 @@ const deliveryZoneInputs=[...document.querySelectorAll('input[name="deliveryZone
 const deliveryFeeDisplay=document.getElementById('deliveryFeeDisplay');
 const checkoutTotalDisplay=document.getElementById('checkoutTotalDisplay');
 const deliverySummaryNote=document.getElementById('deliverySummaryNote');
+const firstOrderDiscountDisplay=document.getElementById('firstOrderDiscountDisplay');
+let firstOrderDiscount=0, checkedOfferPhone='', offerTimer=null, offerRequest=0;
+async function checkFirstOrderOffer(){
+ const phoneInput=document.getElementById('phone');
+ const phone=String(phoneInput.value||'').replace(/[\\s()-]/g,'');
+ if(!/^(?:\\+?88)?01[3-9]\\d{8}$/.test(phone))return false;
+ if(checkedOfferPhone===phone)return true;
+ const requestId=++offerRequest;
+ try{
+  const cfg=window.ZARIAH_SUPABASE_CONFIG;
+  if(!cfg?.url||!cfg?.publishableKey)throw new Error('offer check unavailable');
+  const res=await fetch(cfg.url+'/functions/v1/zariah-public-orders',{
+   method:'POST',headers:{'Content-Type':'application/json','apikey':cfg.publishableKey},
+   body:JSON.stringify({action:'first_order_offer',phone})
+  });
+  const payload=await res.json().catch(()=>({}));
+  if(requestId!==offerRequest||phone!==String(phoneInput.value||'').replace(/[\\s()-]/g,''))return false;
+  if(!res.ok||!payload.offer)throw new Error('offer check unavailable');
+  firstOrderDiscount=payload.offer.eligible?Math.min(Number(payload.offer.discount_bdt)||200,subtotal):0;
+  checkedOfferPhone=phone;
+  firstOrderDiscountDisplay.textContent=firstOrderDiscount?'-'+money(firstOrderDiscount):'Not eligible';
+  calculateDelivery();
+  return true;
+ }catch(_){
+  if(requestId===offerRequest){firstOrderDiscount=0;checkedOfferPhone='';firstOrderDiscountDisplay.textContent='Checked at order confirmation';calculateDelivery();}
+  return false;
+ }
+}
+const phoneOfferInput=document.getElementById('phone');
+phoneOfferInput.addEventListener('input',()=>{
+ clearTimeout(offerTimer);offerRequest++;checkedOfferPhone='';firstOrderDiscount=0;
+ firstOrderDiscountDisplay.textContent='Enter phone to check';calculateDelivery();
+ const digits=String(phoneOfferInput.value||'').replace(/[\\s()-]/g,'');
+ if(/^(?:\\+?88)?01[3-9]\\d{8}$/.test(digits))offerTimer=setTimeout(checkFirstOrderOffer,650);
+});
+phoneOfferInput.addEventListener('blur',checkFirstOrderOffer);
 function selectedDeliveryZone(){return document.querySelector('input[name="deliveryZone"]:checked')?.value||''}
 function calculateDelivery(){
  const zone=selectedDeliveryZone();
  const free=subtotal>=2500;
  const fee=free?0:(zone==='inside_chattogram'?70:zone==='outside_chattogram'?150:null);
  deliveryFeeDisplay.textContent=fee===null?'Select location':fee===0?'Free':money(fee);
- checkoutTotalDisplay.textContent=money(subtotal+(fee||0));
+ checkoutTotalDisplay.textContent=money(subtotal-firstOrderDiscount+(fee||0));
  deliverySummaryNote.textContent=free?'You qualify for free delivery on orders of ৳2,500 or more.':fee===null?'Select your delivery location to calculate the delivery charge.':(zone==='inside_chattogram'?'Inside Chattogram City delivery: ৳70.':'Outside Chattogram City delivery: ৳150.')+' Delivery is free on product subtotal of ৳2,500 or more.';
  document.querySelectorAll('.delivery-choice').forEach(card=>card.classList.toggle('is-selected',card.querySelector('input')?.checked===true));
 }
@@ -368,7 +407,7 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      <p>Your order has been saved successfully. Our team will review it and contact you if any delivery details need confirmation.</p>
      <p style="font-weight:600;color:#292522;margin:20px 0 6px">Order Number</p>
      <p style="font-size:20px;font-weight:600;color:#292522;margin:0">${order.order_number}</p>
-     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt)}</strong><br>Delivery Charge: <strong>${Number(order.delivery_fee_bdt)===0?'Free':money(order.delivery_fee_bdt)}</strong><br>Total Payable: <strong>${money(order.total_bdt)}</strong></p>
+     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt)}</strong><br>First Order Discount: <strong>${Number(order.discount_bdt)>0?'-'+money(order.discount_bdt):'Not applied'}</strong><br>Delivery Charge: <strong>${Number(order.delivery_fee_bdt)===0?'Free':money(order.delivery_fee_bdt)}</strong><br>Total Payable: <strong>${money(order.total_bdt)}</strong></p>
      <p style="margin:8px 0">Selected payment method: <strong>${selectedPayment}</strong></p>
      <p style="font-size:10px;color:#786f65">Any mobile payment remains pending until verified by our team. We will confirm the final amount before payment.</p>
      <div class="order-success-actions">
