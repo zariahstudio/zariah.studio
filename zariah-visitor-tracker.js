@@ -57,7 +57,7 @@
     if(target&&target.nodeType===3)target=target.parentElement;
     var link=target&&target.closest?target.closest('a[href]'):null;
     if(!link)return;
-    var match=(link.getAttribute('href')||'').match(/(?:^|\\/)products\\/([^/?#]+)/i);
+    var match=(link.getAttribute('href')||'').match(/(?:^|\/)products\/([^/?#]+)/i);
     if(!match)return;
     var slug=match[1].slice(0,160);
     if(activeRecord){activeRecord('product_click',slug).catch(function(){});}
