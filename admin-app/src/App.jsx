@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, Layers3, Warehouse, ShoppingBag, Users,
   CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus,
   RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload, Receipt,
-  Printer, MessageCircle, Award, TrendingUp
+  Printer, MessageCircle, Award, TrendingUp, ShieldCheck, Eye, AlertTriangle
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
 import { processImageFile } from './imageProcessing';
@@ -711,7 +711,7 @@ function App() {
 
   const nav = [
     ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
-    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['payments','Payments',CreditCard]
+    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Fraud & Risk Center',ShieldCheck],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
 
@@ -746,7 +746,7 @@ function App() {
         {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} onReviewPayment={reviewPayment} saving={saving} /> }
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
-        {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
+        {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}\n        {section === 'fraud' && <FraudRiskPanel orders={orders} onRefresh={loadOrders} loading={dataLoading} />}
 
       </div>
     </main>
@@ -1074,6 +1074,43 @@ function CustomerEditor({ customer, saving, onClose, onSave }) {
 
 function paidTotal(order) {
   return (order.payments || []).filter(p => p.status === 'verified').reduce((sum, p) => sum + Number(p.amount_bdt || 0), 0);
+}
+
+
+function FraudRiskPanel({ orders, onRefresh, loading }) {
+  const [view, setView] = useState('courier');
+  const [phone, setPhone] = useState('');
+  const normalized = value => String(value || '').replace(/\\D/g, '').replace(/^88/, '');
+  const matchingOrders = phone.trim()
+    ? orders.filter(order => normalized(order.customers?.phone).includes(normalized(phone)))
+    : [];
+  const customersWithOrders = new Map();
+  orders.forEach(order => {
+    const key = normalized(order.customers?.phone);
+    if (!key) return;
+    if (!customersWithOrders.has(key)) customersWithOrders.set(key, []);
+    customersWithOrders.get(key).push(order);
+  });
+  const reviewCases = [...customersWithOrders.entries()].map(([key, rows]) => {
+    const cancelled = rows.filter(o => ['cancelled','returned'].includes(o.status));
+    return { key, rows, cancelled, latest: rows[0] };
+  }).filter(x => x.cancelled.length >= 2)
+    .sort((a,b) => b.cancelled.length-a.cancelled.length);
+  const totalCancelled = orders.filter(o => ['cancelled','returned'].includes(o.status)).length;
+  const uniquePhones = customersWithOrders.size;
+  const formatPhone = value => value || 'Phone unavailable';
+  return <section className="panel fraud-risk-panel">
+    <div className="panel-head split"><div><p className="eyebrow">STORE PROTECTION</p><h2>Fraud &amp; Risk Center</h2><p className="muted">Internal order-history signals for staff review. No automatic order blocking.</p></div><button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh</button></div>
+    <div className="fraud-tabs"><button className={view==='courier'?'active':''} onClick={()=>setView('courier')}><ShieldCheck size={15}/> Customer / Courier Check</button><button className={view==='visitors'?'active':''} onClick={()=>setView('visitors')}><Eye size={15}/> Visitor Intelligence</button></div>
+    {view==='courier' ? <>
+      <div className="fraud-kpis"><article><small>Unique phone numbers</small><strong>{uniquePhones}</strong></article><article><small>Cancelled / returned orders</small><strong>{totalCancelled}</strong></article><article><small>Customers needing review</small><strong>{reviewCases.length}</strong></article></div>
+      <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter customer phone number"/></div></div>
+      {phone.trim() ? <div className="fraud-results">
+        <h3>Matching order history</h3>
+        {matchingOrders.length ? <><p className="muted">{matchingOrders[0].customers?.full_name || 'Customer'} · {formatPhone(matchingOrders[0].customers?.phone)} · {matchingOrders.length} order(s)</p><div className="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Amount</th><th>Order status</th><th>Payment</th></tr></thead><tbody>{matchingOrders.map(o=><tr key={o.id}><td><strong>{o.order_number}</strong></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${['cancelled','returned'].includes(o.status)?'warning':['delivered'].includes(o.status)?'live':''}`}>{o.status}</span></td><td>{o.payment_status || '—'}</td></tr>)}</tbody></table></div><p className="fraud-disclaimer">This is ZARIAH's internal order history only. It does not include external courier delivery records or a third-party fraud score.</p></> : <div className="empty">No matching customer order history found.</div>}
+      </div> : <div className="fraud-review-list"><h3>Repeated cancellation / return history</h3>{reviewCases.length ? <div className="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Total orders</th><th>Cancelled / returned</th><th>Latest order</th></tr></thead><tbody>{reviewCases.map(x=><tr key={x.key}><td>{x.latest.customers?.full_name || '—'}</td><td>{x.latest.customers?.phone || '—'}</td><td>{x.rows.length}</td><td><span className="status warning">{x.cancelled.length}</span></td><td>{x.latest.order_number}</td></tr>)}</tbody></table></div>:<div className="empty">No customers currently meet this review rule.</div>}<p className="fraud-disclaimer">Review rule: at least 2 orders with status cancelled or returned. This is a review signal, not proof of fraud.</p></div>}
+    </> : <div className="visitor-placeholder"><Eye size={28}/><h3>Visitor tracking is not connected yet</h3><p>There is no dedicated visitor/session event table in the current production schema. This panel will show real visitor metrics only after a privacy-conscious tracking pipeline and retention policy are implemented.</p><ul><li>Unique visitors and sessions</li><li>Referrer, device category and viewed products</li><li>Abandoned checkout events</li><li>Suspicious repeated activity signals</li></ul><span className="status warning">Not collecting visitor data yet</span></div>}
+  </section>;
 }
 
 function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt, onReviewPayment, saving }) {
