@@ -6,6 +6,7 @@ RewriteEngine On
 # Legacy brand-owned collection URLs now resolve to the multi-brand catalogue.
 RewriteRule ^collections/?$ /collections/all-bags/ [R=301,L,NE]
 RewriteRule ^collections/(essence|signature|noir)/?$ /collections/all-bags/ [R=301,L,NE]
+RewriteRule ^collections/(?!all-bags/?$|new-arrivals/?$|bestsellers/?$)[^/]+/?$ /collections/all-bags/ [R=301,L,NE]
 
 # Route product URLs before Apache/LiteSpeed resolves existing product folders
 # and their static index.html files. Query parameters (UTM etc.) are preserved.
