@@ -355,6 +355,7 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
    document.getElementById('phone').setCustomValidity('');
    return;
  }
+ await checkFirstOrderOffer();
  button.disabled=true;
  button.textContent='CONNECTING SECURE CHECKOUT…';
  try{
