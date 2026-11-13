@@ -27,20 +27,38 @@
   var device=/ipad|tablet/i.test(ua)?'tablet':/mobile|android|iphone/i.test(ua)?'mobile':'desktop';
   var referrerHost='';
   try{if(d.referrer){var u=new URL(d.referrer);if(u.origin!==w.location.origin)referrerHost=u.hostname;}}catch(e){}
-  var sent=false, activeRecord=null, queuedEvents=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
+  var activeRecord=null, queuedEvents=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
+  var sending=false, sendAttempts=0, maxSendAttempts=3;
+  function diagnostic(status,type,error){
+    var detail={status:status,eventType:type||eventType,pagePath:path};
+    if(error){detail.code=error.code||null;detail.message=String(error.message||error).slice(0,180);}
+    try{w.dispatchEvent(new CustomEvent('zariah:analytics-status',{detail:detail}));}catch(e){}
+    if(w.console&&typeof w.console.warn==='function')w.console.warn('[ZARIAH analytics]',detail);
+  }
+  function recordWithRetry(record,type,slug,attempt){
+    return record(type,slug).then(function(result){
+      if(result&&result.error)throw result.error;
+      diagnostic('sent',type);
+      return result;
+    }).catch(function(error){
+      if(attempt>=2){diagnostic('failed',type,error);throw error;}
+      return new Promise(function(resolve){w.setTimeout(resolve,500*(attempt+1));})
+        .then(function(){return recordWithRetry(record,type,slug,attempt+1);});
+    });
+  }
   w.ZARIAH_TRACK_EVENT=function(type,slug){
     if(!/^(product_view|product_click|cart_add)$/.test(type))return false;
     var item={type:type,slug:String(slug||'').slice(0,160)};
-    if(activeRecord){activeRecord(item.type,item.slug).catch(function(){});}
+    if(activeRecord){recordWithRetry(activeRecord,item.type,item.slug,0).catch(function(){});}
     else queuedEvents.push(item);
     return true;
   };
   function send(){
-    if(sent)return;
-    sent=true;
+    if(sending||sendAttempts>=maxSendAttempts)return;
+    sending=true;sendAttempts++;
     w.ZARIAH_LOAD_SUPABASE().then(function(sdk){
       var config=w.ZARIAH_SUPABASE_CONFIG||{};
-      if(!config.url||!config.publishableKey)return;
+      if(!config.url||!config.publishableKey)throw new Error('Supabase storefront config is missing.');
       var client=sdk.createClient(config.url,config.publishableKey);
       function record(type,slug){
         return client.rpc('record_visitor_event',{
@@ -51,11 +69,28 @@
       activeRecord=record;
       var chain=Promise.resolve();
       if(!sessionStarted){
-        try{w.sessionStorage.setItem('zariah_visitor_started_v1','1');}catch(e){}
-        chain=record('session_start');
+        chain=recordWithRetry(record,'session_start',null,0).then(function(){
+          sessionStarted=true;
+          try{w.sessionStorage.setItem('zariah_visitor_started_v1','1');}catch(e){}
+        });
       }
-      return chain.then(function(){return record(eventType);}).then(function(){var events=queuedEvents.splice(0);return events.reduce(function(p,item){return p.then(function(){return record(item.type,item.slug);});},Promise.resolve());});
-    }).catch(function(){});
+      return chain.then(function(){return recordWithRetry(record,eventType,productSlug,0);})
+        .then(function flushQueued(){
+          if(!queuedEvents.length)return;
+          var item=queuedEvents[0];
+          return recordWithRetry(record,item.type,item.slug,0).then(function(){
+            queuedEvents.shift();
+            return flushQueued();
+          });
+        });
+    }).then(function(){
+      diagnostic('ready',eventType);
+      sending=false;
+    }).catch(function(error){
+      diagnostic('retrying',eventType,error);
+      sending=false;
+      if(sendAttempts<maxSendAttempts)w.setTimeout(send,1500*sendAttempts);
+    });
   }
 
   // Track intentional clicks on product links/cards as separate events.
