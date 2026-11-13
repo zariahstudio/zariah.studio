@@ -41,7 +41,7 @@
   try{if(d.referrer){var referrerUrl=new URL(d.referrer);if(referrerUrl.origin!==w.location.origin)referrerHost=referrerUrl.hostname;}}catch(e){}
 
   var queue=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
-  var pagePending=true, client=null, flushing=false, retryCount=0, retryTimer=null;
+  var pagePending=true, client=null, flushing=false, flushAgain=false, retryCount=0, retryTimer=null;
   function scheduleRetry(){
     if(retryTimer||retryCount>=8)return;
     retryCount++;
@@ -71,8 +71,9 @@
     });
   }
   function flush(){
-    if(flushing)return Promise.resolve();
+    if(flushing){flushAgain=true;return Promise.resolve();}
     flushing=true;
+    var failed=false;
     return loadClient().then(function(){
       var chain=Promise.resolve();
       if(!sessionStarted){
@@ -96,9 +97,13 @@
     }).then(function(){
       retryCount=0;
     }).catch(function(error){
+      failed=true;
       if(w.console&&typeof w.console.warn==='function')w.console.warn('[ZARIAH tracking] Event delivery failed; will retry.',error);
       scheduleRetry();
-    }).then(function(){flushing=false;});
+    }).then(function(){
+      flushing=false;
+      if(flushAgain){flushAgain=false;if(!failed)flush();}
+    });
   }
   w.ZARIAH_TRACK_EVENT=function(type,slug){
     if(!/^(product_view|product_click|cart_add)$/.test(type))return false;
