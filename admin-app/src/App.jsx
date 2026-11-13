@@ -882,10 +882,10 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
 }
 
 const LOYALTY_TIERS = [
-  { key: 'bronze', label: 'Bronze', min: 0, next: 5000, benefit: 'Not yet qualified' },
-  { key: 'silver', label: 'Silver', min: 5000, next: 15000, benefit: 'Silver membership' },
-  { key: 'gold', label: 'Gold', min: 15000, next: 30000, benefit: 'Gold membership' },
-  { key: 'vip', label: 'VIP', min: 30000, next: null, benefit: 'Lifetime VIP membership' }
+  { key: 'bronze', label: 'Bronze', min: 0, next: 10000, benefit: 'Starting membership' },
+  { key: 'silver', label: 'Silver', min: 10000, next: 25000, benefit: 'Silver membership' },
+  { key: 'gold', label: 'Gold', min: 25000, next: 50000, benefit: 'Gold membership' },
+  { key: 'platinum', label: 'Platinum', min: 50000, next: null, benefit: 'Lifetime Platinum membership' }
 ];
 const tierLabel = tier => LOYALTY_TIERS.find(item => item.key === tier)?.label || 'Bronze';
 
@@ -931,7 +931,7 @@ function LoyaltyPanel({ customers, loading, onRefresh, onSelect }) {
     <div className="loyalty-rules">
       <strong>Current earning rules</strong>
       <p>Qualifying spend includes payments only when the order is both Delivered and fully Paid. 1 point is earned per complete ৳100 of qualifying payment.</p>
-      <small>Bronze: ৳0 · Silver: ৳5,000 · Gold: ৳15,000 · VIP: ৳30,000</small>
+      <small>Bronze: ৳0 · Silver: ৳10,000 · Gold: ৳25,000 · Platinum: ৳50,000</small>
       <small>Membership tier never downgrades after qualification, including after a refund. Points/rewards redemption remains disabled until separately approved.</small>
     </div>
     <div className="toolbar customer-toolbar">
