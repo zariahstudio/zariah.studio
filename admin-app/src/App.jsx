@@ -754,7 +754,7 @@ function App() {
         await loadOrders(); setSelectedOrder(null); notify('success', `Order updated: ${selectedOrder.order_number}.`);
       } catch (e) { notify('error', e.message || 'Could not update order.'); }
       finally { setSaving(false); }
-    }} />}}
+    }} />}
     {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} products={products} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
   </div>;
 }
