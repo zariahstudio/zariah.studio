@@ -26,16 +26,20 @@
     const grid = document.getElementById(config.gridId);
     if (!section || !grid) return;
 
-    const matches = products.filter(function (product) {
-      // Normalize CMS labels consistently (including spaces) and prefer the
-      // explicit merchandising flags supplied by the published catalogue.
+    const isTagged = function (product) {
       const badge = String(product.badge || '').trim().toLowerCase().replace(/[\s_-]+/g, '');
       if (config.badge === 'bestseller') {
         return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
       }
       return product.isFeatured === true ||
         ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
-    }).slice(0, 4);
+    };
+    const tagged = products.filter(isTagged);
+    const taggedIds = new Set(tagged.map(function (product) { return String(product.id); }));
+    // Tagged products lead; the remaining published catalogue fills the eight-card edit.
+    const matches = tagged.concat(products.filter(function (product) {
+      return !taggedIds.has(String(product.id));
+    })).slice(0, 8);
 
     section.hidden = matches.length === 0;
     if (!matches.length) {
@@ -52,7 +56,7 @@
       const soldOut = Boolean(product.soldOut);
       return '<a class="z-mobile-home-card" href="' + href + '" aria-label="View ' + name + '">' +
         '<span class="z-mobile-home-media">' +
-          '<span class="z-mobile-home-badge">' + (soldOut ? 'Sold Out' : escapeHtml(config.label)) + '</span>' +
+          '<span class="z-mobile-home-badge">' + (soldOut ? 'Sold Out' : (isTagged(product) ? escapeHtml(config.label) : 'Explore More')) + '</span>' +
           '<img src="' + image + '" alt="' + name + '" loading="lazy" decoding="async">' +
         '</span>' +
         '<span class="z-mobile-home-name">' + name + '</span>' +
