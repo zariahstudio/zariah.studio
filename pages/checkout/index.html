@@ -198,7 +198,15 @@ footer{background:#f8f5ef}
 @media(max-width:370px){.payment-tag{white-space:normal;max-width:104px;text-align:center}}
 
 
-/* Remove individual products directly from the checkout order summary. */
+
+/* Compact quantity stepper in checkout order summary. */
+.checkout-product-controls{display:flex;align-items:center;gap:10px;margin-top:7px!important}
+.checkout-qty{display:inline-flex;align-items:center;border:1px solid #ded5ca;border-radius:3px;background:#fffdf9;min-height:27px}
+.checkout-qty button{width:29px;height:27px;padding:0;border:0;background:transparent;color:#302a24;font:400 16px/1 Inter,sans-serif;cursor:pointer}
+.checkout-qty button:disabled{opacity:.3;cursor:not-allowed}
+.checkout-qty span{min-width:22px;text-align:center;color:#302a24;font:500 10px Inter,sans-serif}
+.checkout-qty button:focus-visible{outline:2px solid #b99768;outline-offset:1px}
+\n/* Remove individual products directly from the checkout order summary. */
 .checkout-remove-item{display:inline-block;margin-top:7px;padding:3px 0;border:0;border-bottom:1px solid #b8a99a;background:transparent;color:#8a6b5b;font:500 9px/1.3 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
 .checkout-remove-item:hover{color:#6f382e;border-color:#6f382e}
 .checkout-remove-item:focus-visible{outline:2px solid #b99768;outline-offset:3px}
@@ -274,7 +282,7 @@ root.innerHTML=`
 </form>
 <aside class="summary">
   <h2>Your Order</h2><p class="summary-subtitle">${cart.length} ${cart.length===1?'item':'items'} selected · Review before placing your order</p>
-  <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta">Quantity: ${Number(item.qty)||1}</div><button class="checkout-remove-item" type="button" data-remove-item="${encodeURIComponent(String(item.id||''))}" aria-label="Remove ${String(item.name||'item').replace(/["&<>]/g,'')} from your order">Remove</button></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
+  <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta checkout-product-controls"><span>Quantity</span><div class="checkout-qty"><button type="button" data-qty-change="-1" data-item-id="${encodeURIComponent(String(item.id||''))}" aria-label="Decrease quantity" ${Number(item.qty)<=1?'disabled':''}>−</button><span>${Number(item.qty)||1}</span><button type="button" data-qty-change="1" data-item-id="${encodeURIComponent(String(item.id||''))}" aria-label="Increase quantity" ${Number(item.qty)>=10?'disabled':''}>+</button></div></div><button class="checkout-remove-item" type="button" data-remove-item="${encodeURIComponent(String(item.id||''))}" aria-label="Remove ${String(item.name||'item').replace(/["&<>]/g,'')} from your order">Remove</button></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
   <div class="row"><span>Product Subtotal</span><strong>${money(subtotal)}</strong></div>
   <div class="row first-order-discount-row"><span>First Order Discount</span><strong id="firstOrderDiscountDisplay">Check with phone number</strong></div>
   <div class="row"><span>Delivery Charge</span><strong id="deliveryFeeDisplay">Select location</strong></div>
@@ -283,6 +291,17 @@ root.innerHTML=`
   <a class="back" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
+root.querySelectorAll('[data-qty-change]').forEach(button=>button.addEventListener('click',()=>{
+ const id=decodeURIComponent(button.dataset.itemId||'');
+ const delta=Number(button.dataset.qtyChange||0);
+ if(!id||!window.ZariahCart||![-1,1].includes(delta))return;
+ const item=window.ZariahCart.read().find(entry=>entry.id===id);
+ if(!item)return;
+ const next=item.qty+delta;
+ if(next<1||next>window.ZariahCart.maxQuantity)return;
+ const result=window.ZariahCart.setQuantity(id,next);
+ if(result?.ok)window.location.reload();
+}));
 root.querySelectorAll('[data-remove-item]').forEach(button=>button.addEventListener('click',()=>{
  const id=decodeURIComponent(button.dataset.removeItem||'');
  if(!id||!window.ZariahCart)return;
