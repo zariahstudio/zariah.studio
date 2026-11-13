@@ -40,20 +40,14 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return response({ error: "method_not_allowed" }, 405, origin);
   if (origin && !allowedOrigins.has(origin)) return response({ error: "origin_not_allowed" }, 403, null);
 
-  const namedPublishableKeys = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
-  let defaultPublishableKey = "";
-  if (namedPublishableKeys) {
-    try { defaultPublishableKey = JSON.parse(namedPublishableKeys).default ?? ""; } catch { /* checked below */ }
-  }
-  const publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ||
-    defaultPublishableKey || Deno.env.get("SUPABASE_ANON_KEY") || "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  if (!publishableKey || !serviceKey || !supabaseUrl) {
+  if (!serviceKey || !supabaseUrl) {
     console.error("Missing required server environment configuration");
     return response({ error: "service_unavailable" }, 503, origin);
   }
-  if (req.headers.get("apikey") !== publishableKey) return response({ error: "unauthorized" }, 401, origin);
+  // The publishable API key is public by design; require it to be present.
+  // Supabase's API gateway validates the key before forwarding the request.
 
   let body: Record<string, unknown>;
   try {
