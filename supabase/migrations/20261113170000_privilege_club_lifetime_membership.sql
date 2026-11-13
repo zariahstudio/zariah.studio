@@ -8,12 +8,12 @@ alter table public.customer_loyalty_accounts
   drop constraint if exists customer_loyalty_accounts_tier_check;
 
 update public.customer_loyalty_accounts
-set tier = case when tier = 'platinum' then 'vip' else tier end
-where tier = 'platinum';
+set tier = 'platinum'
+where tier = 'vip';
 
 alter table public.customer_loyalty_accounts
   add constraint customer_loyalty_accounts_tier_check
-  check (tier in ('bronze','silver','gold','vip'));
+  check (tier in ('bronze','silver','gold','platinum'));
 
 -- Reconcile the existing loyalty ledger against the new Delivered + Paid eligibility rule.
 update public.loyalty_transactions lt
@@ -40,9 +40,9 @@ with totals as (
 )
 insert into public.customer_loyalty_accounts(customer_id,points_balance,lifetime_points,lifetime_spend_bdt,tier)
 select customer_id,points_balance,points_balance,qualifying_spend,
-  case when qualifying_spend>=30000 then 'vip'
-       when qualifying_spend>=15000 then 'gold'
-       when qualifying_spend>=5000 then 'silver'
+  case when qualifying_spend>=50000 then 'platinum'
+       when qualifying_spend>=25000 then 'gold'
+       when qualifying_spend>=10000 then 'silver'
        else 'bronze' end
 from totals
 on conflict(customer_id) do update
@@ -50,7 +50,7 @@ set points_balance=excluded.points_balance,
     lifetime_points=greatest(public.customer_loyalty_accounts.lifetime_points,excluded.lifetime_points),
     lifetime_spend_bdt=excluded.lifetime_spend_bdt,
     tier=case
-      when (case public.customer_loyalty_accounts.tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+      when (case public.customer_loyalty_accounts.tier when 'platinum' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
          > (case excluded.tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
       then public.customer_loyalty_accounts.tier
       else excluded.tier
@@ -142,9 +142,9 @@ begin
   for update;
 
   v_new_tier := case
-    when v_spend>=30000 then 'vip'
-    when v_spend>=15000 then 'gold'
-    when v_spend>=5000 then 'silver'
+    when v_spend>=50000 then 'platinum'
+    when v_spend>=25000 then 'gold'
+    when v_spend>=10000 then 'silver'
     else 'bronze'
   end;
 
