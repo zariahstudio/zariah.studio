@@ -27,7 +27,7 @@
   var device=/ipad|tablet/i.test(ua)?'tablet':/mobile|android|iphone/i.test(ua)?'mobile':'desktop';
   var referrerHost='';
   try{if(d.referrer){var u=new URL(d.referrer);if(u.origin!==w.location.origin)referrerHost=u.hostname;}}catch(e){}
-  var sent=false, activeRecord=null, queuedEvents=[];
+  var sent=false, activeRecord=null, queuedEvents=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
   w.ZARIAH_TRACK_EVENT=function(type,slug){
     if(!/^(product_click|cart_add)$/.test(type))return false;
     var item={type:type,slug:String(slug||'').slice(0,160)};
