@@ -397,11 +397,34 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
    button.textContent='SECURELY PLACING ORDER…';
    const cfg=window.ZARIAH_SUPABASE_CONFIG;
    const client=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
+   function createCheckoutIdempotencyKey(){
+     // randomUUID() is not implemented in some mobile browsers / non-secure contexts.
+     // getRandomValues() is broadly supported; Math.random is the final compatibility fallback.
+     const bytes=new Uint8Array(16);
+     try{
+       if(window.crypto&&typeof window.crypto.getRandomValues==='function'){
+         window.crypto.getRandomValues(bytes);
+       }else{
+         for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
+       }
+     }catch(_){
+       for(let i=0;i<bytes.length;i++)bytes[i]=Math.floor(Math.random()*256);
+     }
+     bytes[6]=(bytes[6]&0x0f)|0x40;
+     bytes[8]=(bytes[8]&0x3f)|0x80;
+     const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+     return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+   }
    let idempotencyKey='';
    try{
      idempotencyKey=sessionStorage.getItem('zariah_checkout_idempotency_v1')||'';
-     if(!idempotencyKey){idempotencyKey=crypto.randomUUID();sessionStorage.setItem('zariah_checkout_idempotency_v1',idempotencyKey);}
-   }catch(_){idempotencyKey=crypto.randomUUID();}
+     if(!idempotencyKey){
+       idempotencyKey=createCheckoutIdempotencyKey();
+       sessionStorage.setItem('zariah_checkout_idempotency_v1',idempotencyKey);
+     }
+   }catch(_){
+     idempotencyKey=createCheckoutIdempotencyKey();
+   }
    const customer={
      full_name:String(data.get('fullName')||'').trim(),
      phone:String(data.get('phone')||'').trim(),
