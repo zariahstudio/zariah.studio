@@ -63,6 +63,7 @@ declare
   v_order_status text;
   v_payment_status text;
   v_payment record;
+  v_existing_status text;
   v_old_tier text;
   v_new_tier text;
   v_points bigint;
@@ -87,14 +88,35 @@ begin
     if v_order_status='delivered'
        and v_payment_status='paid'
        and v_payment.status='verified' then
-      insert into public.loyalty_transactions(customer_id,payment_id,points_delta,spend_delta_bdt,status)
-      values(v_customer_id,v_payment.id,floor(v_payment.amount_bdt/100.0)::integer,v_payment.amount_bdt,'earned')
-      on conflict(payment_id) do update
-      set customer_id=excluded.customer_id,
-          points_delta=excluded.points_delta,
-          spend_delta_bdt=excluded.spend_delta_bdt,
-          status='earned',
-          updated_at=now();
+      select status into v_existing_status
+      from public.loyalty_transactions
+      where payment_id=v_payment.id
+      for update;
+
+      if not found then
+        insert into public.loyalty_transactions(customer_id,payment_id,points_delta,spend_delta_bdt,status)
+        values(v_customer_id,v_payment.id,floor(v_payment.amount_bdt/100.0)::integer,v_payment.amount_bdt,'earned');
+        update public.customer_loyalty_accounts
+        set lifetime_points=lifetime_points+floor(v_payment.amount_bdt/100.0)::integer
+        where customer_id=v_customer_id;
+      elsif v_existing_status='reversed' then
+        update public.loyalty_transactions
+        set customer_id=v_customer_id,
+            points_delta=floor(v_payment.amount_bdt/100.0)::integer,
+            spend_delta_bdt=v_payment.amount_bdt,
+            status='earned',
+            updated_at=now()
+        where payment_id=v_payment.id;
+        update public.customer_loyalty_accounts
+        set lifetime_points=lifetime_points+floor(v_payment.amount_bdt/100.0)::integer
+        where customer_id=v_customer_id;
+      else
+        update public.loyalty_transactions
+        set points_delta=floor(v_payment.amount_bdt/100.0)::integer,
+            spend_delta_bdt=v_payment.amount_bdt,
+            updated_at=now()
+        where payment_id=v_payment.id;
+      end if;
     else
       update public.loyalty_transactions
       set status='reversed',updated_at=now()
@@ -122,8 +144,8 @@ begin
   end;
 
   -- Keep the highest tier ever achieved, even if later qualifying spend is reversed.
-  if case v_old_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end
-     > case v_new_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end then
+  if (case v_old_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end)
+     > (case v_new_tier when 'vip' then 3 when 'gold' then 2 when 'silver' then 1 else 0 end) then
     v_new_tier := v_old_tier;
   end if;
 
