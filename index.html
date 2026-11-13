@@ -635,15 +635,26 @@
     </div>
   </section>
 
-  <!-- MULTI-BRAND HANDBAG DIRECTORY: brand tiles will be populated with confirmed brands. -->
+  <!-- BRAND DIRECTORY: current brands already listed in the ZARIAH catalogue. -->
   <section class="z-next-brands" id="zBrandDirectory" aria-labelledby="zBrandDirectoryTitle">
     <div class="z-next-wrap">
       <div class="z-next-section-head">
-        <div class="z-next-eyebrow">LOCAL &amp; INTERNATIONAL LABELS</div>
+        <div class="z-next-eyebrow">LABELS IN OUR COLLECTION</div>
         <h2 id="zBrandDirectoryTitle">Discover Handbag Brands</h2>
-        <p>Explore a growing selection of handbag brands from Bangladesh and around the world.</p>
+        <p>Explore the labels currently featured at ZARIAH Studio.</p>
       </div>
-      <div class="z-brand-directory-pending" aria-live="polite">Browse local and international handbag labels</div>
+      <div class="z-brand-directory-grid" aria-label="Handbag brands">
+        <div class="z-brand-directory-item">Aurelle</div>
+        <div class="z-brand-directory-item">Amoura</div>
+        <div class="z-brand-directory-item">Cavera</div>
+        <div class="z-brand-directory-item">Celestine</div>
+        <div class="z-brand-directory-item">Elvera</div>
+        <div class="z-brand-directory-item">Marelle</div>
+        <div class="z-brand-directory-item">Novelle</div>
+        <div class="z-brand-directory-item">Solenne</div>
+        <div class="z-brand-directory-item">Velora</div>
+        <div class="z-brand-directory-item">Virelle</div>
+      </div>
     </div>
   </section>
 
@@ -672,7 +683,11 @@
   .z-next-service p,.z-next-benefit-grid p{margin:0;color:#777067;font:400 12px/1.7 Inter,Arial,sans-serif}
   .z-next-service a{display:inline-block;margin-top:12px;color:#8b704c;font:600 10px Inter,Arial,sans-serif;text-decoration:underline;text-underline-offset:3px}
   .z-next-brands{padding:66px 0 72px;background:#eee8df;color:#332e29}
-  .z-brand-directory-pending{margin:30px auto 0;max-width:900px;padding:28px;border:1px solid #d9d0c4;background:#fbf9f5;text-align:center;color:#777067;font:400 12px/1.6 Inter,Arial,sans-serif}
+  .z-brand-directory-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:30px}
+  .z-brand-directory-item{display:flex;align-items:center;justify-content:center;min-height:78px;padding:14px 10px;border:1px solid #d9d0c4;background:#fbf9f5;color:#40382f;text-align:center;font:400 clamp(15px,1.45vw,19px)/1.2 Georgia,serif;letter-spacing:.025em;transition:background .2s,border-color .2s}
+  .z-brand-directory-item:nth-child(3n){font-style:italic}
+  .z-brand-directory-item:hover{background:#f7f1e8;border-color:#bda27d}
+
   .z-next-center{padding:70px 0;background:#fbf9f5}
   .z-next-center-card{display:grid;grid-template-columns:1.05fr .95fr;min-height:360px;overflow:hidden;background:#eae3d8;border:1px solid #ded3c4}
   .z-next-center-copy{padding:clamp(28px,5vw,58px)}
@@ -695,7 +710,7 @@
     .z-next-wrap{width:calc(100% - 28px)}
     .z-next-services,.z-next-collections,.z-next-benefits{padding:43px 0 48px}
     .z-next-service-grid{grid-template-columns:1fr;gap:10px;margin-top:20px}
-    .z-next-service{min-height:0;padding:18px}
+    .z-next-service{min-height:0;padding:18px}\n    .z-brand-directory-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:22px}\n    .z-brand-directory-item{min-height:64px;padding:12px 8px;font-size:16px}
     .z-next-icon{margin-bottom:12px}
     .z-next-collection-grid{grid-template-columns:1fr;gap:10px;margin-top:22px}
     .z-next-collection{min-height:154px;padding:20px}
