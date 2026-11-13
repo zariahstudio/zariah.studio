@@ -79,6 +79,8 @@ body:not(.admin-body) header .menu-toggle{
  body:not(.admin-body) header:not(.zbag-head) nav a{font-size:8px!important;letter-spacing:.09em!important}
 }
 @media(max-width:640px){
+ body:not(.admin-body):has(#hamburger) header:not(.zbag-head) nav,
+ body:not(.admin-body):has(#menuToggle) header:not(.zbag-head) nav{display:none!important}
  body:not(.admin-body) header:not(.zbag-head) .hdr-inner,
  body:not(.admin-body) header.site-header,
  body:not(.admin-body) body:has(.product-layout)>header{
