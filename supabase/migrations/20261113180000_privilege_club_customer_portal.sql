@@ -42,11 +42,25 @@ begin
     v_digits := '0' || substr(v_digits,4);
   end if;
 
-  select count(*)::integer, min(c.id)
-    into v_match_count,v_customer_id
+  select count(*)::integer
+    into v_match_count
   from public.customers c
-  where regexp_replace(c.phone,'[^0-9]','','g') =
-    case when left(v_digits,3)='880' then '0'||substr(v_digits,4) else v_digits end;
+  where case
+    when left(regexp_replace(c.phone,'[^0-9]','','g'),3)='880'
+      then '0'||substr(regexp_replace(c.phone,'[^0-9]','','g'),4)
+    else regexp_replace(c.phone,'[^0-9]','','g')
+  end = v_digits;
+
+  if v_match_count=1 then
+    select c.id into v_customer_id
+    from public.customers c
+    where case
+      when left(regexp_replace(c.phone,'[^0-9]','','g'),3)='880'
+        then '0'||substr(regexp_replace(c.phone,'[^0-9]','','g'),4)
+      else regexp_replace(c.phone,'[^0-9]','','g')
+    end = v_digits
+    limit 1;
+  end if;
 
   if v_match_count=0 then
     return jsonb_build_object('found',false,'message','No ZARIAH customer profile is linked to this verified mobile number yet.');
