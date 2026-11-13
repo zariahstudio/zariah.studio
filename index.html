@@ -515,6 +515,51 @@
   @media(prefers-reduced-motion:reduce){
     .z-store-directions,.z-simple-footer-social a{transition:none}
   }
+
+  /* Expanded contact footer — isolated to homepage footer, responsive and touch-friendly. */
+  .z-contact-footer{padding:54px 0 26px!important;background:#2d2723!important}
+  .z-contact-footer .z-simple-footer-inner{width:min(1180px,calc(100% - 64px))}
+  .z-contact-footer-intro{text-align:left;padding:0 0 34px;border-bottom:1px solid rgba(224,207,184,.18)}
+  .z-contact-footer-intro .footer-name{font-size:clamp(34px,4vw,48px)!important;letter-spacing:.14em!important}
+  .z-contact-footer-intro>p{margin:12px 0 10px;color:#d3c6b6;font:400 13px/1.7 Inter,Arial,sans-serif}
+  .z-footer-made{display:inline-block;color:#c5a77f;font:600 9px/1.5 Inter,Arial,sans-serif;letter-spacing:.2em}
+  .z-footer-columns{display:grid;grid-template-columns:1.35fr .8fr .8fr;gap:clamp(28px,5vw,72px);padding:34px 0 38px}
+  .z-footer-column{display:flex;flex-direction:column;align-items:flex-start;gap:13px;min-width:0}
+  .z-footer-column h2{margin:0 0 7px;color:#f7f0e7;font:400 23px/1.2 Georgia,serif}
+  .z-footer-column>a{color:#d1c5b8;text-decoration:none;font:400 12px/1.6 Inter,Arial,sans-serif;transition:color .2s}
+  .z-footer-column>a:hover{color:#e1bd8c}
+  .z-footer-contact-link{display:grid!important;grid-template-columns:34px minmax(0,1fr) 14px;align-items:center;gap:11px;width:100%;padding:0 0 12px;border-bottom:1px solid rgba(224,207,184,.12)}
+  .z-footer-icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid rgba(197,167,127,.35);border-radius:50%;color:#d7b98e;font-size:16px}
+  .z-footer-contact-link>span:nth-child(2){display:grid;gap:4px;min-width:0}
+  .z-footer-contact-link small{color:#a99b8b;font:600 8px/1.4 Inter,Arial,sans-serif;letter-spacing:.16em}
+  .z-footer-contact-link strong{color:#f2e9dd;font:500 11px/1.5 Inter,Arial,sans-serif;overflow-wrap:anywhere}
+  .z-footer-contact-link em{color:#b8aa9a;font:400 10px/1.4 Inter,Arial,sans-serif;font-style:normal}
+  .z-footer-arrow{color:#c5a77f;font-size:13px}
+  .z-footer-social-link{display:flex!important;align-items:center;gap:10px;width:100%}
+  .z-footer-social-link>span:first-child{display:grid;place-items:center;width:24px;height:24px;border:1px solid rgba(197,167,127,.32);border-radius:50%;color:#d7b98e;font-size:12px}
+  .z-footer-social-link .z-footer-arrow{margin-left:auto}
+  .z-footer-follow-note{max-width:220px;margin:7px 0 0;color:#a99d90;font:400 10px/1.8 Inter,Arial,sans-serif}
+  .z-contact-footer .z-simple-footer-bottom{padding-top:20px}
+  @media(max-width:760px){
+    .z-contact-footer{padding:38px 0 22px!important}
+    .z-contact-footer .z-simple-footer-inner{width:calc(100% - 40px)}
+    .z-contact-footer-intro{padding-bottom:25px}
+    .z-contact-footer-intro .footer-name{font-size:31px!important;letter-spacing:.11em!important}
+    .z-contact-footer-intro>p{font-size:11px}
+    .z-footer-columns{grid-template-columns:1fr 1fr;gap:27px 20px;padding:27px 0 28px}
+    .z-footer-contact{grid-column:1/-1}
+    .z-footer-column h2{font-size:21px}
+    .z-footer-contact-link{padding-bottom:10px}
+    .z-footer-contact-link strong{font-size:11px}
+    .z-footer-column>a{font-size:11px}
+    .z-footer-follow-note{font-size:9px}
+    .z-contact-footer .z-simple-footer-bottom{flex-direction:column;align-items:flex-start;gap:12px}
+    .z-contact-footer .z-simple-footer-bottom div{flex-wrap:wrap;gap:14px}
+  }
+  @media(max-width:360px){
+    .z-footer-columns{grid-template-columns:1fr}
+    .z-footer-contact{grid-column:auto}
+  }
 </style>
 <style id="z-product-card-soft-corners">
 /* Subtle rounded image frames with a restrained inset edge shadow.
@@ -1348,20 +1393,45 @@
 </section>
 
 <!-- SIMPLE FOOTER -->
-<footer class="footer z-simple-footer" aria-label="Site footer">
+<footer class="footer z-simple-footer z-contact-footer" aria-label="ZARIAH Studio contact and site footer">
   <div class="z-simple-footer-inner">
-    <div class="z-simple-footer-brand">
-      <a class="footer-name" href="/">ZARIAH Studio</a>
+    <div class="z-contact-footer-intro">
+      <a class="footer-name" href="/">ZARIAH STUDIO</a>
       <p>Curated in Bangladesh · Delivered Nationwide</p>
+      <span class="z-footer-made">PROUDLY MADE IN BANGLADESH</span>
     </div>
-    <nav class="z-simple-footer-social" aria-label="Social links">
-      <a href="https://www.instagram.com/zariah.studioo" aria-label="Instagram" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://www.facebook.com/zariah.studioo" aria-label="Facebook" target="_blank" rel="noopener noreferrer">Facebook</a>
-      <a href="https://wa.me/8801642779056" aria-label="WhatsApp support" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-    </nav>
+    <div class="z-footer-columns">
+      <section class="z-footer-column z-footer-contact" aria-labelledby="zFooterContactTitle">
+        <h2 id="zFooterContactTitle">Get in Touch</h2>
+        <a class="z-footer-contact-link" href="https://wa.me/8801642779056" target="_blank" rel="noopener noreferrer">
+          <span class="z-footer-icon" aria-hidden="true">◉</span><span><small>WHATSAPP SUPPORT</small><strong>+880 1642-779056</strong></span><span class="z-footer-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="z-footer-contact-link" href="mailto:studioo.zariah@gmail.com">
+          <span class="z-footer-icon" aria-hidden="true">✉</span><span><small>EMAIL</small><strong>studioo.zariah@gmail.com</strong></span><span class="z-footer-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="z-footer-contact-link" href="https://www.google.com/maps/search/?api=1&amp;query=9R5Q%2B7F%20Chattogram" target="_blank" rel="noopener noreferrer">
+          <span class="z-footer-icon" aria-hidden="true">⌖</span><span><small>OUR LOCATION</small><strong>9R5Q+7F, Chattogram</strong><em>Chattogram, Bangladesh</em></span><span class="z-footer-arrow" aria-hidden="true">↗</span>
+        </a>
+      </section>
+      <section class="z-footer-column" aria-labelledby="zFooterExploreTitle">
+        <h2 id="zFooterExploreTitle">Explore</h2>
+        <a href="/collections/all-bags/">All Bags</a>
+        <a href="/collections/new-arrivals/">New Arrivals</a>
+        <a href="/pages/our-story/">Our Story</a>
+        <a href="/pages/faq/">Frequently Asked Questions</a>
+        <a href="/pages/track-order/">Track Your Order</a>
+      </section>
+      <section class="z-footer-column" aria-labelledby="zFooterFollowTitle">
+        <h2 id="zFooterFollowTitle">Follow ZARIAH</h2>
+        <a class="z-footer-social-link" href="https://www.instagram.com/zariah.studioo" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◎</span> Instagram <span class="z-footer-arrow">↗</span></a>
+        <a class="z-footer-social-link" href="https://www.facebook.com/zariah.studioo" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">f</span> Facebook <span class="z-footer-arrow">↗</span></a>
+        <a class="z-footer-social-link" href="https://wa.me/8801642779056" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◉</span> WhatsApp <span class="z-footer-arrow">↗</span></a>
+        <p class="z-footer-follow-note">New collections, styling inspiration and updates from our studio.</p>
+      </section>
+    </div>
     <div class="z-simple-footer-bottom">
       <span>© 2026 ZARIAH Studio. All Rights Reserved.</span>
-      <div><a href="/pages/privacy-policy/">Privacy Policy</a><a href="/pages/terms-of-service/">Terms</a></div>
+      <div><a href="/pages/privacy-policy/">Privacy Policy</a><a href="/pages/terms-of-service/">Terms of Service</a><a href="/pages/contact/">Contact</a></div>
     </div>
   </div>
 </footer>
