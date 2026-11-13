@@ -1081,6 +1081,7 @@ function paidTotal(order) {
 function FraudRiskPanel() {
   const [view, setView] = useState('summary');
   const [visitorEvents, setVisitorEvents] = useState([]);
+  const [visitorSummary, setVisitorSummary] = useState(null);
   const [visitorLoading, setVisitorLoading] = useState(false);
   const [visitorError, setVisitorError] = useState('');
   const [range, setRange] = useState('7');
@@ -1089,18 +1090,24 @@ function FraudRiskPanel() {
     setVisitorLoading(true); setVisitorError('');
     let query = supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').order('created_at',{ascending:false}).limit(500);
     if (range !== 'all') query = query.gte('created_at', new Date(Date.now() - Number(range)*86400000).toISOString());
-    const { data, error } = await query;
-    if (error) { setVisitorError(error.message || 'Visitor event data is unavailable.'); setVisitorEvents([]); }
-    else setVisitorEvents(data || []);
+    const since = range === 'all' ? null : new Date(Date.now() - Number(range)*86400000).toISOString();
+    const [eventsResult, summaryResult] = await Promise.all([
+      query,
+      supabase.rpc('visitor_intelligence_summary', { p_since: since })
+    ]);
+    if (eventsResult.error) { setVisitorError(eventsResult.error.message || 'Visitor event data is unavailable.'); setVisitorEvents([]); }
+    else setVisitorEvents(eventsResult.data || []);
+    if (summaryResult.error) setVisitorSummary(null);
+    else setVisitorSummary(summaryResult.data || null);
     setVisitorLoading(false);
   };
   useEffect(() => { loadVisitorEvents(); }, [range]);
-  const uniqueVisitors = new Set(visitorEvents.map(e=>e.visitor_id)).size;
+  const uniqueVisitors = Number(visitorSummary?.total_sessions ?? new Set(visitorEvents.map(e=>e.visitor_id)).size);
   const productEvents = visitorEvents.filter(e=>e.event_type==='product_view');
   const checkoutEvents = visitorEvents.filter(e=>e.event_type==='checkout_view');
-  const referrers = Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const topProducts = Object.entries(productEvents.reduce((acc,e)=>{const key=e.product_slug||e.page_path;acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const devices = Object.entries(visitorEvents.reduce((acc,e)=>{acc[e.device_type]=(acc[e.device_type]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]);
+  const referrers = visitorSummary?.referrers?.map(r=>[r.name,r.count]) || Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const topProducts = visitorSummary?.top_products?.map(r=>[r.name,r.count]) || Object.entries(productEvents.reduce((acc,e)=>{const key=e.product_slug||e.page_path;acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const devices = visitorSummary?.devices?.map(r=>[r.name,r.count]) || Object.entries(visitorEvents.reduce((acc,e)=>{acc[e.device_type]=(acc[e.device_type]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]);
   const filteredEvents = visitorEvents.filter(e=>[e.visitor_id,e.page_path,e.referrer_host,e.event_type,e.device_type,e.product_slug].join(' ').toLowerCase().includes(search.toLowerCase()));
   const ranges=[['1','Today'],['7','7 Days'],['30','30 Days'],['all','All Time']];
   return <section className="panel fraud-risk-panel visitor-intelligence-panel">
@@ -1108,14 +1115,14 @@ function FraudRiskPanel() {
     <div className="visitor-topbar"><div className="visitor-tabs"><button className={view==='summary'?'active':''} onClick={()=>setView('summary')}><TrendingUp size={15}/> Executive Summary</button><button className={view==='checkout'?'active':''} onClick={()=>setView('checkout')}><ShoppingBag size={15}/> Checkout Activity</button><button className={view==='logs'?'active':''} onClick={()=>setView('logs')}><Eye size={15}/> All Visitor Logs ({visitorEvents.length})</button></div><div className="visitor-range">{ranges.map(([v,label])=><button key={v} className={range===v?'active':''} onClick={()=>setRange(v)}>{label}</button>)}</div></div>
     {visitorError ? <div className="visitor-empty"><AlertTriangle size={24}/><h3>Visitor tracking is awaiting database setup</h3><p>{visitorError.includes('visitor_events')?'Apply the visitor-intelligence migration before visitor data can appear.':visitorError}</p><small>No existing visitor data has been changed.</small></div> : <>
       {view==='summary' && <>
-        <div className="fraud-kpis visitor-kpis"><article><small>Unique visitors / sessions</small><strong>{uniqueVisitors.toLocaleString()}</strong><span>{visitorEvents.length.toLocaleString()} tracked events</span></article><article><small>Product views</small><strong>{productEvents.length.toLocaleString()}</strong><span>Product detail page visits</span></article><article><small>Checkout visits</small><strong>{checkoutEvents.length.toLocaleString()}</strong><span>Checkout page views</span></article><article><small>Mobile sessions</small><strong>{visitorEvents.filter(e=>e.device_type==='mobile').length.toLocaleString()}</strong><span>Recorded mobile events</span></article></div>
+        <div className="fraud-kpis visitor-kpis"><article><small>Unique sessions</small><strong>{uniqueVisitors.toLocaleString()}</strong><span>{Number(visitorSummary?.total_events ?? visitorEvents.length).toLocaleString()} tracked events</span></article><article><small>Product views</small><strong>{Number(visitorSummary?.product_views ?? productEvents.length).toLocaleString()}</strong><span>Product detail page visits</span></article><article><small>Checkout visits</small><strong>{Number(visitorSummary?.checkout_views ?? checkoutEvents.length).toLocaleString()}</strong><span>Checkout page views</span></article><article><small>Bounce rate</small><strong>{visitorSummary?.bounce_rate == null ? '—' : Number(visitorSummary.bounce_rate).toFixed(1)+'%'}</strong><span>Single-page sessions</span></article></div>
         <div className="visitor-summary-grid"><section className="visitor-sources"><div className="panel-head"><h3>Customer Acquisition Sources</h3><small>Top channels</small></div>{referrers.length?referrers.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count} events</strong></div>):<p className="muted">No referrer data in this period.</p>}</section><section className="visitor-sources"><div className="panel-head"><h3>Most Viewed Products</h3><small>Trending</small></div>{topProducts.length?topProducts.map(([name,count],i)=><div className="visitor-source-row" key={name}><span>#{i+1} {name}</span><strong>{count} views</strong></div>):<p className="muted">No product views recorded yet.</p>}</section></div>
         <section className="visitor-sources"><div className="panel-head"><h3>Device Breakdown</h3><small>Recorded events</small></div>{devices.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count}</strong></div>)}</section>
       </>}
       {view==='checkout' && <><div className="fraud-kpis visitor-kpis"><article><small>Checkout page visits</small><strong>{checkoutEvents.length}</strong></article><article><small>Unique checkout sessions</small><strong>{new Set(checkoutEvents.map(e=>e.visitor_id)).size}</strong></article><article><small>Mobile checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='mobile').length}</strong></article><article><small>Desktop checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='desktop').length}</strong></article></div><p className="fraud-disclaimer">These are checkout page visits, not confirmed abandoned carts or identified leads. No customer form data is collected by this tracker.</p><VisitorEventTable events={checkoutEvents} search={search} setSearch={setSearch}/></>}
       {view==='logs' && <VisitorEventTable events={filteredEvents} search={search} setSearch={setSearch}/>}
       {visitorLoading && <div className="visitor-loading"><Loading/></div>}
-      <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and are not linked to customer identities. Showing up to the latest 500 events.</p>
+      <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and are not linked to customer identities. Summary metrics are aggregated across the selected period; visitor logs show up to the latest 500 events. Average observed session time is {visitorSummary?.avg_session_seconds == null ? 'not available yet' : Math.round(Number(visitorSummary.avg_session_seconds)/60)+' min'}.</p>
     </>}
   </section>;
 }
