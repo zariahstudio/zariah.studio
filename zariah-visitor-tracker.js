@@ -191,6 +191,6 @@
     tick();
   })();
 
-  if('requestIdleCallback' in w)w.requestIdleCallback(send,{timeout:2500});
-  else w.setTimeout(send,1200);
+  if('requestIdleCallback' in w)w.requestIdleCallback(flush,{timeout:2500});
+  else w.setTimeout(flush,1200);
 })(window,document);
