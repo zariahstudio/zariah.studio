@@ -191,13 +191,14 @@ root.innerHTML=`
   <div class="fields">
     <div class="field"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
     <div class="field"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
+    <div class="field full"><label for="deliveryZone">Delivery Location *</label><select id="deliveryZone" name="deliveryZone" required><option value="">Select your delivery location</option><option value="inside_chattogram">Inside Chattogram City — ৳70</option><option value="outside_chattogram">Outside Chattogram City — ৳150</option></select><p class="hint">Orders of ৳2,500 or more qualify for free delivery.</p></div>
     <div class="field full"><label for="address">Full Delivery Address *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House / Flat, Road, Building, Area and a nearby landmark" required maxlength="400"></textarea></div>
     <div class="field full"><label for="notes">Special Delivery Instructions (Optional)</label><textarea id="notes" name="notes" placeholder="Anything our delivery team should know?" maxlength="300"></textarea></div>
   </div>
 </section>
 <section class="form-section">
   <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery & Payment</h2><p class="section-caption">Review how your order will reach you.</p></div></div>
-  <div class="delivery-method"><span class="method-mark" aria-hidden="true">↗</span><div><strong>Standard Home Delivery</strong><span>Delivery across Bangladesh. Our team will confirm the applicable delivery charge and estimated delivery time with you before dispatch.</span></div></div>
+  <div class="delivery-method"><span class="method-mark" aria-hidden="true">↗</span><div><strong>Standard Home Delivery</strong><span>Inside Chattogram: ৳70 · Outside Chattogram: ৳150. Free delivery on product subtotal of ৳2,500 or more.</span></div></div>
   <div class="payment-options" role="radiogroup" aria-label="Choose payment method">
     <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span><strong>Cash on Delivery</strong><small>Pay when your parcel arrives.</small></span></label>
     <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span><strong>bKash</strong><small>Mobile financial service</small></span></label>
@@ -221,12 +222,26 @@ root.innerHTML=`
   <h2>Your Order</h2><p class="summary-subtitle">${cart.length} ${cart.length===1?'item':'items'} selected · Review before placing your order</p>
   <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</div><div class="product-meta">Quantity: ${Number(item.qty)||1}</div></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
   <div class="row"><span>Product Subtotal</span><strong>${money(subtotal)}</strong></div>
-  <div class="row"><span>Delivery Charge</span><span class="delivery-pending">Confirmed before dispatch</span></div>
-  <div class="row total"><strong>Product Total</strong><strong>${money(subtotal)}</strong></div>
-  <p class="summary-note">Delivery charge is not included in this product subtotal. Our team will confirm the final payable amount before dispatch.</p>
+  <div class="row"><span>Delivery Charge</span><strong id="deliveryFeeDisplay">Select location</strong></div>
+  <div class="row total"><strong>Total Payable</strong><strong id="checkoutTotalDisplay">${money(subtotal)}</strong></div>
+  <p class="summary-note" id="deliverySummaryNote">Select your delivery location to calculate the delivery charge. Orders of ৳2,500 or more get free delivery.</p>
   <a class="back" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
+const deliveryZone=document.getElementById('deliveryZone');
+const deliveryFeeDisplay=document.getElementById('deliveryFeeDisplay');
+const checkoutTotalDisplay=document.getElementById('checkoutTotalDisplay');
+const deliverySummaryNote=document.getElementById('deliverySummaryNote');
+function calculateDelivery(){
+ const zone=deliveryZone.value;
+ const free=subtotal>=2500;
+ const fee=free?0:(zone==='inside_chattogram'?70:zone==='outside_chattogram'?150:null);
+ deliveryFeeDisplay.textContent=fee===null?'Select location':fee===0?'Free':money(fee);
+ checkoutTotalDisplay.textContent=money(subtotal+(fee||0));
+ deliverySummaryNote.textContent=free?'You qualify for free delivery on orders of ৳2,500 or more.':fee===null?'Select your delivery location to calculate the delivery charge.':(zone==='inside_chattogram'?'Inside Chattogram City delivery: ৳70.':'Outside Chattogram City delivery: ৳150.')+' Delivery is free on product subtotal of ৳2,500 or more.';
+}
+deliveryZone.addEventListener('change',calculateDelivery);
+calculateDelivery();
 const paymentChoices=[...document.querySelectorAll('input[name="paymentMethod"]')];
 const mfsDetails=document.getElementById('mfsPaymentDetails');
 const codNote=document.getElementById('codNote');
@@ -277,7 +292,8 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      address:String(data.get('address')||'').trim(),
      notes:String(data.get('notes')||'').trim(),
      payment_method:String(data.get('paymentMethod')||'cash_on_delivery'),
-     payment_reference:String(data.get('paymentReference')||'').trim()
+     payment_reference:String(data.get('paymentReference')||'').trim(),
+     delivery_zone:String(data.get('deliveryZone')||'')
    };
    const items=cart.map(item=>({sku:String(item.id||'').trim(),quantity:Number(item.qty)||1}));
    const gatewayResponse=await fetch(cfg.url+'/functions/v1/zariah-public-orders',{
@@ -304,7 +320,7 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      <p>Your order has been saved successfully. Our team will review it and contact you if any delivery details need confirmation.</p>
      <p style="font-weight:600;color:#292522;margin:20px 0 6px">Order Number</p>
      <p style="font-size:20px;font-weight:600;color:#292522;margin:0">${order.order_number}</p>
-     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt ?? order.total_bdt)}</strong> · Delivery charge confirmed before dispatch</p>
+     <p style="margin:12px 0">Product Subtotal: <strong>${money(order.subtotal_bdt)}</strong><br>Delivery Charge: <strong>${Number(order.delivery_fee_bdt)===0?'Free':money(order.delivery_fee_bdt)}</strong><br>Total Payable: <strong>${money(order.total_bdt)}</strong></p>
      <p style="margin:8px 0">Selected payment method: <strong>${selectedPayment}</strong></p>
      <p style="font-size:10px;color:#786f65">Any mobile payment remains pending until verified by our team. We will confirm the final amount before payment.</p>
      <div class="order-success-actions">
