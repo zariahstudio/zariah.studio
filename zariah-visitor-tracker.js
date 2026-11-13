@@ -6,68 +6,119 @@
   'use strict';
   if(w.__zariahVisitorTrackingStarted)return;
   w.__zariahVisitorTrackingStarted=true;
-  var KEY='zariah_visitor_session_v1', visitorId='';
+
+  var KEY='zariah_visitor_session_v1';
+  var STARTED_KEY='zariah_visitor_started_v1';
+  var visitorId='';
+  function makeVisitorId(){
+    if(w.crypto&&typeof w.crypto.randomUUID==='function')return w.crypto.randomUUID();
+    if(!w.crypto||typeof w.crypto.getRandomValues!=='function')return '';
+    var bytes=new Uint8Array(16);
+    w.crypto.getRandomValues(bytes);
+    bytes[6]=(bytes[6]&15)|64;
+    bytes[8]=(bytes[8]&63)|128;
+    var hex=Array.prototype.map.call(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');
+    return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+  }
   try{
     visitorId=w.sessionStorage.getItem(KEY)||'';
     if(!/^[0-9a-f-]{36}$/i.test(visitorId)){
-      visitorId=(w.crypto&&w.crypto.randomUUID)?w.crypto.randomUUID():'';
+      visitorId=makeVisitorId();
       if(visitorId)w.sessionStorage.setItem(KEY,visitorId);
     }
   }catch(e){}
-  if(!visitorId||typeof w.ZARIAH_LOAD_SUPABASE!=='function')return;
+  if(!visitorId)return;
+
   var path=(w.location.pathname||'/').slice(0,500);
-  var sessionStarted=false;
-  try{sessionStarted=w.sessionStorage.getItem('zariah_visitor_started_v1')==='1';}catch(e){}
-  var eventType='page_view', productSlug=null;
   var productMatch=path.match(/^\/products\/([^/]+)/i);
-  if(productMatch){eventType='product_view';productSlug=productMatch[1].slice(0,160);}
-  else if(/^\/pages\/cart\/?/i.test(path))eventType='cart_view';
-  else if(/^\/pages\/checkout\/?/i.test(path))eventType='checkout_view';
-  var ua=navigator.userAgent||'';
+  var productSlug=productMatch?productMatch[1].slice(0,160):null;
+  var eventType=productMatch?'product_view':(/^\/pages\/cart\/?/i.test(path)?'cart_view':(/^\/pages\/checkout\/?/i.test(path)?'checkout_view':'page_view'));
+  var sessionStarted=false;
+  try{sessionStarted=w.sessionStorage.getItem(STARTED_KEY)==='1';}catch(e){}
+  var ua=(w.navigator&&w.navigator.userAgent)||'';
   var device=/ipad|tablet/i.test(ua)?'tablet':/mobile|android|iphone/i.test(ua)?'mobile':'desktop';
   var referrerHost='';
-  try{if(d.referrer){var u=new URL(d.referrer);if(u.origin!==w.location.origin)referrerHost=u.hostname;}}catch(e){}
-  var sent=false, activeRecord=null, queuedEvents=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
-  w.ZARIAH_TRACK_EVENT=function(type,slug){
-    if(!/^(product_view|product_click|cart_add)$/.test(type))return false;
-    var item={type:type,slug:String(slug||'').slice(0,160)};
-    if(activeRecord){activeRecord(item.type,item.slug).catch(function(){});}
-    else queuedEvents.push(item);
-    return true;
-  };
-  function send(){
-    if(sent)return;
-    sent=true;
-    w.ZARIAH_LOAD_SUPABASE().then(function(sdk){
+  try{if(d.referrer){var referrerUrl=new URL(d.referrer);if(referrerUrl.origin!==w.location.origin)referrerHost=referrerUrl.hostname;}}catch(e){}
+
+  var queue=Array.isArray(w.ZARIAH_PENDING_TRACK_EVENTS)?w.ZARIAH_PENDING_TRACK_EVENTS.splice(0):[];
+  var pagePending=true, client=null, flushing=false, retryCount=0, retryTimer=null;
+  function scheduleRetry(){
+    if(retryTimer||retryCount>=8)return;
+    retryCount++;
+    retryTimer=w.setTimeout(function(){retryTimer=null;flush();},Math.min(30000,1500*Math.pow(2,retryCount-1)));
+  }
+  function loadClient(){
+    if(client)return Promise.resolve(client);
+    if(typeof w.ZARIAH_LOAD_SUPABASE!=='function')return Promise.reject(new Error('Supabase loader is not available'));
+    return w.ZARIAH_LOAD_SUPABASE().then(function(sdk){
       var config=w.ZARIAH_SUPABASE_CONFIG||{};
-      if(!config.url||!config.publishableKey)return;
-      var client=sdk.createClient(config.url,config.publishableKey);
-      function record(type,slug){
-        return client.rpc('record_visitor_event',{
-          p_visitor_id:visitorId,p_event_type:type,p_page_path:path,
-          p_referrer_host:referrerHost||null,p_device_type:device,p_product_slug:slug||productSlug
-        });
-      }
-      activeRecord=record;
+      if(!config.url||!config.publishableKey)throw new Error('Supabase tracking configuration is incomplete');
+      client=sdk.createClient(config.url,config.publishableKey);
+      return client;
+    });
+  }
+  function record(type,slug,eventPath){
+    return client.rpc('record_visitor_event',{
+      p_visitor_id:visitorId,
+      p_event_type:type,
+      p_page_path:(eventPath||path).slice(0,500),
+      p_referrer_host:referrerHost||null,
+      p_device_type:device,
+      p_product_slug:slug||null
+    }).then(function(result){
+      if(result&&result.error)throw result.error;
+      return result;
+    });
+  }
+  function flush(){
+    if(flushing)return Promise.resolve();
+    flushing=true;
+    return loadClient().then(function(){
       var chain=Promise.resolve();
       if(!sessionStarted){
-        try{w.sessionStorage.setItem('zariah_visitor_started_v1','1');}catch(e){}
-        chain=record('session_start');
+        chain=chain.then(function(){return record('session_start',null,path);}).then(function(){
+          sessionStarted=true;
+          try{w.sessionStorage.setItem(STARTED_KEY,'1');}catch(e){}
+        });
       }
-      return chain.then(function(){return record(eventType);}).then(function(){var events=queuedEvents.splice(0);return events.reduce(function(p,item){return p.then(function(){return record(item.type,item.slug);});},Promise.resolve());});
-    }).catch(function(){});
+      if(pagePending){
+        chain=chain.then(function(){return record(eventType,productSlug,path);}).then(function(){pagePending=false;});
+      }
+      function drain(){
+        if(!queue.length)return Promise.resolve();
+        var item=queue[0];
+        return record(item.type,item.slug,item.path).then(function(){
+          queue.shift();
+          return drain();
+        });
+      }
+      return chain.then(drain);
+    }).then(function(){
+      retryCount=0;
+    }).catch(function(error){
+      if(w.console&&typeof w.console.warn==='function')w.console.warn('[ZARIAH tracking] Event delivery failed; will retry.',error);
+      scheduleRetry();
+    }).then(function(){flushing=false;});
   }
+  w.ZARIAH_TRACK_EVENT=function(type,slug){
+    if(!/^(product_view|product_click|cart_add)$/.test(type))return false;
+    var cleanSlug=String(slug||'').trim().toLowerCase().slice(0,160);
+    if(!cleanSlug)return false;
+    var eventPath=(type==='product_view'||type==='product_click')?('/products/'+cleanSlug.replace(/[^a-z0-9-]/g,'')+'/'):path;
+    queue.push({type:type,slug:cleanSlug,path:eventPath});
+    flush();
+    return true;
+  };
 
-  // Track intentional clicks on product links/cards as separate events.
+  // Track product links. SPA navigation and cart mutations are instrumented at
+  // their own source so this delegated listener does not double-count them.
   d.addEventListener('click',function(event){
     var target=event.target;
     if(target&&target.nodeType===3)target=target.parentElement;
     var link=target&&target.closest?target.closest('a[href]'):null;
     if(!link)return;
     var match=(link.getAttribute('href')||'').match(/(?:^|\/)products\/([^/?#]+)/i);
-    if(!match)return;
-    var slug=match[1].slice(0,160);
-    w.ZARIAH_TRACK_EVENT('product_click',slug);
+    if(match)w.ZARIAH_TRACK_EVENT('product_click',match[1]);
   },true);
 
   // Privilege Club conversion prompt: 60 seconds of visible, recently active time.
