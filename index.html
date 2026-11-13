@@ -1762,5 +1762,45 @@ const OverlayManager = (function() {
 </style>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
+
+<style id="z-contact-footer-half-height">
+/* Compact the existing homepage footer without removing its content or links. */
+.z-contact-footer{padding:26px 0 14px!important}
+.z-contact-footer .z-simple-footer-inner{width:min(1180px,calc(100% - 64px))!important}
+.z-contact-footer-intro{padding:0 0 16px!important}
+.z-contact-footer-intro .footer-name{font-size:clamp(27px,3vw,36px)!important;letter-spacing:.12em!important}
+.z-contact-footer-intro>p{margin:6px 0 0!important;font-size:11px!important;line-height:1.4!important}
+.z-contact-footer .z-footer-columns{grid-template-columns:1.2fr .8fr .8fr!important;gap:clamp(20px,3vw,42px)!important;padding:17px 0 18px!important}
+.z-contact-footer .z-footer-column{gap:7px!important}
+.z-contact-footer .z-footer-column h2{font-size:19px!important;margin:0 0 3px!important}
+.z-contact-footer .z-footer-column>a{font-size:10px!important;line-height:1.35!important}
+.z-contact-footer .z-footer-contact-link{grid-template-columns:27px minmax(0,1fr) 10px!important;gap:8px!important;padding:0 0 7px!important}
+.z-contact-footer .z-footer-icon{width:25px!important;height:25px!important;font-size:13px!important}
+.z-contact-footer .z-footer-contact-link>span:nth-child(2){gap:2px!important}
+.z-contact-footer .z-footer-contact-link small{font-size:7px!important}
+.z-contact-footer .z-footer-contact-link strong{font-size:10px!important}
+.z-contact-footer .z-footer-contact-link em{font-size:9px!important}
+.z-contact-footer .z-footer-social-link{gap:7px!important}
+.z-contact-footer .z-footer-social-link>span:first-child{width:20px!important;height:20px!important;font-size:10px!important}
+.z-contact-footer .z-footer-follow-note{margin:3px 0 0!important;font-size:9px!important;line-height:1.5!important}
+.z-contact-footer .z-simple-footer-bottom{padding-top:12px!important;font-size:9px!important}
+.z-contact-footer .z-simple-footer-bottom div{gap:16px!important}
+@media(max-width:760px){
+ .z-contact-footer{padding:22px 0 12px!important}
+ .z-contact-footer .z-simple-footer-inner{width:calc(100% - 36px)!important}
+ .z-contact-footer-intro{padding-bottom:13px!important}
+ .z-contact-footer-intro .footer-name{font-size:27px!important}
+ .z-contact-footer-intro>p{font-size:10px!important}
+ .z-contact-footer .z-footer-columns{grid-template-columns:1fr 1fr!important;gap:16px 14px!important;padding:14px 0 15px!important}
+ .z-contact-footer .z-footer-contact{grid-column:1/-1!important}
+ .z-contact-footer .z-footer-column{gap:6px!important}
+ .z-contact-footer .z-footer-column h2{font-size:18px!important}
+ .z-contact-footer .z-footer-column>a{font-size:10px!important}
+ .z-contact-footer .z-footer-contact-link{padding-bottom:6px!important}
+ .z-contact-footer .z-footer-follow-note{font-size:8px!important}
+ .z-contact-footer .z-simple-footer-bottom{padding-top:10px!important;gap:8px!important;font-size:8px!important}
+ .z-contact-footer .z-simple-footer-bottom div{gap:12px!important}
+}
+</style>
 </body>
 </html>
