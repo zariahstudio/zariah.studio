@@ -151,6 +151,50 @@ footer{background:#f8f5ef}
 }
 @media(prefers-reduced-motion:reduce){.submit{transition:none}}
 
+ 
+/* Kinbo-style checkout composition: delivery choice, payment, then delivery details. */
+.delivery-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.delivery-choice{position:relative;display:flex;align-items:center;gap:12px;min-height:82px;padding:15px 14px;border:1px solid #dce2e7;border-radius:14px;background:#f7fafc;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s}
+.delivery-choice input{width:18px;min-height:18px;flex:0 0 18px;margin:0;accent-color:#216b49}
+.delivery-choice.is-selected{border:2px solid #216b49;background:#eff9f2;box-shadow:0 0 0 2px rgba(33,107,73,.06)}
+.delivery-choice-icon{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;color:#60778b;font-size:21px}
+.delivery-choice-copy{display:flex;flex-direction:column;gap:6px}
+.delivery-choice-copy strong{font:600 13px/1.3 Inter,sans-serif;color:#252e38}
+.delivery-choice-copy small{font:400 11px/1.4 Inter,sans-serif;color:#6e7b88}
+.payment-options{grid-template-columns:1fr;gap:10px;margin-top:0}
+.payment-option{position:relative;align-items:center;min-height:76px;padding:15px 16px;border:1px solid #dfe3e7;border-radius:14px;background:#fff;gap:13px;transition:border-color .18s,background .18s,box-shadow .18s}
+.payment-option:has(input:checked){border:2px solid #216b49;background:#eff9f2;box-shadow:0 0 0 2px rgba(33,107,73,.06)}
+.payment-option input{width:19px;min-height:19px;flex:0 0 19px;margin:0;accent-color:#216b49}
+.payment-copy{display:flex;flex-direction:column;gap:6px;min-width:0}
+.payment-option strong{font:600 13px/1.3 Inter,sans-serif;color:#252e38}
+.payment-option small{font:400 11px/1.5 Inter,sans-serif;color:#6e7b88}
+.payment-tag{margin-left:auto;padding:5px 8px;border-radius:5px;background:#dff3e6;color:#216b49;font:600 9px Inter,sans-serif;white-space:nowrap}
+.cod-note{margin-top:14px;padding:15px 16px;border:1px solid #f0df9c;border-radius:13px;background:#fffbea;color:#755b2b;font:500 12px/1.8 Inter,sans-serif}
+.mfs-payment-details{border:1px solid #d9e6db;border-radius:12px;background:#f4faf5;padding:16px}
+.mfs-payment-number{color:#216b49;font-size:22px}
+.delivery-info-section input,.delivery-info-section textarea{min-height:58px;padding:16px 17px;border:1px solid #dce2e7;border-radius:13px;background:#f7fafc;font-size:14px}
+.delivery-info-section textarea{min-height:105px}
+.delivery-info-section .field{position:relative}
+.delivery-info-section label{font-size:9px}
+.free-delivery-offer{margin:18px 0 0;padding:20px 18px;border:1px solid #e7e0d5;border-radius:14px;background:#fffdf9;box-shadow:0 5px 20px rgba(58,45,31,.035)}
+.free-delivery-offer h3{margin:0 0 12px;color:#286b48;font:600 19px/1.3 Inter,sans-serif}
+.free-delivery-offer p{margin:8px 0;color:#393d3a;font:400 12px/1.8 Inter,sans-serif}
+.free-delivery-offer p[lang="bn"]{font-size:14px;color:#5b5044}
+.checkout-trust{grid-template-columns:1fr;gap:10px}
+.checkout-trust span{font-size:10px}
+@media(max-width:760px){
+ .delivery-choice-grid{grid-template-columns:1fr;gap:9px}
+ .delivery-choice{min-height:76px;padding:13px 14px}
+ .payment-option{min-height:76px;padding:14px 13px}
+ .payment-option strong{font-size:13px}
+ .payment-option small{font-size:11px}
+ .payment-tag{font-size:8px;padding:5px 6px}
+ .delivery-info-section input,.delivery-info-section textarea{min-height:58px;font-size:14px}
+ .free-delivery-offer{padding:18px 15px}
+ .free-delivery-offer h3{font-size:18px}
+}
+@media(max-width:370px){.payment-tag{white-space:normal;max-width:104px;text-align:center}}
+
 </style>
 <link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109"><link rel="stylesheet" href="/assets/css/mobile-navigation-refinement.css?v=20261110-mobile-ux2"><link rel="stylesheet" href="/assets/css/mobile-commerce-controls.css?v=20261110-mobile-ux3"><link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2">  <link rel="stylesheet" href="/assets/css/unified-premium-header.css?v=20261113-v1">
 </head>
@@ -177,46 +221,48 @@ const subtotal=cart.reduce((sum,item)=>sum+(Number(item.price)||0)*(Number(item.
 root.innerHTML=`
 <div class="layout">
 <form id="guestCheckout" novalidate>
-<section class="form-section">
-  <div class="section-heading"><span class="section-number">01</span><div><h2 class="section-title">Contact Information</h2><p class="section-caption">How can we reach you about your order?</p></div></div>
+<section class="form-section delivery-choice-section">
+  <div class="section-heading"><span class="section-number">01</span><div><h2 class="section-title">Select Delivery City</h2><p class="section-caption">Choose where your order should be delivered.</p></div></div>
+  <div class="delivery-choice-grid" role="radiogroup" aria-label="Select delivery city">
+    <label class="delivery-choice"><input type="radio" name="deliveryZone" value="inside_chattogram" required><span class="delivery-choice-icon" aria-hidden="true">⌂</span><span class="delivery-choice-copy"><strong>Inside Chattogram</strong><small>1–2 Days · ৳70</small></span></label>
+    <label class="delivery-choice"><input type="radio" name="deliveryZone" value="outside_chattogram" required><span class="delivery-choice-icon" aria-hidden="true">⌖</span><span class="delivery-choice-copy"><strong>Outside Chattogram</strong><small>2–4 Days · ৳150</small></span></label>
+  </div>
+  <p class="hint">Orders with product subtotal of ৳2,500 or more qualify for free delivery.</p>
+</section>
+<section class="form-section payment-section">
+  <div class="section-heading"><span class="section-number">02</span><div><h2 class="section-title">Choose Payment Method</h2><p class="section-caption">Select how you would like to pay.</p></div></div>
+  <div class="payment-options" role="radiogroup" aria-label="Choose payment method">
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span class="payment-copy"><strong>Cash on Delivery</strong><small>Pay when your parcel arrives at your doorstep.</small></span><span class="payment-tag">No Advance Needed</span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-copy"><strong>bKash Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-copy"><strong>Nagad Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-copy"><strong>Rocket Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
+  </div>
+  <div id="mfsPaymentDetails" class="mfs-payment-details" hidden>
+    <p><strong>Send payment to this number only after our team confirms your final payable amount.</strong></p>
+    <span class="mfs-payment-number">01642779056</span>
+    <p>Choose the selected service (bKash, Nagad or Rocket). Delivery charge is included in the final amount confirmed by our team.</p>
+    <div class="field"><label for="paymentReference">Transaction ID (Optional)</label><input id="paymentReference" name="paymentReference" autocomplete="off" maxlength="40" placeholder="Enter transaction ID if already paid"></div>
+    <p>Payment remains pending until verified. Never share your PIN or OTP.</p>
+  </div>
+  <div id="codNote" class="cod-note"><strong>100% নিশ্চিন্তে অর্ডার করুন</strong><br>অগ্রিম কোনো টাকা দিতে হবে না। পার্সেল হাতে পেয়ে দেখে বুঝে পেমেন্ট করুন।</div>
+</section>
+<section class="form-section delivery-info-section">
+  <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery Information</h2><p class="section-caption">Enter your details so we can deliver your order.</p></div></div>
   <div class="fields">
-    <div class="field full"><label for="fullName">Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Enter your full name" required maxlength="80"></div>
-    <div class="field"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required maxlength="16"></div>
-    <div class="field"><label for="email">Email Address (Optional)</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></div>
+    <div class="field full"><label for="fullName">Your Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name" required maxlength="80></div>
+    <div class="field full"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required maxlength="16"></div>
+    <div class="field full"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
+    <div class="field full"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
+    <div class="field full"><label for="address">Full Address (House, Road, Area, Thana) *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House / Flat, Road, Area, Thana and nearby landmark" required maxlength="400"></textarea></div>
+    <div class="field full"><label for="notes">Special Delivery Instructions (Optional)</label><textarea id="notes" name="notes" placeholder="Any special instructions for delivery?" maxlength="300"></textarea></div>
+    <div class="field full"><label for="email">Email Address (Optional)</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="100"></div>
   </div>
   <p class="hint">Your phone number will be used for order confirmation and delivery coordination.</p>
 </section>
-<section class="form-section">
-  <div class="section-heading"><span class="section-number">02</span><div><h2 class="section-title">Delivery Information</h2><p class="section-caption">Where should we deliver your order?</p></div></div>
-  <div class="fields">
-    <div class="field"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
-    <div class="field"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
-    <div class="field full"><label for="deliveryZone">Delivery Location *</label><select id="deliveryZone" name="deliveryZone" required><option value="">Select your delivery location</option><option value="inside_chattogram">Inside Chattogram City — ৳70</option><option value="outside_chattogram">Outside Chattogram City — ৳150</option></select><p class="hint">Orders of ৳2,500 or more qualify for free delivery.</p></div>
-    <div class="field full"><label for="address">Full Delivery Address *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House / Flat, Road, Building, Area and a nearby landmark" required maxlength="400"></textarea></div>
-    <div class="field full"><label for="notes">Special Delivery Instructions (Optional)</label><textarea id="notes" name="notes" placeholder="Anything our delivery team should know?" maxlength="300"></textarea></div>
-  </div>
-</section>
-<section class="form-section">
-  <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery & Payment</h2><p class="section-caption">Review how your order will reach you.</p></div></div>
-  <div class="delivery-method"><span class="method-mark" aria-hidden="true">↗</span><div><strong>Standard Home Delivery</strong><span>Inside Chattogram: ৳70 · Outside Chattogram: ৳150. Free delivery on product subtotal of ৳2,500 or more.</span></div></div>
-  <div class="payment-options" role="radiogroup" aria-label="Choose payment method">
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span><strong>Cash on Delivery</strong><small>Pay when your parcel arrives.</small></span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span><strong>bKash</strong><small>Mobile financial service</small></span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span><strong>Nagad</strong><small>Mobile financial service</small></span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span><strong>Rocket</strong><small>Mobile financial service</small></span></label>
-  </div>
-  <div id="mfsPaymentDetails" class="mfs-payment-details" hidden>
-    <p><strong>Payment number</strong></p>
-    <span class="mfs-payment-number">01642779056</span>
-    <p>Our team will confirm your final payable amount, including delivery charge, before you send payment. Please wait for confirmation before transferring money.</p>
-    <div class="field"><label for="paymentReference">Transaction ID (if already paid)</label><input id="paymentReference" name="paymentReference" autocomplete="off" maxlength="40" placeholder="Enter transaction ID (optional)"></div>
-    <p>Payment is marked pending until our team verifies it. Never share your PIN or OTP.</p>
-  </div>
-  <div id="codNote" class="cod-note"><strong>Cash on Delivery.</strong> Pay when your parcel arrives. Our team will confirm the delivery charge before dispatch.</div>
-</section>
 <button class="submit" type="submit">Place Order Securely&nbsp; →</button>
 <p class="hint">By placing your order, you confirm that the contact and delivery information above is accurate. Our team may contact you to verify availability and delivery details.</p>
-<div class="checkout-trust"><span><b>◇</b> Curated Selection</span><span><b>✓</b> Order Confirmation</span><span><b>↗</b> Nationwide Delivery</span></div>
+<div class="checkout-trust"><span><b>♧</b> 100% Authentic</span><span><b>✓</b> Check on Delivery</span><span><b>↗</b> Nationwide Delivery</span></div>
+<div class="free-delivery-offer"><h3>🎁 Free Delivery Offer!</h3><p>On orders of <strong>৳2,500 or more</strong>, enjoy free home delivery anywhere in Bangladesh.</p><p lang="bn">৳২,৫০০ বা তার বেশি অর্ডারে সারাদেশে ফ্রি হোম ডেলিভারি।</p></div>
 </form>
 <aside class="summary">
   <h2>Your Order</h2><p class="summary-subtitle">${cart.length} ${cart.length===1?'item':'items'} selected · Review before placing your order</p>
@@ -228,19 +274,21 @@ root.innerHTML=`
   <a class="back" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
-const deliveryZone=document.getElementById('deliveryZone');
+const deliveryZoneInputs=[...document.querySelectorAll('input[name="deliveryZone"]')];
 const deliveryFeeDisplay=document.getElementById('deliveryFeeDisplay');
 const checkoutTotalDisplay=document.getElementById('checkoutTotalDisplay');
 const deliverySummaryNote=document.getElementById('deliverySummaryNote');
+function selectedDeliveryZone(){return document.querySelector('input[name="deliveryZone"]:checked')?.value||''}
 function calculateDelivery(){
- const zone=deliveryZone.value;
+ const zone=selectedDeliveryZone();
  const free=subtotal>=2500;
  const fee=free?0:(zone==='inside_chattogram'?70:zone==='outside_chattogram'?150:null);
  deliveryFeeDisplay.textContent=fee===null?'Select location':fee===0?'Free':money(fee);
  checkoutTotalDisplay.textContent=money(subtotal+(fee||0));
  deliverySummaryNote.textContent=free?'You qualify for free delivery on orders of ৳2,500 or more.':fee===null?'Select your delivery location to calculate the delivery charge.':(zone==='inside_chattogram'?'Inside Chattogram City delivery: ৳70.':'Outside Chattogram City delivery: ৳150.')+' Delivery is free on product subtotal of ৳2,500 or more.';
+ document.querySelectorAll('.delivery-choice').forEach(card=>card.classList.toggle('is-selected',card.querySelector('input')?.checked===true));
 }
-deliveryZone.addEventListener('change',calculateDelivery);
+deliveryZoneInputs.forEach(input=>input.addEventListener('change',calculateDelivery));
 calculateDelivery();
 const paymentChoices=[...document.querySelectorAll('input[name="paymentMethod"]')];
 const mfsDetails=document.getElementById('mfsPaymentDetails');
