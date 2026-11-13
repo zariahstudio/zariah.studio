@@ -26,6 +26,7 @@ REQUIRED_FILES=(
   "zariah-cart.js"
   "zariah-supabase-loader.js"
   "zariah-analytics-loader.js"
+  "zariah-visitor-tracker.js"
   "product-seo.php"
   "sitemap.php"
   "robots.txt"
