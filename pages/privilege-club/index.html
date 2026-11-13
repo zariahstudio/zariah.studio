@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Privilege Club | ZARIAH Studio</title>
-<meta name="description" content="Access your ZARIAH Studio Privilege Club membership, tier and rewards points using your verified mobile number.">
+<meta name="description" content="Access your ZARIAH Studio Privilege Club membership, tier and rewards points using your verified email address.">
 <link rel="canonical" href="https://www.zariahstudio.com/pages/privilege-club/"><base href="/">
 <link rel="icon" href="/images/brand/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 <div class="announcement">A MORE PERSONAL WAY TO SHOP · ZARIAH PRIVILEGE CLUB</div>
 <header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/collections/all-bags/">Shop Bags</a><a href="/pages/track-order/">Track Order</a><a href="/pages/contact/">Contact</a></nav></header>
 <main>
-<section class="intro"><div class="eyebrow">ZARIAH STUDIO MEMBERSHIP</div><h1>Privilege Club</h1><p>Every completed purchase brings you closer to a higher membership. Sign in with the mobile number used for your ZARIAH orders to view your membership card, qualifying spend and points.</p></section>
+<section class="intro"><div class="eyebrow">ZARIAH STUDIO MEMBERSHIP</div><h1>Privilege Club</h1><p>Every completed purchase brings you closer to a higher membership. Register with your name, mobile number and email address. Verification is completed by email only; no SMS is required.</p></section>
 <section class="tiers" aria-label="Membership tiers">
 <div class="tier"><strong>Bronze</strong><small>Starting tier</small><small>৳0+</small></div>
 <div class="tier"><strong>Silver</strong><small>Lifetime tier</small><small>৳10,000+</small></div>
@@ -43,11 +43,14 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 <div class="tier"><strong>Platinum</strong><small>Lifetime tier</small><small>৳50,000+</small></div>
 </section>
 <section class="login" id="loginPanel">
-<h2>Access your membership</h2><p class="hint">Enter the Bangladesh mobile number used when placing your order. We will send a one-time verification code. Your membership details are shown only after the number is verified.</p>
-<div class="field"><label for="phone">Mobile number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="16"></div>
-<button class="action" id="sendOtp">Send verification code</button>
-<div id="otpWrap" hidden><div class="field"><label for="otp">6-digit verification code</label><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"></div><button class="action" id="verifyOtp">Verify & view membership</button></div>
+<h2 id="formTitle">Create your membership</h2><p class="hint" id="formHint">Enter your name, Bangladesh mobile number and email address. We will send a one-time code to your email only. Your mobile number is stored for membership and order matching; it is not SMS-verified.</p>
+<div class="field" id="nameField"><label for="fullName">Full name</label><input id="fullName" type="text" autocomplete="name" maxlength="120" placeholder="Your full name"></div>
+<div class="field" id="phoneField"><label for="phone">Mobile number</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" maxlength="16"></div>
+<div class="field"><label for="email">Email address</label><input id="email" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="you@example.com"></div>
+<button class="action" id="sendOtp">Send email verification code</button>
+<div id="otpWrap" hidden><div class="field"><label for="otp">6-digit email verification code</label><input id="otp" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"></div><button class="action" id="verifyOtp">Verify email & view membership</button></div>
 <div class="message" id="message" role="status" aria-live="polite"></div>
+<p class="hint" style="margin:18px 0 0;text-align:center">Already registered? <button type="button" id="switchLogin" style="background:none;color:#8b704c;text-decoration:underline;font:inherit">Sign in with email</button></p>
 </section>
 <section class="member" id="memberPanel" aria-live="polite">
 <div class="member-head"><div><div class="eyebrow">ZARIAH STUDIO · PRIVILEGE CLUB</div><h2 id="memberName">Member</h2><div class="member-id" id="memberId"></div></div><span class="tier-pill" id="memberTier">Bronze</span></div>
@@ -61,16 +64,16 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 <script>
 (function(){
 'use strict';
-var client=null, session=null;
+var client=null,isLogin=false;
 var $=function(id){return document.getElementById(id)};
 var showMessage=function(text){$('message').textContent=text;$('message').classList.add('show')};
 var clearMessage=function(){$('message').textContent='';$('message').classList.remove('show')};
-var normalisePhone=function(value){var digits=String(value||'').replace(/[^0-9]/g,'');if(digits.indexOf('00880')===0)digits=digits.slice(2);if(digits.indexOf('880')===0)digits=digits.slice(3);if(digits.length===10&&digits.charAt(0)==='1')digits='0'+digits;return digits};
-var toE164=function(value){var digits=normalisePhone(value);return /^01[3-9][0-9]{8}$/.test(digits)?'+88'+digits:null};
+var normalisePhone=function(value){var d=String(value||'').replace(/[^0-9]/g,'');if(d.indexOf('00880')===0)d=d.slice(2);if(d.indexOf('880')===0)d=d.slice(3);if(d.length===10&&d.charAt(0)==='1')d='0'+d;return d};
+var validPhone=function(value){return /^01[3-9][0-9]{8}$/.test(normalisePhone(value))};
 var money=function(value){return '৳'+Number(value||0).toLocaleString('en-BD')};
 var tiers=[{key:'bronze',label:'Bronze',next:10000},{key:'silver',label:'Silver',next:25000},{key:'gold',label:'Gold',next:50000},{key:'platinum',label:'Platinum',next:null}];
 function render(data){
-if(!data||!data.found){$('loginPanel').style.display='block';$('memberPanel').classList.remove('show');showMessage(data&&data.message?data.message:'No matching membership profile was found. Use the mobile number from your order or contact support.');return}
+if(!data||!data.found){$('loginPanel').style.display='block';$('memberPanel').classList.remove('show');showMessage(data&&data.message?data.message:'Membership profile was not found. Please contact support.');return}
 $('loginPanel').style.display='none';$('memberPanel').classList.add('show');
 $('memberName').textContent=data.member_name||'ZARIAH Member';$('memberId').textContent='MEMBER ID · '+data.member_id;
 $('memberTier').textContent=(data.tier||'bronze').toUpperCase();$('points').textContent=Number(data.points_balance||0).toLocaleString('en-BD');$('lifetimePoints').textContent=Number(data.lifetime_points||0).toLocaleString('en-BD');$('spend').textContent=money(data.qualifying_spend_bdt);
@@ -82,9 +85,10 @@ var rows=(data.transactions||[]).slice(0,20);
 $('historyRows').innerHTML=rows.length?rows.map(function(tx){var date=new Date(tx.date).toLocaleDateString('en-GB');var pts=Number(tx.points||0);return '<tr><td>'+date+'</td><td>'+money(tx.spend_bdt)+'</td><td>'+(pts>0?'+':'')+pts+'</td><td>'+(tx.status==='earned'?'Earned':'Reversed')+'</td></tr>'}).join(''):'<tr><td colspan="4">No points activity yet.</td></tr>';
 }
 async function loadClient(){if(client)return client;var cfg=window.ZARIAH_SUPABASE_CONFIG||{};if(!cfg.url||!cfg.publishableKey)throw new Error('Membership access is not configured yet. Please contact support.');var sdk=await window.ZARIAH_LOAD_SUPABASE();client=sdk.createClient(cfg.url,cfg.publishableKey);return client}
-$('sendOtp').addEventListener('click',async function(){clearMessage();var phone=toE164($('phone').value);if(!phone){showMessage('Enter a valid Bangladesh mobile number, for example 01XXXXXXXXX.');return}var button=$('sendOtp');button.disabled=true;button.textContent='Sending code…';try{var db=await loadClient();var result=await db.auth.signInWithOtp({phone:phone});if(result.error)throw result.error;$('otpWrap').hidden=false;showMessage('A verification code has been requested for '+phone+'. Enter the code to continue.')}catch(error){showMessage(error.message||'Unable to send the code. Please try again later.')}finally{button.disabled=false;button.textContent='Send verification code'}});
-$('verifyOtp').addEventListener('click',async function(){clearMessage();var phone=toE164($('phone').value),token=$('otp').value.replace(/[^0-9]/g,'');if(!phone||!/^[0-9]{6}$/.test(token)){showMessage('Enter the 6-digit code sent to your mobile number.');return}var button=$('verifyOtp');button.disabled=true;button.textContent='Verifying…';try{var db=await loadClient();var verified=await db.auth.verifyOtp({phone:phone,token:token,type:'sms'});if(verified.error)throw verified.error;session=verified.data.session;var profile=await db.rpc('get_my_privilege_club');if(profile.error)throw profile.error;render(profile.data)}catch(error){showMessage(error.message||'Verification failed. Check the code and try again.')}finally{button.disabled=false;button.textContent='Verify & view membership'}});
-$('signOut').addEventListener('click',async function(){if(client)await client.auth.signOut();session=null;$('memberPanel').classList.remove('show');$('loginPanel').style.display='block';$('otpWrap').hidden=true;$('otp').value='';clearMessage()});
+$('switchLogin').addEventListener('click',function(){isLogin=!isLogin;clearMessage();$('otpWrap').hidden=true;$('otp').value='';$('nameField').hidden=isLogin;$('phoneField').hidden=isLogin;$('formTitle').textContent=isLogin?'Sign in to your membership':'Create your membership';$('formHint').textContent=isLogin?'Enter your registered email address. A one-time verification code will be sent to your email only.':'Enter your name, Bangladesh mobile number and email address. Verification is by email only; no SMS is sent.';$('switchLogin').textContent=isLogin?'Create a new membership':'Sign in with email'});
+$('sendOtp').addEventListener('click',async function(){clearMessage();var email=$('email').value.trim().toLowerCase(),name=$('fullName').value.trim(),phone=normalisePhone($('phone').value);if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMessage('Enter a valid email address.');return}if(!isLogin&&(!name||name.length<2||!validPhone(phone))){showMessage('Enter your full name and a valid Bangladesh mobile number.');return}var button=$('sendOtp');button.disabled=true;button.textContent='Sending email…';try{var db=await loadClient();var options={shouldCreateUser:true};if(!isLogin)options.data={full_name:name,phone:phone};var result=await db.auth.signInWithOtp({email:email,options:options});if(result.error)throw result.error;$('otpWrap').hidden=false;showMessage('A 6-digit verification code has been sent to '+email+'. Check your inbox and spam folder.')}catch(error){showMessage(error.message||'Unable to send the verification email. Please try again.')}finally{button.disabled=false;button.textContent='Send email verification code'}});
+$('verifyOtp').addEventListener('click',async function(){clearMessage();var email=$('email').value.trim().toLowerCase(),token=$('otp').value.replace(/[^0-9]/g,'');if(!/^[0-9]{6}$/.test(token)){showMessage('Enter the 6-digit code sent to your email.');return}var button=$('verifyOtp');button.disabled=true;button.textContent='Verifying…';try{var db=await loadClient();var verified=await db.auth.verifyOtp({email:email,token:token,type:'email'});if(verified.error)throw verified.error;var profile=await db.rpc('get_my_privilege_club');if(profile.error)throw profile.error;render(profile.data)}catch(error){showMessage(error.message||'Verification failed. Check the code and try again.')}finally{button.disabled=false;button.textContent='Verify email & view membership'}});
+$('signOut').addEventListener('click',async function(){if(client)await client.auth.signOut();$('memberPanel').classList.remove('show');$('loginPanel').style.display='block';$('otpWrap').hidden=true;$('otp').value='';clearMessage()});
 })();
 </script>
 </body></html>
