@@ -1260,7 +1260,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
 
   try {
     const config = window.ZARIAH_SUPABASE_CONFIG;
-    if (!config || !config.url || !config.publishableKey) throw new Error('Order service is temporarily unavailable. Please try again or contact us on WhatsApp.');
+    if (!config || !config.url || !config.publishableKey) throw new Error('Order service is temporarily unavailable. Please try again later or contact Customer Support.');
     const sdk = await window.ZARIAH_LOAD_SUPABASE();
     const client = sdk.createClient(config.url, config.publishableKey, {
       auth: { persistSession: false, autoRefreshToken: false }
@@ -1286,20 +1286,6 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
     if (error) throw error;
     if (!order || order.success !== true || !order.order_number) throw new Error('We could not confirm your order. Please try again.');
 
-    const waMsg = encodeURIComponent(
-      `Hello ZARIAH Studio! 🌿\n\nI'd like to confirm my order:\n\n` +
-      `🧾 Order: ${order.order_number}\n` +
-      `📦 Product: ${productName}\n` +
-      `🏷 Collection: ${collection}\n` +
-      `🔖 Code: ${productCode}\n` +
-      `💰 Price: ${price}\n` +
-      `🔢 Quantity: ${qty}\n\n` +
-      `👤 Name: ${name}\n📞 Phone: ${phone}\n` +
-      `📍 District: ${district}\nArea: ${area}\nAddress: ${address}\n\n` +
-      `Please confirm availability and delivery charge. Thank you!`
-    );
-    const waUrl = `https://wa.me/8801642779056?text=${waMsg}`;
-
     const formSection = document.querySelector('.omodal-hdr');
     const bodySection = document.querySelector('.omodal-body');
     const footerSection = document.querySelector('.omodal-ftr');
@@ -1324,13 +1310,9 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
         detail.append(document.createTextNode(price + ' · Qty: ' + qty), document.createElement('br'), deliveryLine);
       }
     }
-
-    // The database has confirmed the order. WhatsApp is a separate confirmation step.
+    // Order is complete in the database; no messaging-app confirmation is needed.
     delete submitButton.dataset.idempotencyKey;
     delete submitButton.dataset.requestSignature;
-    const waBtn = document.getElementById('btnWaConfirm');
-    if (waBtn) waBtn.onclick = () => openWhatsApp(waUrl);
-    setTimeout(() => openWhatsApp(waUrl), 1200);
   } catch (error) {
     console.error('[ZARIAH] Website order submission failed:', error);
     if (checkoutError) {
