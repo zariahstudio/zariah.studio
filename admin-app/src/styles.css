@@ -156,3 +156,22 @@
 .visitor-placeholder p{font-size:13px;line-height:1.7}
 .visitor-placeholder ul{text-align:left;display:inline-block;font-size:13px;line-height:1.9;margin:10px auto 18px}
 @media(max-width:700px){.fraud-kpis{grid-template-columns:1fr}.fraud-tabs button{flex:1;justify-content:center}.fraud-risk-panel .panel-head.split{align-items:flex-start;gap:12px}}
+
+
+/* Visitor intelligence tables and controls */
+.visitor-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0 16px}
+.visitor-range{display:flex;gap:5px;flex-wrap:wrap;padding:4px;background:#f3f5fa;border:1px solid var(--line);border-radius:9px}
+.visitor-range button{border:0;background:transparent;color:var(--muted);border-radius:7px;padding:8px 12px;font:inherit;font-size:12px;cursor:pointer}
+.visitor-range button.active{background:#203d83;color:#fff}
+.visitor-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.visitor-sources{border:1px solid var(--line);border-radius:9px;padding:16px;margin:16px 0}
+.visitor-sources .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.visitor-sources h3{font-size:15px;margin:0}
+.visitor-sources .panel-head small{color:var(--muted);font-size:11px}
+.visitor-source-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:12px}
+.visitor-source-row strong{font-variant-numeric:tabular-nums}
+.visitor-empty{max-width:560px;margin:24px auto;text-align:center;border:1px dashed var(--line);border-radius:10px;padding:26px;color:var(--muted)}
+.visitor-empty svg{margin:0 auto 10px;color:#b7791f}
+.visitor-empty h3{color:var(--ink);font-size:16px;margin:0 0 8px}
+.visitor-empty p{font-size:13px;line-height:1.65}
+@media(max-width:760px){.visitor-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.visitor-toolbar{align-items:flex-start}.visitor-range{width:100%}.visitor-range button{flex:1;padding:8px 6px}}
