@@ -74,7 +74,8 @@
           '<span class="z-mobile-home-name">' + name + '</span>' +
           '<span class="z-mobile-home-price">' + price + '</span></a>';
       }).join('');
-    }
+    });
+  }
   document.addEventListener('DOMContentLoaded', render);
   window.addEventListener('zariah:catalogue-updated', function () { cachedProducts = null; cachedSelections = {}; render(); });
   window.addEventListener('resize', render);
