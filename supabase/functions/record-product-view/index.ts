@@ -1,16 +1,18 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://zariahstudio.com",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-};
+function corsHeaders(origin: string) {
+  return {
+    "Access-Control-Allow-Origin": origin,
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
 
-function json(data: unknown, status = 200) {
+function json(data: unknown, status = 200, origin = "https://zariahstudio.com") {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" },
+    headers: { ...corsHeaders(origin), "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }
 
@@ -35,24 +37,23 @@ async function hmacIp(ip: string, secret: string): Promise<string> {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
-
   const origin = req.headers.get("origin") || "";
   if (origin !== "https://zariahstudio.com" && origin !== "https://www.zariahstudio.com") {
     return json({ error: "Origin not allowed" }, 403);
   }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(origin) });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405, origin);
 
   const ip = req.headers.get("cf-connecting-ip");
-  if (!validIp(ip)) return json({ error: "Trusted client IP header unavailable" }, 503);
+  if (!validIp(ip)) return json({ error: "Trusted client IP header unavailable" }, 503, origin);
 
   let payload: Record<string, unknown>;
   try {
     const raw = await req.text();
-    if (raw.length > 4096) return json({ error: "Request too large" }, 413);
+    if (raw.length > 4096) return json({ error: "Request too large" }, 413, origin);
     payload = JSON.parse(raw);
   } catch {
-    return json({ error: "Invalid JSON" }, 400);
+    return json({ error: "Invalid JSON" }, 400, origin);
   }
 
   const visitorId = payload.visitor_id;
@@ -66,14 +67,14 @@ Deno.serve(async (req: Request) => {
       typeof pagePath !== "string" || pagePath !== `/products/${slug}/` ||
       !(deviceType === "mobile" || deviceType === "desktop" || deviceType === "tablet" || deviceType === "unknown") ||
       !(referrerHost === null || typeof referrerHost === "string" && referrerHost.length <= 255)) {
-    return json({ error: "Invalid product view payload" }, 400);
+    return json({ error: "Invalid product view payload" }, 400, origin);
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_SECRET_KEY");
   if (!supabaseUrl || !serviceKey) {
     console.error("Missing required Supabase server environment.");
-    return json({ error: "Tracking service unavailable" }, 503);
+    return json({ error: "Tracking service unavailable" }, 503, origin);
   }
 
   try {
@@ -97,13 +98,13 @@ Deno.serve(async (req: Request) => {
 
     if (!rpcResponse.ok) {
       console.error("record_product_view RPC failed:", rpcResponse.status, await rpcResponse.text());
-      return json({ error: "Could not record product view" }, 502);
+      return json({ error: "Could not record product view" }, 502, origin);
     }
 
     const recorded = await rpcResponse.json();
-    return json({ recorded: recorded === true });
+    return json({ recorded: recorded === true }, 200, origin);
   } catch (error) {
     console.error("Product view tracking failed:", error);
-    return json({ error: "Tracking service unavailable" }, 503);
+    return json({ error: "Tracking service unavailable" }, 503, origin);
   }
 });
