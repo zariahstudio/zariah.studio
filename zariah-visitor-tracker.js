@@ -30,7 +30,7 @@
     if(sent)return;
     sent=true;
     w.ZARIAH_LOAD_SUPABASE().then(function(sdk){
-      var client=sdk.createClient(w.ZARIAH_SUPABASE_URL,w.ZARIAH_SUPABASE_ANON_KEY);
+      var config=w.ZARIAH_SUPABASE_CONFIG||{};\n      if(!config.url||!config.publishableKey)return;\n      var client=sdk.createClient(config.url,config.publishableKey);
       return client.rpc('record_visitor_event',{
         p_visitor_id:visitorId,p_event_type:eventType,p_page_path:path,
         p_referrer_host:referrerHost||null,p_device_type:device,p_product_slug:productSlug
