@@ -124,7 +124,7 @@ function renderProducts() {
     art.innerHTML = `
       <div class="pcard-img" style="background:${bg}" id="pcimg-${p.id}">
         ${p.badge ? `<div class="badge ${p.badgeClass}" aria-label="${p.badge}">${p.badge}</div>` : ''}
-        <div class="coll-badge" aria-label="${p.collection} collection">${p.collection}</div><button class="z-wishlist-heart" type="button" data-wishlist="${p.id}" aria-pressed="${zIsWishlisted(p.id)}" aria-label="Add to wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button>
+        ${p.brand ? `<div class="coll-badge" aria-label="${p.brand} brand">${p.brand}</div>` : ''}<button class="z-wishlist-heart" type="button" data-wishlist="${p.id}" aria-pressed="${zIsWishlisted(p.id)}" aria-label="Add to wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button>
         ${p.soldOut ? `<div class="soldout-stamp" aria-label="Sold out">Sold Out</div>` : (p.preOrder ? `<div class="z-preorder-stamp" aria-label="Pre-order available">Pre-order</div>` : '')}
         <img class="pcard-img-real pcard-img-front" src="${frontImg}" alt="${p.name} — front view" loading="lazy" data-product="${p.id}" decoding="async">
         <img class="pcard-img-real pcard-img-side" data-src="${sideImg}" alt="${p.name} — side view" loading="lazy" aria-hidden="true" data-product="${p.id}" decoding="async">
@@ -215,7 +215,7 @@ function renderProducts() {
         fbTrack('Contact', { content_name: 'Notify Me — ' + p.name, content_category: 'Back In Stock' });
         fbTrackCustom('WhatsAppClick', { location: 'notify_btn', product: p.name, collection: p.collection });
         if (typeof gtag !== 'undefined') {
-          gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.collection });
+          gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.brand || p.type });
         }
         const msg = encodeURIComponent(`Hello ZARIAH Studio! 🌿\n\nI'd like to be notified when the *${p.name}* (${p.collection} Collection) is back in stock.\n\nPlease let me know as soon as it's available. Thank you!`);
         window.open(`https://wa.me/8801642779056?text=${msg}`, '_blank', 'noopener,noreferrer');
@@ -896,7 +896,7 @@ function openPModal(id) {
       content_ids: [p.id],
       content_name: p.name,
       content_type: 'product',
-      content_category: p.collection + ' > ' + p.type,
+      content_category: (p.brand ? p.brand + ' > ' : '') + p.type,
       value: parsePrice(p.price),
       currency: 'BDT'
     });
@@ -915,7 +915,7 @@ function openPModal(id) {
   const imgs = getGalleryImages(p);
   const labels = ['Front','Side','Back','Detail','Lifestyle','Inside'];
 
-  document.getElementById('pmodalColl').textContent = p.collection + ' Collection';
+  document.getElementById('pmodalColl').textContent = p.brand || 'Selected Handbag';
   document.getElementById('pmodalName').textContent = p.name;
   document.getElementById('pmodalType').textContent = p.type;
   document.getElementById('pmodalPrice').textContent = p.price;
@@ -938,7 +938,7 @@ function openPModal(id) {
 
   const featuresEl = document.getElementById('pmodalFeatures');
   if (featuresEl) {
-    const materialLabel = p.collection === 'Noir' ? 'Top-grain genuine cowhide' : 'Premium vegan leather';
+    const materialLabel = p.material || 'Product details shown on this page';
     featuresEl.innerHTML = `
       <span class="pfeat">${materialLabel}</span>
       <span class="pfeat">Gold-tone hardware</span>
@@ -993,17 +993,17 @@ function openPModal(id) {
       const message = encodeURIComponent(
         `Hello ZARIAH Studio! 🌿\n\nI have a question about this bag:\n\n` +
         `📦 Product: ${p.name}\n` +
-        `🏷 Collection: ${p.collection}\n` +
+        `🏷 Brand: ${p.brand || 'Please confirm'}\n` +
         `🔖 Code: ${p.id}\n` +
         `🎨 Color: ${p.color || 'Please advise'}\n` +
         `💰 Price: ${p.price}\n\n` +
         `Could you please share more details? Thank you!`
       );
       if (typeof fbq !== 'undefined') {
-        fbq('track', 'Contact', { content_name: p.name, content_category: p.collection, content_ids: [p.id] });
+        fbq('track', 'Contact', { content_name: p.name, content_category: p.brand || p.type, content_ids: [p.id] });
       }
       if (typeof gtag !== 'undefined') {
-        gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'product_enquiry', item_id: p.id, item_name: p.name, item_category: p.collection });
+        gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'product_enquiry', item_id: p.id, item_name: p.name, item_category: p.brand || p.type });
       }
       openWhatsApp(`https://wa.me/8801642779056?text=${message}`);
     };
@@ -1541,8 +1541,8 @@ function renderProductDetailsPage(id){
  const imgs=getGalleryImages(p).filter(Boolean);
  const unique=[...new Set(imgs)];
   const gallery='<div class="z-gallery-stage"><img id="zGalleryImage" src="'+zEscape(unique[0]||'')+'" alt="'+zEscape(p.name)+' — Front view" loading="eager" decoding="async"></div>'+(unique.length>1?'<button class="z-gallery-arrow prev" id="zGalleryPrev" type="button" aria-label="Previous product image">‹</button><button class="z-gallery-arrow next" id="zGalleryNext" type="button" aria-label="Next product image">›</button><span class="z-gallery-count" id="zGalleryCount">1 / '+unique.length+'</span><div class="z-gallery-dots" id="zGalleryDots" aria-label="Choose product image">'+unique.map((_,i)=>'<button type="button" class="z-gallery-dot'+(i===0?' active':'')+'" data-gallery-index="'+i+'" aria-label="Show image '+(i+1)+'"></button>').join('')+'</div>':'');
- const related=PRODUCTS.filter(item=>item.collection===p.collection&&item.id!==p.id).slice(0,4);
- host.innerHTML='<div class="z-detail-top"><button class="z-detail-back" type="button" id="zDetailBack">← Back to collection</button><span class="z-detail-collection">ZARIAH Studio</span></div><div class="z-detail-grid"><div class="z-detail-gallery">'+gallery+'</div><section class="z-detail-info"><span class="z-detail-collection">'+zEscape(p.collection)+' Collection</span><h1 class="z-detail-name">'+zEscape(p.name)+'</h1>'+(p.brand?'<p class="z-detail-sku">Brand: '+zEscape(p.brand)+'</p>':'')+'<p class="z-detail-sku">'+zEscape(p.sku||p.id)+'</p><p class="z-detail-price">'+zEscape(p.price)+'</p><button class="z-detail-wishlist" id="zDetailWishlist" data-wishlist="'+zEscape(p.id)+'" type="button" aria-pressed="'+zIsWishlisted(p.id)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>'+(zIsWishlisted(p.id)?'Saved to Wishlist':'Add to Wishlist')+'</span></button><p class="z-detail-availability'+(p.soldOut?' soldout':(p.preOrder?' preorder':''))+'">'+(p.soldOut?'Currently unavailable':(p.preOrder?'Pre-order available':'In stock — Available to reserve'))+'</p><p class="z-detail-desc">'+zEscape(p.desc||'')+'</p>'+(p.color?'<div class="z-detail-colours"><div class="z-detail-colours-label">Available colours</div><div class="z-detail-swatches">'+String(p.color).split('/').map((c,i)=>'<button type="button" class="z-detail-swatch" data-colour="'+zEscape(c.trim())+'" aria-label="'+zEscape(c.trim())+'" aria-pressed="'+(i===0?'true':'false')+'" style="background:'+zColourHex(c.trim())+'"></button>').join('')+'</div><p class="z-detail-selected-colour" id="zSelectedColour">'+zEscape(String(p.color).split('/')[0].trim())+'</p></div>':'')+'<section class="z-detail-specs"><h2>Product Specifications</h2>'+[['Bag type',p.type],['Dimensions',p.size],['Material',p.material],['Strap',p.strap],['Compartments',p.compartments]].filter(([k,v])=>v).map(([k,v])=>'<div class="z-detail-spec-row"><span>'+zEscape(k)+'</span><span>'+zEscape(v)+'</span></div>').join('')+'</section>'+(p.deliveryInfo?'<p class="z-detail-desc" style="margin-top:18px">'+zEscape(p.deliveryInfo)+'</p>':'')+'<button class="z-detail-add-bag" id="zDetailAddBag" type="button"'+(p.soldOut?' disabled':'')+'>'+(p.soldOut?'Currently Unavailable':'Add to Bag')+'</button><button class="z-detail-reserve" id="zDetailReserve" type="button"'+(p.soldOut?' disabled':'')+'>Reserve Your Bag</button></section></div><div class="z-image-zoom" id="zImageZoom" role="dialog" aria-modal="true" aria-label="Product image zoom"><button class="z-image-zoom-close" id="zImageZoomClose" type="button" aria-label="Close image zoom">×</button><img id="zImageZoomFull" alt="'+zEscape(p.name)+' enlarged view" decoding="async"></div>'+(related.length?'<section class="z-detail-related"><h2>Complete the Collection</h2><div class="z-related-grid">'+related.map(item=>'<article class="z-related-item" data-related="'+zEscape(item.id)+'"><img src="'+zEscape(item.remoteImages?.front||'images/products/'+String(item.assetFolder||item.id).toLowerCase()+'/front.webp')+'" alt="'+zEscape(item.name)+'" loading="lazy" decoding="async"><p>'+zEscape(item.name)+'</p><small>'+zEscape(item.price)+'</small></article>').join('')+'</div></section>':'');
+ const related=PRODUCTS.filter(item=>item.id!==p.id&&(p.brand?String(item.brand||'').trim()===String(p.brand).trim():item.type===p.type)).slice(0,4);
+ host.innerHTML='<div class="z-detail-top"><button class="z-detail-back" type="button" id="zDetailBack">← Back to all bags</button><span class="z-detail-collection">ZARIAH Studio</span></div><div class="z-detail-grid"><div class="z-detail-gallery">'+gallery+'</div><section class="z-detail-info"><span class="z-detail-collection">'+zEscape(p.brand||'Selected Handbag')+'</span><h1 class="z-detail-name">'+zEscape(p.name)+'</h1>'+(p.brand?'<p class="z-detail-sku">Brand: '+zEscape(p.brand)+'</p>':'')+'<p class="z-detail-sku">'+zEscape(p.sku||p.id)+'</p><p class="z-detail-price">'+zEscape(p.price)+'</p><button class="z-detail-wishlist" id="zDetailWishlist" data-wishlist="'+zEscape(p.id)+'" type="button" aria-pressed="'+zIsWishlisted(p.id)+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span>'+(zIsWishlisted(p.id)?'Saved to Wishlist':'Add to Wishlist')+'</span></button><p class="z-detail-availability'+(p.soldOut?' soldout':(p.preOrder?' preorder':''))+'">'+(p.soldOut?'Currently unavailable':(p.preOrder?'Pre-order available':'In stock — Available to reserve'))+'</p><p class="z-detail-desc">'+zEscape(p.desc||'')+'</p>'+(p.color?'<div class="z-detail-colours"><div class="z-detail-colours-label">Available colours</div><div class="z-detail-swatches">'+String(p.color).split('/').map((c,i)=>'<button type="button" class="z-detail-swatch" data-colour="'+zEscape(c.trim())+'" aria-label="'+zEscape(c.trim())+'" aria-pressed="'+(i===0?'true':'false')+'" style="background:'+zColourHex(c.trim())+'"></button>').join('')+'</div><p class="z-detail-selected-colour" id="zSelectedColour">'+zEscape(String(p.color).split('/')[0].trim())+'</p></div>':'')+'<section class="z-detail-specs"><h2>Product Specifications</h2>'+[['Bag type',p.type],['Dimensions',p.size],['Material',p.material],['Strap',p.strap],['Compartments',p.compartments]].filter(([k,v])=>v).map(([k,v])=>'<div class="z-detail-spec-row"><span>'+zEscape(k)+'</span><span>'+zEscape(v)+'</span></div>').join('')+'</section>'+(p.deliveryInfo?'<p class="z-detail-desc" style="margin-top:18px">'+zEscape(p.deliveryInfo)+'</p>':'')+'<button class="z-detail-add-bag" id="zDetailAddBag" type="button"'+(p.soldOut?' disabled':'')+'>'+(p.soldOut?'Currently Unavailable':'Add to Bag')+'</button><button class="z-detail-reserve" id="zDetailReserve" type="button"'+(p.soldOut?' disabled':'')+'>Reserve Your Bag</button></section></div><div class="z-image-zoom" id="zImageZoom" role="dialog" aria-modal="true" aria-label="Product image zoom"><button class="z-image-zoom-close" id="zImageZoomClose" type="button" aria-label="Close image zoom">×</button><img id="zImageZoomFull" alt="'+zEscape(p.name)+' enlarged view" decoding="async"></div>'+(related.length?'<section class="z-detail-related"><h2>'+(p.brand?'More from '+zEscape(p.brand):'More Bags You May Like')+'</h2><div class="z-related-grid">'+related.map(item=>'<article class="z-related-item" data-related="'+zEscape(item.id)+'"><img src="'+zEscape(item.remoteImages?.front||'images/products/'+String(item.assetFolder||item.id).toLowerCase()+'/front.webp')+'" alt="'+zEscape(item.name)+'" loading="lazy" decoding="async"><p>'+zEscape(item.name)+'</p><small>'+zEscape(item.price)+'</small></article>').join('')+'</div></section>':'');
  host.hidden=false;host.scrollTop=0;document.body.classList.add('z-product-route');window.scrollTo(0,0);
  document.getElementById('zDetailBack').addEventListener('click',()=>{if(location.search.includes('product=')){history.pushState({},'',location.pathname+location.hash);renderProductDetailsPage(null);}else{renderProductDetailsPage(null);}});
  if(unique.length>1){
