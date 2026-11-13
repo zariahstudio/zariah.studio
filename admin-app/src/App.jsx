@@ -310,6 +310,8 @@ function App() {
   const [stockMovements, setStockMovements] = useState([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [orderPaymentFilter, setOrderPaymentFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [receiptOrder, setReceiptOrder] = useState(null);
   const [paymentOrder, setPaymentOrder] = useState(null);
@@ -721,9 +723,10 @@ function App() {
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
-          <div className="panel-head split"><div><p className="eyebrow">ORDER OPERATIONS</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Review customer orders and publish delivery updates to the tracking page.</p></div><button className="secondary" onClick={loadOrders}><RefreshCw size={15}/> Refresh orders</button></div>
-          <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div></div>
-          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase())).map(o => <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>Manage tracking</button></td></tr>)}</tbody></table>{orders.length === 0 && <div className="empty">No orders found yet.</div>}</div>}
+          <div className="panel-head split"><div><p className="eyebrow">ORDER OPERATIONS</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Search, filter and manage orders with a consistent status history.</p></div><button className="secondary" onClick={loadOrders}><RefreshCw size={15}/> Refresh orders</button></div>
+          <div className="order-kpis"><article><small>Total orders</small><strong>{orders.length}</strong></article><article><small>New orders</small><strong>{orders.filter(o=>['new','pending'].includes(o.status)).length}</strong></article><article><small>In progress</small><strong>{orders.filter(o=>['confirmed','processing','shipped'].includes(o.status)).length}</strong></article><article><small>Unpaid / partial</small><strong>{orders.filter(o=>['unpaid','partial','partially_paid'].includes(o.payment_status)).length}</strong></article></div>
+          <div className="toolbar order-toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div><div className="order-filter-fields"><select aria-label="Filter by order status" value={orderStatusFilter} onChange={e=>setOrderStatusFilter(e.target.value)}><option value="all">All statuses</option>{['new','confirmed','processing','shipped','delivered','cancelled','returned'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select><select aria-label="Filter by payment status" value={orderPaymentFilter} onChange={e=>setOrderPaymentFilter(e.target.value)}><option value="all">All payments</option>{['unpaid','partial','partially_paid','paid','refunded'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select></div></div>
+          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Paid</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase()) && (orderStatusFilter==='all'||o.status===orderStatusFilter) && (orderPaymentFilter==='all'||o.payment_status===orderPaymentFilter)).map(o => {const paid=(o.payments||[]).filter(p=>p.status==='verified').reduce((sum,p)=>sum+Number(p.amount_bdt||0),0);return <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td>{money(paid)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>View / Manage</button></td></tr>})}</tbody></table>{orders.length===0&&<div className="empty">No orders found yet.</div>}</div>}
         </section>}
         {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} /> }
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
@@ -738,20 +741,18 @@ function App() {
     {selectedCustomer && <CustomerDetailModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onEdit={() => setCustomerEditor(selectedCustomer)} onReceipt={orderId => fetchReceiptOrder(orderId).catch(e => notify('error', e.message))} />}
     {customerEditor && <CustomerEditor customer={customerEditor} saving={saving} onClose={() => setCustomerEditor(null)} onSave={payload => saveCustomer(customerEditor.id, payload)} />}
     {selectedOrder && <OrderManager order={selectedOrder} status={orderStatus} setStatus={setOrderStatus} courier={courierName} setCourier={setCourierName} tracking={trackingNumber} setTracking={setTrackingNumber} message={trackingMessage} setMessage={setTrackingMessage} saving={saving} onClose={() => setSelectedOrder(null)} onSave={async () => {
-      const nextStatus = orderStatus;
-      const now = new Date().toISOString();
       setSaving(true);
       try {
-        const patch = { status: nextStatus, courier_name: courierName.trim() || null, courier_tracking_number: trackingNumber.trim() || null };
-        if (nextStatus === 'shipped' && !selectedOrder.shipped_at) patch.shipped_at = now;
-        if (nextStatus === 'delivered' && !selectedOrder.delivered_at) patch.delivered_at = now;
-        const { error: updateError } = await supabase.from('orders').update(patch).eq('id', selectedOrder.id);
-        if (updateError) throw updateError;
-        const eventText = trackingMessage.trim() || `Order status updated to ${nextStatus}.`;
-        const { error: eventError } = await supabase.from('order_tracking_events').insert({ order_id: selectedOrder.id, status: nextStatus, message: eventText, created_by: session.user.id });
-        if (eventError) throw eventError;
-        await loadOrders(); setSelectedOrder(null); notify('success', `Tracking updated for ${selectedOrder.order_number}.`);
-      } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
+        const { error } = await supabase.rpc('update_order_status', {
+          p_order_id: selectedOrder.id,
+          p_new_status: orderStatus,
+          p_message: trackingMessage.trim() || null,
+          p_courier_name: courierName.trim() || null,
+          p_tracking_number: trackingNumber.trim() || null
+        });
+        if (error) throw error;
+        await loadOrders(); setSelectedOrder(null); notify('success', `Order updated: ${selectedOrder.order_number}.`);
+      } catch (e) { notify('error', e.message || 'Could not update order.'); }
       finally { setSaving(false); }
     }} />}
     {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} products={products} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
