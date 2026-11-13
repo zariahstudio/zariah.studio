@@ -70,6 +70,23 @@ Deno.serve(async (req) => {
   };
 
   try {
+    if (body.action === "first_order_offer") {
+      const phone = String(body.phone ?? "").replace(/[\\s()-]/g, "");
+      if (!/^(?:\\+?88)?01[3-9]\\d{8}$/.test(phone)) {
+        return response({ error: "invalid_phone" }, 400, origin);
+      }
+      if (!(await checkLimit("first_order_offer_ip", ipHash, 600, 20)) ||
+          !(await checkLimit("first_order_offer_phone", phone, 3600, 6))) {
+        return response({ error: "too_many_requests" }, 429, origin);
+      }
+      const { data, error } = await admin.rpc("check_first_order_discount", { p_phone: phone });
+      if (error) {
+        console.error("First-order offer check failed", error.code);
+        return response({ error: "offer_unavailable" }, 503, origin);
+      }
+      return response({ offer: data }, 200, origin);
+    }
+
     if (body.action === "checkout") {
       const customer = body.customer;
       const items = body.items;
