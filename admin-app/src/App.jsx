@@ -402,6 +402,21 @@ function App() {
     setReceiptOrder(data);
   };
 
+  const reviewPayment = async (payment, decision, reason) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc('review_order_payment', {
+        p_payment_id: payment.id,
+        p_decision: decision,
+        p_reason: reason || null
+      });
+      if (error) throw error;
+      await Promise.all([loadOrders(), loadCustomers()]);
+      notify('success', decision === 'verify' ? 'Payment verified successfully.' : 'Payment rejected and reason recorded.');
+    } catch (e) { notify('error', e.message || 'Could not review payment.'); }
+    finally { setSaving(false); }
+  };
+
   const recordPayment = async (order, payment) => {
     setSaving(true);
     try {
@@ -728,7 +743,7 @@ function App() {
           <div className="toolbar order-toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div><div className="order-filter-fields"><select aria-label="Filter by order status" value={orderStatusFilter} onChange={e=>setOrderStatusFilter(e.target.value)}><option value="all">All statuses</option>{['new','confirmed','processing','shipped','delivered','cancelled','returned'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select><select aria-label="Filter by payment status" value={orderPaymentFilter} onChange={e=>setOrderPaymentFilter(e.target.value)}><option value="all">All payments</option>{['unpaid','partial','partially_paid','paid','refunded'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select></div></div>
           {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Paid</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase()) && (orderStatusFilter==='all'||o.status===orderStatusFilter) && (orderPaymentFilter==='all'||o.payment_status===orderPaymentFilter)).map(o => {const paid=(o.payments||[]).filter(p=>p.status==='verified').reduce((sum,p)=>sum+Number(p.amount_bdt||0),0);return <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td>{money(paid)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>View / Manage</button></td></tr>})}</tbody></table>{orders.length===0&&<div className="empty">No orders found yet.</div>}</div>}
         </section>}
-        {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} /> }
+        {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} onReviewPayment={reviewPayment} saving={saving} /> }
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
@@ -1061,11 +1076,18 @@ function paidTotal(order) {
   return (order.payments || []).filter(p => p.status === 'verified').reduce((sum, p) => sum + Number(p.amount_bdt || 0), 0);
 }
 
-function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt }) {
+function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt, onReviewPayment, saving }) {
   const [filter, setFilter] = useState('all');
-  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid'].includes(order.payment_status) : order.source === 'manual'));
+  const [reasons, setReasons] = useState({});
+  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid','partial'].includes(order.payment_status) : order.source === 'manual'));
+  const pending = orders.flatMap(order => (order.payments || []).filter(p => p.status === 'pending').map(payment => ({...payment, order})));
   return <section className="panel">
-    <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Record online payments, create in-store sales and share digital receipts.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
+    <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Review transfer payments before they affect verified paid totals.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
+    <section className="payment-review"><div className="panel-head"><p className="eyebrow">MANUAL VERIFICATION</p><h2>Pending payment reviews <span className="count">{pending.length}</span></h2><p className="muted">Only verified payments count toward the order's paid balance.</p></div>
+      {pending.length===0?<div className="empty">No pending payment submissions.</div>:<div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Method</th><th>Amount</th><th>Transaction reference</th><th>Review</th></tr></thead><tbody>
+        {pending.map(p=><tr key={p.id}><td><strong>{p.order.order_number}</strong></td><td>{p.order.customers?.full_name||'—'}<small className="muted" style={{display:'block'}}>{p.order.customers?.phone||''}</small></td><td>{p.method}</td><td>{money(p.amount_bdt)}</td><td>{p.reference||'—'}</td><td><div className="payment-review-actions"><input aria-label="Rejection reason" placeholder="Reason if rejecting" value={reasons[p.id]||''} onChange={e=>setReasons(v=>({...v,[p.id]:e.target.value}))}/><button className="primary small" disabled={saving||!p.reference||!['bkash','nagad','rocket','bank_transfer'].includes(p.method)} onClick={()=>onReviewPayment(p,'verify',null)}>Verify</button><button className="secondary small" disabled={saving||!(reasons[p.id]||'').trim()} onClick={()=>onReviewPayment(p,'reject',reasons[p.id])}>Reject</button></div></td></tr>)}
+      </tbody></table></div>}
+    </section>
     <div className="toolbar"><div className="filter-tabs"><button className={filter==='all'?'active':''} onClick={()=>setFilter('all')}>All sales</button><button className={filter==='due'?'active':''} onClick={()=>setFilter('due')}>Outstanding due</button><button className={filter==='store'?'active':''} onClick={()=>setFilter('store')}>Store sales</button></div></div>
     <div className="table-wrap"><table><thead><tr><th>Receipt / Order</th><th>Customer</th><th>Channel</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
       {rows.map(order => { const paid=paidTotal(order); const due=Math.max(Number(order.total_bdt||0)-paid,0); return <tr key={order.id}><td><strong>{order.receipt_number || order.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{order.order_number}</small></td><td>{order.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{order.customers?.phone || ''}</small></td><td><span className="status">{order.source==='manual'?'In-store':'Online'}</span></td><td>{money(order.total_bdt)}</td><td>{money(paid)}</td><td><strong>{money(due)}</strong></td><td><span className={`status ${due===0?'live':'warning'}`}>{due===0?'paid':paid>0?'partially paid':'due'}</span></td><td><div className="row-actions"><button className="secondary small" onClick={()=>onReceipt(order)}><Receipt size={13}/> Receipt</button>{due>0 && <button className="primary small" onClick={()=>onRecordPayment(order)}>Paid / Add payment</button>}</div></td></tr>; })}
