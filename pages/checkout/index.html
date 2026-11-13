@@ -47,7 +47,7 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 <header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/">Your Bag</a><a href="/pages/search/" aria-label="Search">Search</a></nav></header>
 <main>
 <div class="crumb"><a href="/">Home</a> / <a href="/pages/cart/">Your Bag</a> / Checkout</div>
-<h1>Guest Checkout</h1><p class="intro">A few details, and your chosen pieces will be ready for confirmation.</p>
+<h1>Guest Checkout</h1><p class="intro">Enter your details to place your order securely.</p>
 <div id="checkoutRoot"></div>
 </main>
 <footer>© ZARIAH Studio — A brand of InsightBridge · Proudly Made in Bangladesh</footer>
@@ -85,8 +85,8 @@ root.innerHTML=`
 <h2 class="section-title">Payment Method</h2>
 <div class="payment-card"><input type="radio" checked disabled aria-label="Cash on delivery selected"><div><strong>Cash on Delivery</strong><span>Pay when your order is delivered. Any delivery charge will be confirmed before dispatch.</span></div></div>
 </section>
-<button class="submit" type="submit">Continue to WhatsApp to Confirm Order</button>
-<p class="hint">Your order request is saved securely first. Our team will confirm availability and delivery charge with you on WhatsApp.</p>
+<button class="submit" type="submit">Place Order Securely</button>
+<p class="hint">Your order will be saved securely. Our team will contact you if availability or delivery details need confirmation.</p>
 </form>
 <aside class="summary">
 <h2>Order Summary</h2>
@@ -142,33 +142,26 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
    if(error)throw error;
    if(!order?.success||!order?.order_number)throw new Error('Order confirmation could not be received.');
 
-   const serverLines=cart.map((item,i)=>`${i+1}. ${item.name} (${item.id}) × ${item.qty}`);
-   const message=[
-     'Hello ZARIAH Studio, I have submitted my website order.',
-     `Order Number: ${order.order_number}`,'',
-     'CUSTOMER DETAILS',
-     `Name: ${customer.full_name}`,`Phone: ${customer.phone}`,
-     `Email: ${customer.email||'Not provided'}`,
-     `District/City: ${customer.district}`,`Area/Thana: ${customer.area}`,
-     `Address: ${customer.address}`,`Notes: ${customer.notes||'None'}`,'',
-     'ORDER ITEMS',...serverLines,'',
-     `Database-verified subtotal: ${money(order.subtotal_bdt)}`,
-     'Delivery: To be confirmed by ZARIAH Studio',
-     'Payment: Cash on Delivery','',
-     'Please confirm availability and final delivery charge.'
-   ].join('\n');
    try{window.ZariahCart.clear();}catch(_){}
    try{sessionStorage.removeItem('zariah_checkout_idempotency_v1');}catch(_){}
-   const wa='https://wa.me/8801642779056?text='+encodeURIComponent(message);
-   window.location.href=wa;
+   root.innerHTML=`<section class="empty" role="status" aria-live="polite" style="max-width:620px;margin:28px auto">
+     <p style="letter-spacing:.18em;font-size:10px;color:#9b7a4e">ZARIAH STUDIO</p>
+     <h2>Thank You. Your Order Is Received.</h2>
+     <p>Your order has been saved successfully. Our team will review it and contact you if any delivery details need confirmation.</p>
+     <p style="font-weight:600;color:#292522;margin:20px 0 6px">Order Number</p>
+     <p style="font-size:20px;font-weight:600;color:#292522;margin:0">${order.order_number}</p>
+     <p style="margin:12px 0">Order Total: <strong>${money(order.total_bdt)}</strong> · Cash on Delivery</p>
+     <a href="/pages/track-order/" style="display:inline-block;background:#292522;color:#fff;padding:14px 20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin:12px 6px">Track Your Order</a>
+     <a href="/collections/all-bags/" style="display:inline-block;border:1px solid #c5a06a;color:#292522;padding:14px 20px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin:12px 6px">Continue Shopping</a>
+   </section>`;
  }catch(err){
    console.error('[ZARIAH checkout]',err);
    const message=String(err?.message||'').includes('create_website_order')
-     ? 'Secure checkout is not active yet. Please contact our team on WhatsApp.'
+     ? 'Secure checkout is not active yet. Please try again later or contact Customer Support.'
      : (err?.message||'We could not submit your order. Please try again.');
    alert(message);
    button.disabled=false;
-   button.textContent='Continue to WhatsApp to Confirm Order';
+   button.textContent='Place Order Securely';
  }
 });
 })();
