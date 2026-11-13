@@ -54,6 +54,10 @@ begin
     raise exception 'Order is already in this status.' using errcode = '22023';
   end if;
 
+  if p_new_status = 'returned' then
+    raise exception 'Returns require the dedicated return and stock-inspection workflow, which is not enabled yet.' using errcode = '22023';
+  end if;
+
   if v_order.status in ('cancelled','returned','delivered') then
     raise exception 'This order status cannot be changed through the standard workflow.' using errcode = '22023';
   end if;
