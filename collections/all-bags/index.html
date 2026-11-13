@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Shop All Handbags | Local &amp; International Brands | ZARIAH Studio</title>
+<title>Shop All Handbags | ZARIAH Studio</title>
 <meta name="description" content="Shop handbags from local and international brands at ZARIAH Studio. Explore different labels, styles and price points in one place.">
 <meta name="theme-color" content="#F8F6F2">
 <link rel="canonical" href="https://www.zariahstudio.com/collections/all-bags/">
@@ -217,7 +217,7 @@
 </div></header>
 <div class="mobile-search-panel" id="mobileSearchPanel" hidden><label class="mobile-search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="mobileBagSearchInput" type="search" placeholder="Search bags, styles or brands..." aria-label="Search bags, styles or brands"><button id="mobileSearchClose" type="button" aria-label="Close search">×</button></label></div>
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/" class="mobile-cart-link">Shopping Bag <span data-cart-count>0</span></a><a href="/collections/new-arrivals/">New Arrivals</a><a href="/collections/bestsellers/">Bestsellers</a><a href="/">Home</a></nav>
-<section class="page-intro" aria-labelledby="collection-title"><div class="eyebrow">LOCAL &amp; INTERNATIONAL BRANDS</div><h1 id="collection-title">Shop All Handbags</h1></section>
+<section class="page-intro" aria-labelledby="collection-title"><h1 id="collection-title">Shop All Handbags</h1></section>
 <main class="catalogue"><div class="toolbar"><div class="result-count" id="resultCount" aria-live="polite">Showing all bags</div><div class="controls"><div class="catalogue-search"><input id="bagSearchInput" type="search" placeholder="Search bags by name..." aria-label="Search bags"><span aria-hidden="true">⌕</span></div><div class="select-wrap"><select id="brandFilter" aria-label="Filter by brand"><option value="all">All brands</option></select></div><div class="select-wrap"><select id="typeFilter" aria-label="Filter by bag style"><option value="all">All styles</option></select></div><div class="select-wrap sort-compact"><select id="sortFilter" aria-label="Sort by name"><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select></div></div></div><div class="grid" id="productGrid" aria-live="polite"></div></main>
 <footer class="footer"><a href="/">ZARIAH Studio</a><a href="/#contact">Contact</a><a href="/#faq">FAQ</a><p style="margin-top:14px">Curated in Bangladesh · Delivered Nationwide</p><div style="margin-top:10px"><a href="/pages/privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp; <a href="/pages/terms-of-service/">Terms of Service</a></div></footer>
 <!-- Analytics APIs are bootstrapped locally; third-party requests load when the browser is idle. -->
@@ -290,4 +290,55 @@ populateBrandFilter();populateStyleFilter();render();window.ZARIAH_LOAD_SUPABASE
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
 
 
+<style id="z-all-bags-final-header-spacing">
+@media (min-width: 901px) {
+  header.hdr { width:100%!important; }
+  header.hdr > .hdr-inner {
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:minmax(190px,230px) minmax(0,1fr) auto!important;
+    grid-template-areas:"brand navigation actions"!important;
+    align-items:center!important;
+    justify-content:initial!important;
+    column-gap:clamp(18px,2.2vw,34px)!important;
+    width:100%!important;
+    max-width:1440px!important;
+    min-height:76px!important;
+    height:76px!important;
+    margin:0 auto!important;
+    padding:0 clamp(28px,4vw,56px)!important;
+  }
+  header.hdr > .hdr-inner > .logo {grid-area:brand!important;justify-self:start!important;margin:0!important}
+  header.hdr > .hdr-inner > nav.nav {
+    grid-area:navigation!important;
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:clamp(16px,2vw,28px)!important;
+    width:auto!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  header.hdr > .hdr-inner > nav.nav > a {display:inline-flex!important;flex:0 0 auto!important;white-space:nowrap!important;margin:0!important}
+  header.hdr > .hdr-inner > .mobile-search-toggle {display:none!important}
+  header.hdr > .hdr-inner > .hdr-right {
+    grid-area:actions!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:12px!important;
+    margin:0!important;
+    white-space:nowrap!important;
+  }
+  .page-intro {padding:24px 28px 18px!important}
+  .page-intro .eyebrow {display:none!important}
+  .page-intro h1 {margin:0!important}
+}
+</style>
 </body></html>
