@@ -116,3 +116,15 @@
 .image-upload-preview span{margin-top:7px;font-size:10px;color:var(--ink)}
 .image-upload-preview small{margin-top:4px;font-size:9px;color:var(--muted)}
 .media-preview img{object-fit:contain;padding:8px}
+
+
+/* Phase 2 order operations */
+.order-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.order-kpis article{background:#fbf8f3;border:1px solid var(--line);border-radius:5px;padding:14px 16px}
+.order-kpis small,.order-kpis strong{display:block}
+.order-kpis small{font-size:10px;color:var(--muted)}
+.order-kpis strong{font:500 25px 'Cormorant Garamond',serif;margin-top:5px}
+.order-toolbar{align-items:center;flex-wrap:wrap}
+.order-filter-fields{display:flex;gap:8px;flex-wrap:wrap}
+.order-filter-fields select{width:auto;min-width:145px}
+@media(max-width:760px){.order-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.order-kpis article{padding:12px}.order-toolbar{align-items:stretch}.order-toolbar .searchbox{width:100%}.order-filter-fields{width:100%}.order-filter-fields select{flex:1;min-width:0}}
