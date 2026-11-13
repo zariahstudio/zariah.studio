@@ -1,5 +1,6 @@
--- Phase 2B follow-up: create a pending payment record for MFS website checkout references.
+-- Phase 2B follow-up: capture customer-submitted MFS references as pending payment rows.
 -- Additive trigger only. Existing orders/payments are not backfilled or rewritten.
+-- Populate both legacy NOT NULL and current columns; the existing BEFORE trigger keeps them synchronized.
 begin;
 
 create or replace function public.capture_website_mfs_payment_submission()
@@ -35,7 +36,8 @@ begin
       and p.reference = v_reference
   ) then
     update public.payments
-    set amount_bdt = v_amount
+    set amount = v_amount,
+        amount_bdt = v_amount
     where order_id = new.id
       and status = 'pending'
       and method = v_method
@@ -50,9 +52,11 @@ begin
   where order_id = new.id and status = 'pending';
 
   insert into public.payments(
-    order_id, method, amount_bdt, status, reference, notes
+    order_id, amount, payment_method, payment_status, transaction_reference,
+    method, amount_bdt, status, reference, notes
   ) values (
-    new.id, v_method, v_amount, 'pending', v_reference,
+    new.id, v_amount, v_method, 'pending', v_reference,
+    v_method, v_amount, 'pending', v_reference,
     'Customer-submitted website checkout reference. Awaiting manual verification.'
   );
 
