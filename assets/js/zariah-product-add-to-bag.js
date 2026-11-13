@@ -26,6 +26,9 @@
       showToast(result.reason === 'limit' ? 'Maximum quantity reached for this bag.' : 'This bag could not be added. Please try again.');
       return false;
     }
+    if (typeof window.ZARIAH_TRACK_EVENT === 'function') {
+      window.ZARIAH_TRACK_EVENT('cart_add', button.dataset.productId || button.dataset.productName || '');
+    }
     if (buyNow) {
       buyNow.disabled = true;
       buyNow.textContent = 'PROCEEDING TO CHECKOUT…';
