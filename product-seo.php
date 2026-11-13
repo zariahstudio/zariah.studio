@@ -86,11 +86,11 @@ header('Cache-Control: public, max-age=60, s-maxage=60');
 header('Vary: Accept-Encoding');
 
 $name = (string)($product['name'] ?? 'Handbag');
-$collection = (string)($product['collection_name'] ?? 'Collection');
+$brand = trim((string)($product['brand'] ?? $product['brand_name'] ?? ''));
 $type = (string)($product['product_type'] ?? 'Handbag');
 $description = trim((string)($product['description'] ?? ''));
 $seoTitle = trim((string)($product['seo_title'] ?? '')) ?: ($name . ' | ZARIAH Studio Bangladesh');
-$seoDescription = trim((string)($product['seo_description'] ?? '')) ?: ('Shop ' . $name . ' from ZARIAH Studio Bangladesh. Cash on delivery available.');
+$seoDescription = trim((string)($product['seo_description'] ?? '')) ?: ('Shop ' . $name . ' at ZARIAH Studio. Discover selected handbags from local and international brands. Delivery across Bangladesh.');
 $canonical = ZARIAH_SITE_URL . '/products/' . rawurlencode($slug) . '/';
 $price = (int)($product['price_bdt'] ?? 0);
 $comparePrice = isset($product['compare_at_price_bdt']) ? (int)$product['compare_at_price_bdt'] : null;
@@ -104,7 +104,7 @@ if ($primaryImage === '') $primaryImage = ZARIAH_SITE_URL . '/images/brand/favic
 $isPreorder = (($product['availability_mode'] ?? '') === 'pre_order');
 $isSoldOut = !empty($product['is_sold_out']);
 $availability = $isPreorder ? 'https://schema.org/PreOrder' : ($isSoldOut ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock');
-$availabilityText = $isPreorder ? 'Available for pre-order' : ($isSoldOut ? 'Currently unavailable' : 'Available to order · Cash on delivery');
+$availabilityText = $isPreorder ? 'Available for pre-order' : ($isSoldOut ? 'Currently unavailable' : 'Available to order');
 $schema = [
     '@context' => 'https://schema.org',
     '@type' => 'Product',
@@ -115,7 +115,6 @@ $schema = [
     'image' => array_values(array_filter(array_map(function($image) {
         return is_array($image) ? ($image['url'] ?? null) : null;
     }, $images))),
-    'brand' => ['@type' => 'Brand', 'name' => 'ZARIAH Studio'],
     'offers' => [
         '@type' => 'Offer',
         'url' => $canonical,
@@ -125,10 +124,11 @@ $schema = [
         'itemCondition' => 'https://schema.org/NewCondition',
         'seller' => ['@type' => 'Organization', 'name' => 'ZARIAH Studio']
     ]
-];
+]; 
+if ($brand !== '') { $schema['brand'] = ['@type' => 'Brand', 'name' => $brand]; }
 $schemaJson = json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 $specs = [
-    'Collection' => $collection,
+    'Brand' => $brand,
     'Style' => $type,
     'Available colours' => (string)($product['color'] ?? ''),
     'Approx. dimensions' => (string)($product['size_text'] ?? '')
@@ -172,13 +172,13 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <script type="application/ld+json"><?= $schemaJson ?></script>
 </head>
 <body>
-<div class="ann">ZARIAH STUDIO · QUIET LUXURY, BEAUTIFULLY CARRIED</div>
+<div class="ann">ZARIAH STUDIO · LOCAL & INTERNATIONAL HANDBAG BRANDS</div>
 <header>
 <a class="brand" href="/">ZARIAH<small>STUDIO</small></a>
-<nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/collections/">Collections</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a></nav>
+<nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/collections/all-bags/">Shop by Brand</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a></nav>
 </header>
 <main>
-<div class="breadcrumb"><a href="/">Home</a> / <a href="/collections/">Collections</a> / <a href="/collections/<?= z_escape(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $collection))) ?>/"><?= z_escape($collection) ?></a> / <?= z_escape($name) ?></div>
+<div class="breadcrumb"><a href="/">Home</a> / <a href="/collections/all-bags/">All Bags</a> / <?= z_escape($name) ?></div>
 <section class="product-layout">
 <div class="gallery">
 <div class="main-image">
@@ -192,7 +192,7 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 </div>
 </div>
 <div class="product-copy">
-<span class="eyebrow"><?= z_escape($collection) ?> Collection · <?= z_escape($type) ?></span>
+<span class="eyebrow"><?= $brand !== '' ? z_escape($brand) . ' · ' : '' ?><?= z_escape($type) ?></span>
 <h1><?= z_escape($name) ?></h1>
 <div class="price">৳<?= number_format($price) ?><?php if ($comparePrice && $comparePrice > $price): ?> <del>৳<?= number_format($comparePrice) ?></del><?php endif; ?></div>
 <p class="description"><?= z_escape($description) ?></p>
@@ -207,12 +207,12 @@ $sku = strtolower((string)($product['sku'] ?? $slug));
 <?php endif; ?>
 <a class="order-btn z-wa-enquire" style="background:transparent;color:var(--ink);border:1px solid var(--line);margin-top:10px" href="https://wa.me/8801642779056?text=<?= rawurlencode('Hello ZARIAH Studio, I would like to enquire about ' . $name . '.') ?>">Enquire on WhatsApp</a>
 <p class="note">For more product details, colour availability or ordering assistance, contact our team.</p>
-<a class="back-link" href="/collections/<?= z_escape(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $collection))) ?>/">← Explore <?= z_escape($collection) ?> Collection</a>
+<a class="back-link" href="/collections/all-bags/">← Browse All Bags</a>
 </div>
 </section>
 <section class="more"><div class="eyebrow">Continue exploring</div><h2>Discover More Bags</h2><a href="/collections/all-bags/">View All Bags →</a></section>
 </main>
-<footer>© ZARIAH Studio — A brand of InsightBridge · Proudly Made in Bangladesh<div style="margin-top:10px"><a href="/pages/privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp; <a href="/pages/terms-of-service/">Terms of Service</a></div></footer>
+<footer>© ZARIAH Studio · Curated in Bangladesh · Delivered Nationwide<div style="margin-top:10px"><a href="/pages/privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp; <a href="/pages/terms-of-service/">Terms of Service</a></div></footer>
 <script src="/assets/js/product-related-cards.js?v=20261109-stablecta" defer></script>
 <script src="/zariah-cart.js" defer></script>
 <script src="/assets/js/zariah-product-gallery.js" defer></script>
