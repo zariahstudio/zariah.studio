@@ -1599,7 +1599,7 @@ function syncCollectionsRoute(){
 window.addEventListener('popstate',syncCollectionsRoute);
 syncCollectionsRoute();
 syncIndividualCollectionRoute();
-function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Quiet Luxury Handbags Bangladesh';zRenderRecentlyViewed();}}
+function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Local & International Handbag Brands';zRenderRecentlyViewed();}}
 window.addEventListener('popstate',syncProductRoute);
 
 syncProductRoute();
