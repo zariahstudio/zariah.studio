@@ -1036,7 +1036,7 @@ function CustomerDetailModal({ customer, onClose, onEdit, onReceipt }) {
       </div>
       <div className="customer-address"><strong>Customer details</strong><p>{customer.address || 'Address not provided'}</p><p>{customer.district || 'District not provided'}</p><small>Customer since {new Date(customer.created_at).toLocaleDateString('en-GB')}</small></div>
       <div className="customer-loyalty-card">
-        <div><p className="eyebrow">LOYALTY MEMBERSHIP</p><strong className={`tier-name tier-${customer.loyalty?.tier || 'bronze'}`}>{tierLabel(customer.loyalty?.tier)}</strong><small>{Number(customer.loyalty?.points_balance || 0).toLocaleString('en-BD')} available points</small></div>
+        <div><p className="eyebrow">ZARIAH STUDIO · PRIVILEGE CLUB</p><strong className={`tier-name tier-${customer.loyalty?.tier || 'bronze'}`}>{tierLabel(customer.loyalty?.tier)}</strong><small>MEMBER ID · ZS-{customer.id.replace(/-/g, '').slice(0, 12).toUpperCase()}</small><small>{Number(customer.loyalty?.points_balance || 0).toLocaleString('en-BD')} available points</small></div>
         <div className="loyalty-profile-numbers"><span><small>Lifetime points</small><b>{Number(customer.loyalty?.lifetime_points || 0).toLocaleString('en-BD')}</b></span><span><small>Qualifying spend</small><b>{money(customer.loyalty?.lifetime_spend_bdt || 0)}</b></span></div>
       </div>
       <div className="loyalty-activity">
