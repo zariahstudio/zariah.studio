@@ -37,8 +37,8 @@
     position: static !important;
     inset: auto !important;
     transform: none !important;
-    justify-self: center !important;
-    align-items: center !important;
+    justify-self: start !important;
+    align-items: flex-start !important;
     width: max-content !important;
     max-width: 100% !important;
     margin: 0 !important;
