@@ -142,10 +142,17 @@ document.getElementById('guestCheckout').addEventListener('submit',async functio
      notes:String(data.get('notes')||'').trim()
    };
    const items=cart.map(item=>({sku:String(item.id||'').trim(),quantity:Number(item.qty)||1}));
-   const {data:order,error}=await client.rpc('create_website_order',{
-     p_customer:customer,p_items:items,p_idempotency_key:idempotencyKey
+   const gatewayResponse=await fetch(cfg.url+'/functions/v1/zariah-public-orders',{
+     method:'POST',
+     headers:{'Content-Type':'application/json','apikey':cfg.publishableKey},
+     body:JSON.stringify({action:'checkout',customer,items,idempotencyKey})
    });
-   if(error)throw error;
+   const gatewayPayload=await gatewayResponse.json().catch(()=>({}));
+   if(!gatewayResponse.ok)throw new Error(
+     gatewayResponse.status===429?'Too many attempts. Please wait a little and try again.':
+     'Secure checkout is temporarily unavailable. Please try again shortly.'
+   );
+   const order=gatewayPayload.order;
    if(!order?.success||!order?.order_number)throw new Error('Order confirmation could not be received.');
 
    try{window.ZariahCart.clear();}catch(_){}

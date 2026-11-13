@@ -36,11 +36,17 @@ form.addEventListener('submit',async ev=>{
  try{
   await window.ZARIAH_LOAD_SUPABASE();const cfg=window.ZARIAH_SUPABASE_CONFIG;
   if(!cfg||!window.supabase?.createClient)throw new Error('Tracking service unavailable');
-  const client=window.supabase.createClient(cfg.url,cfg.publishableKey,{auth:{persistSession:false,autoRefreshToken:false}});
-  const {data,error}=await client.rpc('lookup_order_tracking',{p_order_number:orderNumber,p_phone:phone});
-  if(error)throw error;
-  if(!data?.found){showMessage('No matching order found. Check the order number and the phone number used at checkout. For help, contact our team on WhatsApp.');return;}
-  renderOrder(data);
+  const gatewayResponse=await fetch(cfg.url+'/functions/v1/zariah-public-orders',{
+   method:'POST',
+   headers:{'Content-Type':'application/json','apikey':cfg.publishableKey},
+   body:JSON.stringify({action:'tracking',orderNumber,phone})
+  });
+  const gatewayPayload=await gatewayResponse.json().catch(()=>({}));
+  if(gatewayResponse.status===404){showMessage('No matching order found. Check the order number and the phone number used at checkout. For help, contact our team on WhatsApp.');return;}
+  if(gatewayResponse.status===429){showMessage('Too many attempts. Please wait a little before trying again.');return;}
+  if(!gatewayResponse.ok)throw new Error('Tracking service unavailable');
+  if(!gatewayPayload.order?.found){showMessage('No matching order found. Check the order number and the phone number used at checkout. For help, contact our team on WhatsApp.');return;}
+  renderOrder(gatewayPayload.order);
  }catch(err){console.error('[ZARIAH tracking]',err);showMessage('We could not load your tracking details right now. Please try again shortly or contact our team on WhatsApp.');}
  finally{button.disabled=false;button.textContent='TRACK MY ORDER';}
 });
