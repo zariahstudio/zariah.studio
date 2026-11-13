@@ -71,3 +71,14 @@ $$;
 
 revoke all on function public.consume_public_api_rate_limit(text, text, integer, integer) from public, anon, authenticated;
 grant execute on function public.consume_public_api_rate_limit(text, text, integer, integer) to service_role;
+
+
+-- Cutover guard: this migration MUST be applied only after the new Edge Function
+-- is deployed and both storefront pages are live on the gateway-backed version.
+-- The Edge Function uses service_role for these two RPC calls.
+revoke execute on function public.create_website_order(jsonb, jsonb, text)
+  from public, anon, authenticated;
+revoke execute on function public.lookup_order_tracking(text, text)
+  from public, anon, authenticated;
+grant execute on function public.create_website_order(jsonb, jsonb, text) to service_role;
+grant execute on function public.lookup_order_tracking(text, text) to service_role;
