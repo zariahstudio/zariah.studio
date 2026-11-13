@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Shop All Handbags | Local &amp; International Brands | ZARIAH Studio</title>
+<title>Shop All Handbags | ZARIAH Studio</title>
 <meta name="description" content="Shop handbags from local and international brands at ZARIAH Studio. Explore different labels, styles and price points in one place.">
 <meta name="theme-color" content="#F8F6F2">
 <link rel="canonical" href="https://www.zariahstudio.com/collections/all-bags/">
@@ -176,6 +176,38 @@
  .catalogue .toolbar .catalogue-search{grid-column:1/-1!important}
 }
 </style>  <link rel="stylesheet" href="/assets/css/unified-premium-header.css?v=20261113-v1">
+<style id="z-all-bags-desktop-header-fix">
+@media(min-width:1024px){
+  .hdr>.hdr-inner{
+    display:grid!important;
+    grid-template-columns:minmax(190px,250px) minmax(0,1fr) auto!important;
+    grid-template-areas:"brand nav actions"!important;
+    align-items:center!important;
+    column-gap:clamp(24px,3vw,48px)!important;
+    min-height:104px!important;
+    height:auto!important;
+  }
+  .hdr>.hdr-inner>.logo{grid-area:brand!important}
+  .hdr>.hdr-inner>.nav{
+    grid-area:nav!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:clamp(18px,2vw,30px)!important;
+    min-width:0!important;width:100%!important;
+    white-space:nowrap!important;overflow:visible!important;
+  }
+  .hdr>.hdr-inner>.nav>a{flex:0 0 auto!important;white-space:nowrap!important}
+  .hdr>.hdr-inner>.mobile-search-toggle{display:none!important}
+  .hdr>.hdr-inner>.hdr-right{
+    grid-area:actions!important;
+    display:flex!important;flex-flow:row nowrap!important;
+    align-items:center!important;justify-content:flex-end!important;
+    gap:12px!important;white-space:nowrap!important;
+  }
+}
+</style>
 </head>
 <body>
 <header class="hdr"><div class="hdr-inner">
@@ -185,7 +217,7 @@
 </div></header>
 <div class="mobile-search-panel" id="mobileSearchPanel" hidden><label class="mobile-search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.2 4.2"></path></svg><input id="mobileBagSearchInput" type="search" placeholder="Search bags, styles or brands..." aria-label="Search bags, styles or brands"><button id="mobileSearchClose" type="button" aria-label="Close search">×</button></label></div>
 <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation"><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/" class="mobile-cart-link">Shopping Bag <span data-cart-count>0</span></a><a href="/collections/new-arrivals/">New Arrivals</a><a href="/collections/bestsellers/">Bestsellers</a><a href="/">Home</a></nav>
-<section class="page-intro" aria-labelledby="collection-title"><div class="eyebrow">LOCAL &amp; INTERNATIONAL BRANDS</div><h1 id="collection-title">Shop All Handbags</h1></section>
+<section class="page-intro" aria-labelledby="collection-title"><h1 id="collection-title">Shop All Handbags</h1></section>
 <main class="catalogue"><div class="toolbar"><div class="result-count" id="resultCount" aria-live="polite">Showing all bags</div><div class="controls"><div class="catalogue-search"><input id="bagSearchInput" type="search" placeholder="Search bags by name..." aria-label="Search bags"><span aria-hidden="true">⌕</span></div><div class="select-wrap"><select id="brandFilter" aria-label="Filter by brand"><option value="all">All brands</option></select></div><div class="select-wrap"><select id="typeFilter" aria-label="Filter by bag style"><option value="all">All styles</option></select></div><div class="select-wrap sort-compact"><select id="sortFilter" aria-label="Sort by name"><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select></div></div></div><div class="grid" id="productGrid" aria-live="polite"></div></main>
 <footer class="footer"><a href="/">ZARIAH Studio</a><a href="/#contact">Contact</a><a href="/#faq">FAQ</a><p style="margin-top:14px">Curated in Bangladesh · Delivered Nationwide</p><div style="margin-top:10px"><a href="/pages/privacy-policy/">Privacy Policy</a> &nbsp;·&nbsp; <a href="/pages/terms-of-service/">Terms of Service</a></div></footer>
 <!-- Analytics APIs are bootstrapped locally; third-party requests load when the browser is idle. -->
@@ -216,7 +248,7 @@ const FALLBACK_PRODUCTS = [
 let products=FALLBACK_PRODUCTS.slice();
 const money=n=>'৳'+new Intl.NumberFormat('en-BD',{maximumFractionDigits:0}).format(Number(n||0));
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function imageFor(p){const folder=String(p.assetFolder||p.id||p.sku).toLowerCase();return p.remoteImages?.front||'/images/products/'+folder+'/front.webp'}
+function imageFor(p){const folder=String(p.assetFolder||p.sku||p.id).toLowerCase();return '/images/products/'+folder+'/front.webp'}
 function render(){const brand=document.getElementById('brandFilter').value,type=document.getElementById('typeFilter').value,sort=document.getElementById('sortFilter').value;const query=(document.getElementById('bagSearchInput')?.value||'').trim().toLowerCase();let list=products.filter(p=>(brand==='all'||String(p.brand||'').trim()===brand)&&(type==='all'||String(p.type||'').trim()===type)&&(!query||[p.name,p.type,p.collection,p.brand,p.sku,p.id].some(v=>String(v||'').toLowerCase().includes(query))));if(sort==='az')list.sort((a,b)=>a.name.localeCompare(b.name));if(sort==='za')list.sort((a,b)=>b.name.localeCompare(a.name));const featured=new URLSearchParams(location.search).get('featured');if(featured==='new'||featured==='bestseller'){const isMatch=p=>{const badge=String(p.badge||'').trim().toLowerCase().replace(/[\\s_-]+/g,'');return featured==='new'?(badge==='new'||badge==='newarrival'||badge==='newarrivals'||p.isFeatured===true||p.is_featured===true||p.isNew===true||p.is_new===true):(badge==='bestseller'||badge==='bestsellers'||p.isBestseller===true||p.is_bestseller===true)};const tagged=list.filter(isMatch);const taggedIds=new Set(tagged.map(p=>String(p.id)));list=tagged.concat(list.filter(p=>!taggedIds.has(String(p.id)))).slice(0,8);}document.getElementById('resultCount').textContent=`Showing ${list.length} ${list.length===1?'bag':'bags'}`;const grid=document.getElementById('productGrid');grid.innerHTML=list.length?list.map(p=>{const id=p.sku||p.id;const saved=wishlist.includes(String(id))||wishlist.includes(String(p.id));return `<article class="card"><a class="visual" href="/products/${String(id).toLowerCase()}/"><img src="${safe(imageFor(p))}" alt="${safe(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='/images/brand/favicon.png'" decoding="async"><span class="collection-tag">${safe(p.collection)}</span></a><button class="heart" type="button" data-wish="${safe(id)}" aria-label="Add ${safe(p.name)} to wishlist" aria-pressed="${saved}"></button><div class="card-info"><div class="name-price"><h2 class="name">${safe(p.name)}</h2><span class="price">${safe(p.price)}</span></div><p class="type">${safe(p.type||'Handbag')}</p><p class="brand-name">${safe(p.brand||'')}</p><a class="view-link" href="/products/${String(id).toLowerCase()}/">View details&nbsp; →</a>${p.soldOut?'<button class="z-card-notify" type="button" disabled>Notify Me</button>':'<div class="z-card-actions"><button class="z-card-add-bag" type="button" data-add-bag="'+safe(id)+'">Add to Bag</button></div>'}</div></article>`}).join(''):'<div class="empty">No bags found in this collection.</div>';grid.querySelectorAll('[data-wish]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.wish;wishlist=wishlist.includes(id)?wishlist.filter(x=>x!==id):[...wishlist,id];try{localStorage.setItem('zariah_wishlist_v1',JSON.stringify(wishlist))}catch(e){}btn.setAttribute('aria-pressed',String(wishlist.includes(id)));}));grid.querySelectorAll('[data-add-bag]').forEach(btn=>btn.addEventListener('click',()=>{const id=btn.dataset.addBag;const product=products.find(item=>String(item.sku||item.id)===id);if(!product||!window.ZariahCart)return;const result=window.ZariahCart.add({id:product.sku||product.id,name:product.name,price:price(product.price),image:imageFor(product),soldOut:!!product.soldOut});if(!result.ok){btn.textContent=result.reason==='limit'?'Limit reached':'Unavailable';return;}btn.textContent='Added';btn.setAttribute('aria-label',product.name+' added to bag');window.dispatchEvent(new CustomEvent('zariah:open-cart'));window.setTimeout(()=>{if(btn.isConnected)btn.textContent='Add to Bag'},1400);}));}
 function price(v){return Number(String(v||'').replace(/[^0-9.]/g,''))||0}
 let wishlist=[];try{wishlist=JSON.parse(localStorage.getItem('zariah_wishlist_v1')||'[]');if(!Array.isArray(wishlist))wishlist=[]}catch(e){}
@@ -258,4 +290,55 @@ populateBrandFilter();populateStyleFilter();render();window.ZARIAH_LOAD_SUPABASE
 <script src="/assets/js/mini-bag-drawer.js?v=20261109" defer></script>
 
 
+<style id="z-all-bags-final-header-spacing">
+@media (min-width: 901px) {
+  header.hdr { width:100%!important; }
+  header.hdr > .hdr-inner {
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:minmax(190px,230px) minmax(0,1fr) auto!important;
+    grid-template-areas:"brand navigation actions"!important;
+    align-items:center!important;
+    justify-content:initial!important;
+    column-gap:clamp(18px,2.2vw,34px)!important;
+    width:100%!important;
+    max-width:1440px!important;
+    min-height:76px!important;
+    height:76px!important;
+    margin:0 auto!important;
+    padding:0 clamp(28px,4vw,56px)!important;
+  }
+  header.hdr > .hdr-inner > .logo {grid-area:brand!important;justify-self:start!important;margin:0!important}
+  header.hdr > .hdr-inner > nav.nav {
+    grid-area:navigation!important;
+    display:flex!important;
+    flex-direction:row!important;
+    flex-wrap:nowrap!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:clamp(16px,2vw,28px)!important;
+    width:auto!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:0!important;
+    white-space:nowrap!important;
+    overflow:visible!important;
+  }
+  header.hdr > .hdr-inner > nav.nav > a {display:inline-flex!important;flex:0 0 auto!important;white-space:nowrap!important;margin:0!important}
+  header.hdr > .hdr-inner > .mobile-search-toggle {display:none!important}
+  header.hdr > .hdr-inner > .hdr-right {
+    grid-area:actions!important;
+    display:flex!important;
+    flex-flow:row nowrap!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:12px!important;
+    margin:0!important;
+    white-space:nowrap!important;
+  }
+  .page-intro {padding:24px 28px 18px!important}
+  .page-intro .eyebrow {display:none!important}
+  .page-intro h1 {margin:0!important}
+}
+</style>
 </body></html>
