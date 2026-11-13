@@ -27,7 +27,7 @@
   var device=/ipad|tablet/i.test(ua)?'tablet':/mobile|android|iphone/i.test(ua)?'mobile':'desktop';
   var referrerHost='';
   try{if(d.referrer){var u=new URL(d.referrer);if(u.origin!==w.location.origin)referrerHost=u.hostname;}}catch(e){}
-  var sent=false;
+  var sent=false, activeRecord=null, queuedProductClicks=[];
   function send(){
     if(sent)return;
     sent=true;
@@ -35,20 +35,34 @@
       var config=w.ZARIAH_SUPABASE_CONFIG||{};
       if(!config.url||!config.publishableKey)return;
       var client=sdk.createClient(config.url,config.publishableKey);
-      function record(type){
+      function record(type,slug){
         return client.rpc('record_visitor_event',{
           p_visitor_id:visitorId,p_event_type:type,p_page_path:path,
-          p_referrer_host:referrerHost||null,p_device_type:device,p_product_slug:productSlug
+          p_referrer_host:referrerHost||null,p_device_type:device,p_product_slug:slug||productSlug
         });
       }
+      activeRecord=record;
       var chain=Promise.resolve();
       if(!sessionStarted){
         try{w.sessionStorage.setItem('zariah_visitor_started_v1','1');}catch(e){}
         chain=record('session_start');
       }
-      return chain.then(function(){return record(eventType);});
+      return chain.then(function(){return record(eventType);}).then(function(){var clicks=queuedProductClicks.splice(0);return clicks.reduce(function(p,slug){return p.then(function(){return record('product_click',slug);});},Promise.resolve());});
     }).catch(function(){});
   }
+
+  // Track intentional clicks on product links/cards as separate events.
+  d.addEventListener('click',function(event){
+    var target=event.target;
+    if(target&&target.nodeType===3)target=target.parentElement;
+    var link=target&&target.closest?target.closest('a[href]'):null;
+    if(!link)return;
+    var match=(link.getAttribute('href')||'').match(/(?:^|\/)products\/([^/?#]+)/i);
+    if(!match)return;
+    var slug=match[1].slice(0,160);
+    if(activeRecord){activeRecord('product_click',slug).catch(function(){});}
+    else queuedProductClicks.push(slug);
+  },true);
 
   // Privilege Club conversion prompt: 60 seconds of visible, recently active time.
   // Session-scoped dismissal; never interrupts cart, checkout, or the membership page.
