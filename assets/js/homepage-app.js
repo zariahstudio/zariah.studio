@@ -1,14 +1,8 @@
 /* ═══════════════════════════════════════
    BAG ILLUSTRATION SYSTEM
 ═══════════════════════════════════════ */
-function getStroke(collection) {
-  return collection === 'Noir' ? 'rgba(160,140,200,0.55)' : 'rgba(184,150,90,0.5)';
-}
-function getCardBg(p) {
-  if (p.collection === 'Essence')   return 'linear-gradient(145deg,#A69C94 0%,#77716D 100%)';
-  if (p.collection === 'Signature') return 'linear-gradient(145deg,#9A9088 0%,#625D59 100%)';
-  return 'linear-gradient(145deg,#18181e 0%,#0e0e14 100%)';
-}
+function getStroke(product) { return 'rgba(184,150,90,0.5)'; }
+function getCardBg(p) { return 'linear-gradient(145deg,#A69C94 0%,#77716D 100%)'; }
 const BAG_SVGS = {
   'Shoulder Bag': (s) => `<svg viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:75%;position:absolute;top:50%;left:50%;transform:translate(-50%,-52%)" aria-hidden="true"><rect x="18" y="110" width="264" height="255" rx="5" fill="rgba(184,150,90,0.06)" stroke="${s}" stroke-width="1.5"/><path d="M18 110 Q18 64 60 52 L240 52 Q282 52 282 110" fill="rgba(184,150,90,0.04)" stroke="${s}" stroke-width="1.5"/><path d="M80 52 Q80 20 100 16 Q130 12 130 52" stroke="${s}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M170 52 Q170 20 200 16 Q220 12 220 52" stroke="${s}" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="125" y="95" width="50" height="28" rx="3" fill="rgba(184,150,90,0.15)" stroke="${s}" stroke-width="1.5"/><circle cx="150" cy="109" r="7" fill="rgba(184,150,90,0.4)"/><line x1="18" y1="240" x2="282" y2="240" stroke="${s}" stroke-width="1" opacity="0.5"/><rect x="30" y="123" width="240" height="228" rx="2" fill="none" stroke="${s}" stroke-width="0.8" stroke-dasharray="4 5" opacity="0.5"/></svg>`,
   'Crossbody': (s) => `<svg viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:70%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)" aria-hidden="true"><rect x="40" y="100" width="220" height="190" rx="7" fill="rgba(184,150,90,0.06)" stroke="${s}" stroke-width="1.5"/><path d="M70 100 Q70 68 100 62 Q150 56 200 62 Q230 68 230 100" fill="none" stroke="${s}" stroke-width="1.5"/><path d="M40 175 Q14 175 12 200 Q10 240 12 280 Q14 300 40 300" fill="none" stroke="${s}" stroke-width="1.2" opacity="0.4"/><circle cx="150" cy="197" r="14" fill="rgba(184,150,90,0.18)" stroke="${s}" stroke-width="1.5"/><circle cx="150" cy="197" r="6" fill="${s}"/><rect x="54" y="112" width="192" height="164" rx="3" fill="none" stroke="${s}" stroke-width="0.8" stroke-dasharray="4 5" opacity="0.4"/></svg>`,
@@ -23,7 +17,7 @@ const BAG_SVGS = {
 };
 
 function getBagSVG(product, variant) {
-  const s = getStroke(product.collection);
+  const s = getStroke(product);
   const fn = BAG_SVGS[product.type] || BAG_SVGS['Shoulder Bag'];
   const svg = fn(s);
   if (variant === 'side') {
@@ -53,13 +47,7 @@ function getGalleryImagesFallback(product, idx) {
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
-let activeCollection = (() => {
-  const path = location.pathname.toLowerCase();
-  if (path.startsWith('/collections/essence')) return 'Essence';
-  if (path.startsWith('/collections/signature')) return 'Signature';
-  if (path.startsWith('/collections/noir')) return 'Noir';
-  return 'all';
-})();
+let activeCollection = 'all';
 let activeType = 'all';
 let activeBrand = 'all';
 let activeSortOrder = 'featured';
@@ -74,7 +62,7 @@ const Z_WISHLIST_KEY='zariah_wishlist_v1';let zWishlist=[];try{const v=JSON.pars
 function renderProducts() {
   const grid = document.getElementById('prodGrid');
   let filtered = PRODUCTS.filter(p => {
-    const collMatch = activeCollection === 'all' || p.collection === activeCollection;
+    const collMatch = true;
     const typeMatch = activeType === 'all' || p.type === activeType;
     const brandMatch = activeBrand === 'all' || String(p.brand || '').trim() === activeBrand;
     return collMatch && typeMatch && brandMatch;
@@ -124,7 +112,7 @@ function renderProducts() {
     art.innerHTML = `
       <div class="pcard-img" style="background:${bg}" id="pcimg-${p.id}">
         ${p.badge ? `<div class="badge ${p.badgeClass}" aria-label="${p.badge}">${p.badge}</div>` : ''}
-        <div class="coll-badge" aria-label="${p.collection} collection">${p.collection}</div><button class="z-wishlist-heart" type="button" data-wishlist="${p.id}" aria-pressed="${zIsWishlisted(p.id)}" aria-label="Add to wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button>
+        <button class="z-wishlist-heart" type="button" data-wishlist="${p.id}" aria-pressed="${zIsWishlisted(p.id)}" aria-label="Add to wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg></button>
         ${p.soldOut ? `<div class="soldout-stamp" aria-label="Sold out">Sold Out</div>` : (p.preOrder ? `<div class="z-preorder-stamp" aria-label="Pre-order available">Pre-order</div>` : '')}
         <img class="pcard-img-real pcard-img-front" src="${frontImg}" alt="${p.name} — front view" loading="lazy" data-product="${p.id}" decoding="async">
         <img class="pcard-img-real pcard-img-side" data-src="${sideImg}" alt="${p.name} — side view" loading="lazy" aria-hidden="true" data-product="${p.id}" decoding="async">
@@ -306,9 +294,8 @@ function updateFilterStatus(visibleCount) {
   const resetBtn  = document.getElementById('filterResetBtn');
   if (!statusBar || !statusTxt) return;
 
-  const collLabels = { all: 'All Collections', Essence: 'Essence Collection', Signature: 'Signature Collection', Noir: 'Noir Collection' };
-  const collLabel = activeBrand !== 'all' ? `${activeBrand} Brand` : (collLabels[activeCollection] || (activeCollection === 'all' ? 'All Collections' : `${activeCollection} Collection`));
-  const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeBrand !== 'all' || activeSortOrder !== 'featured';
+  const collLabel = activeBrand !== 'all' ? `${activeBrand} Brand` : 'All Bags';
+  const isFiltered = activeType !== 'all' || activeBrand !== 'all' || activeSortOrder !== 'featured';
 
   statusTxt.innerHTML = `Showing <em>${collLabel}</em> &mdash; <strong>${visibleCount} ${visibleCount === 1 ? 'Product' : 'Products'}</strong>`;
   if (resetBtn) resetBtn.classList.toggle('hidden', !isFiltered);
@@ -317,7 +304,7 @@ function updateFilterStatus(visibleCount) {
   const countLine = document.getElementById('prodCountLine');
   if (countLine) {
     if (isFiltered) {
-      const collShort = activeBrand !== 'all' ? activeBrand : ({ all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection);
+      const collShort = activeBrand !== 'all' ? activeBrand : 'All Bags';
       const typeLabel = (activeBrand !== 'all' ? ' — ' + activeBrand : '') + (activeType !== 'all' ? ' — ' + activeType : '');
       countLine.textContent = 'Showing ' + collShort + typeLabel + ' — ' + visibleCount + ' ' + (visibleCount === 1 ? 'Product' : 'Products');
     } else {
@@ -339,7 +326,7 @@ function setSortOrder(order) {
 }
 
 function setCollFilter(coll) {
-  activeCollection = coll;
+  activeCollection = 'all';
   // Sync hidden fcol-tabs (DOM state)
   document.querySelectorAll('.fcol-tab').forEach(t => {
     const active = t.dataset.coll === coll;
