@@ -516,6 +516,30 @@
     .z-store-directions,.z-simple-footer-social a{transition:none}
   }
 </style>
+<style id="z-product-card-soft-corners">
+/* Subtle rounded image frames with a restrained inset edge shadow.
+   Visual-only treatment: preserves image sizing, card spacing, hover, and click behavior. */
+.z-mobile-home-card .z-mobile-home-media,
+.products .pcard-img,
+#prodGrid .pcard-img,
+.catalogue .visual,
+.grid:not(.z-collection-feature-grid) .visual,
+.product-grid .product-image,
+.z-recently-card .visual,
+.z-related-item .visual{
+  border-radius:9px!important;
+  overflow:hidden!important;
+  box-shadow:inset 0 0 0 1px rgba(169,137,96,.20),inset 0 0 16px rgba(48,42,37,.075)!important;
+}
+.z-mobile-home-card .z-mobile-home-media img,
+.products .pcard-img-real,
+#prodGrid .pcard-img-real,
+.catalogue .visual img,
+.grid:not(.z-collection-feature-grid) .visual img,
+.product-grid .product-image img{
+  border-radius:inherit!important;
+}
+</style>
 </head>
 <body>
 <a href="#products" class="skip-link">Skip to products</a>
