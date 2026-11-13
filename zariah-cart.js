@@ -91,6 +91,14 @@
     }
 
     if (!write(items)) return { ok: false, reason: 'storage' };
+    // Central instrumentation covers every storefront Add to Bag entry point.
+    const trackedId = String(product.id || product.sku || id).trim().toLowerCase();
+    if (typeof window.ZARIAH_TRACK_EVENT === 'function') {
+      window.ZARIAH_TRACK_EVENT('cart_add', trackedId);
+    } else {
+      window.ZARIAH_PENDING_TRACK_EVENTS = window.ZARIAH_PENDING_TRACK_EVENTS || [];
+      window.ZARIAH_PENDING_TRACK_EVENTS.push({ type: 'cart_add', slug: trackedId });
+    }
     return { ok: true, count: count(items), items };
   }
 
