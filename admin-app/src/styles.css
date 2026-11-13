@@ -175,3 +175,15 @@
 .visitor-empty h3{color:var(--ink);font-size:16px;margin:0 0 8px}
 .visitor-empty p{font-size:13px;line-height:1.65}
 @media(max-width:760px){.visitor-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.visitor-toolbar{align-items:flex-start}.visitor-range{width:100%}.visitor-range button{flex:1;padding:8px 6px}}
+
+
+/* Visitor Intelligence & Trackers */
+.visitor-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0 16px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.visitor-tabs{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.visitor-tabs button{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:9px;padding:10px 13px;font:inherit;font-size:12px;cursor:pointer}
+.visitor-tabs button.active{background:#203d83;color:#fff;border-color:#203d83}
+.visitor-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.visitor-summary-grid .visitor-sources{min-width:0}
+.visitor-kpis article span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.visitor-loading{padding:10px 0}
+@media(max-width:760px){.visitor-topbar{align-items:stretch}.visitor-tabs{display:grid;grid-template-columns:1fr 1fr}.visitor-tabs button{justify-content:center;padding:10px 7px;font-size:11px}.visitor-topbar .visitor-range{width:100%}.visitor-summary-grid{grid-template-columns:1fr}}
