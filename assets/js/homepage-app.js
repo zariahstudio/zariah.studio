@@ -236,13 +236,13 @@ function renderProducts() {
    FAQ
 ═══════════════════════════════════════ */
 const FAQ_DATA = [
-  { q: 'How does Cash on Delivery work?',        a: 'You place your order, we dispatch it, and you pay only when the package arrives at your door. No advance payment is ever required. Simply inspect your bag when it arrives and pay the courier.' },
-  { q: 'How long does delivery take?',           a: 'Orders are dispatched within 24–48 hours. Dhaka deliveries typically arrive in 1–2 business days. Chittagong and other cities may take 2–4 business days depending on courier service.' },
-  { q: 'What is your exchange policy?',          a: 'We offer a 7-day easy exchange policy. If you receive your bag and find a quality issue or defect, contact us on WhatsApp within 7 days and we\'ll arrange an exchange. The bag must be unused and in its original packaging.' },
-  { q: 'Can I see more photos before ordering?', a: 'Absolutely. WhatsApp us at +8801642779056 and we\'ll send you detailed photos of the exact bag — including hardware close-ups, interior shots, and size reference images. We want you to feel completely confident before ordering.' },
-  { q: 'Are ZARIAH bags good quality?',          a: 'Yes. Every bag is quality-checked by our team before dispatch. We source premium vegan leather and hardware, and stand behind the quality of every piece we sell. With COD, you can inspect before paying — that\'s our guarantee.' },
-  { q: 'Do you deliver outside Dhaka and Chittagong?', a: 'Yes, we deliver across Bangladesh. WhatsApp us with your location and we\'ll confirm the delivery timeline and availability in your area.' },
-  { q: 'How do I choose between collections?',   a: 'Essence is for soft, everyday elegance. Signature is for timeless, confident pieces that define your identity. Noir is for bold, statement-making bags. WhatsApp us and we\'ll help you find the perfect match for your style.' },
+  { q: "Do you sell local and international handbag brands?", a: "Yes. ZARIAH Studio brings together a curated selection of handbags from local and international brands. Brand and product information is shown on each listing where available." },
+  { q: "How can I place an order?", a: "Choose the bag you want, add it to your shopping bag, proceed to checkout and submit your delivery details. If you need help before ordering, contact our customer support team." },
+  { q: "Where can I find a bag's brand and product details?", a: "Open the product page to review the available brand, style, colour, dimensions, price and availability information. Details may vary by item. Contact us if you need clarification." },
+  { q: "Are imported and locally sourced bags identified?", a: "We aim to show relevant brand and origin information on each product listing when it has been confirmed. If the origin or another detail is not shown, please ask our team before ordering." },
+  { q: "What payment options are available?", a: "Cash on Delivery is available for eligible orders. The available payment option and any applicable conditions will be confirmed during checkout or by our team." },
+  { q: "Do you deliver across Bangladesh?", a: "We offer delivery across Bangladesh. Delivery charges and estimated arrival times depend on the destination and courier service and will be confirmed with your order." },
+  { q: "How can I ask about availability or an exchange?", a: "Contact our team with the product name or order number. Availability, changes, returns and exchanges are handled according to the relevant product status and published policy." }
 ];
 
 function renderFAQ() {
@@ -1593,8 +1593,8 @@ function syncIndividualCollectionRoute(){
 function syncCollectionsRoute(){
  const isCollections=location.pathname.replace(/\/+$/,'')==='/collections' && !location.search.includes('product=');
  document.body.classList.toggle('z-collections-route',isCollections);
- if(isCollections){document.title='Collections | ZARIAH Studio';const meta=document.querySelector('meta[name=description]');if(meta)meta.content='Explore Essence, Signature and Noir handbag collections by ZARIAH Studio.';const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/collections/';}
- else if(!new URLSearchParams(location.search).get('product')){document.title='ZARIAH Studio — Quiet Luxury Handbags Bangladesh';const meta=document.querySelector('meta[name=description]');if(meta)meta.content="ZARIAH Studio crafts refined women\'s handbags for quiet luxury. Premium bags delivered across Bangladesh. Cash on delivery.";const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/';}
+ if(isCollections){document.title='Collections | ZARIAH Studio';const meta=document.querySelector('meta[name=description]');if(meta)meta.content='Explore handbags from local and international brands at ZARIAH Studio.';const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/collections/';}
+ else if(!new URLSearchParams(location.search).get('product')){document.title='ZARIAH Studio — Local & International Handbag Brands';const meta=document.querySelector('meta[name=description]');if(meta)meta.content="Discover handbags from local and international brands at ZARIAH Studio. Delivery across Bangladesh and Cash on Delivery.";const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/';}
 }
 window.addEventListener('popstate',syncCollectionsRoute);
 syncCollectionsRoute();
