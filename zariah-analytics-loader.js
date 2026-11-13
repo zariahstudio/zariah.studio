@@ -57,6 +57,7 @@
     inject('https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID), 'ga4');
     inject('https://connect.facebook.net/en_US/fbevents.js', 'meta-pixel');
     inject('https://www.clarity.ms/tag/' + encodeURIComponent(CLARITY_ID), 'clarity');
+    inject('/zariah-visitor-tracker.js', 'visitor-tracker');
   }
 
   // Let the initial render/LCP get a head start, then use an idle slot.
