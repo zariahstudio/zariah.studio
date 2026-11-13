@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Package, Layers3, Warehouse, ShoppingBag, Users,
   CreditCard, Settings, LogOut, Plus, Search, Pencil, Archive, ImagePlus,
   RefreshCw, Menu, X, CheckCircle2, AlertCircle, LoaderCircle, Upload, Receipt,
-  Printer, MessageCircle, Award, TrendingUp
+  Printer, MessageCircle, Award, TrendingUp, Eye, AlertTriangle
 } from 'lucide-react';
 import { supabase, supabaseConfigured } from './supabase';
 import { processImageFile } from './imageProcessing';
@@ -310,6 +310,8 @@ function App() {
   const [stockMovements, setStockMovements] = useState([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [orderSearch, setOrderSearch] = useState('');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [orderPaymentFilter, setOrderPaymentFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [receiptOrder, setReceiptOrder] = useState(null);
   const [paymentOrder, setPaymentOrder] = useState(null);
@@ -398,6 +400,21 @@ function App() {
       .eq('id', orderId).single();
     if (error) throw error;
     setReceiptOrder(data);
+  };
+
+  const reviewPayment = async (payment, decision, reason) => {
+    setSaving(true);
+    try {
+      const { error } = await supabase.rpc('review_order_payment', {
+        p_payment_id: payment.id,
+        p_decision: decision,
+        p_reason: reason || null
+      });
+      if (error) throw error;
+      await Promise.all([loadOrders(), loadCustomers()]);
+      notify('success', decision === 'verify' ? 'Payment verified successfully.' : 'Payment rejected and reason recorded.');
+    } catch (e) { notify('error', e.message || 'Could not review payment.'); }
+    finally { setSaving(false); }
   };
 
   const recordPayment = async (order, payment) => {
@@ -694,7 +711,7 @@ function App() {
 
   const nav = [
     ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
-    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['payments','Payments',CreditCard]
+    ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Visitor Intelligence',Eye],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
 
@@ -721,14 +738,16 @@ function App() {
         {section === 'media' && <MediaPanel assets={mediaAssets} onUpload={uploadMedia} onToggle={toggleMedia} saving={saving}/>}
         {section === 'inventory' && <section className="panel"><div className="panel-head"><div><p className="eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p className="muted">Set the current on-hand quantity for each product.</p></div></div><div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>On hand</th><th>Stock level</th><th>Update quantity</th></tr></thead><tbody>{products.map(p => { const inv=p.inventory?.[0]||{}; const qty = inv.on_hand ?? 0; const available=Number(qty)-Number(inv.reserved||0); const low=Boolean(inv.stock_counted)&&available<=Number(inv.low_stock_threshold??2); return <tr key={p.id}><td><strong>{p.name}</strong></td><td>{p.sku}</td><td>{qty}</td><td><span className={`status ${low ? 'warning' : 'live'}`}>{!inv.stock_counted ? 'Not tracked' : low ? 'Low stock' : 'In stock'}</span></td><td><StockInput initial={qty} onSave={v => adjustStock(p,v)}/></td></tr>; })}</tbody></table></div></section>}
         {section === 'orders' && <section className="panel">
-          <div className="panel-head split"><div><p className="eyebrow">ORDER OPERATIONS</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Review customer orders and publish delivery updates to the tracking page.</p></div><button className="secondary" onClick={loadOrders}><RefreshCw size={15}/> Refresh orders</button></div>
-          <div className="toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div></div>
-          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase())).map(o => <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>Manage tracking</button></td></tr>)}</tbody></table>{orders.length === 0 && <div className="empty">No orders found yet.</div>}</div>}
+          <div className="panel-head split"><div><p className="eyebrow">ORDER OPERATIONS</p><h2>Orders <span className="count">{orders.length}</span></h2><p className="muted">Search, filter and manage orders with a consistent status history.</p></div><button className="secondary" onClick={loadOrders}><RefreshCw size={15}/> Refresh orders</button></div>
+          <div className="order-kpis"><article><small>Total orders</small><strong>{orders.length}</strong></article><article><small>New orders</small><strong>{orders.filter(o=>['new','pending'].includes(o.status)).length}</strong></article><article><small>In progress</small><strong>{orders.filter(o=>['confirmed','processing','shipped'].includes(o.status)).length}</strong></article><article><small>Unpaid / partial</small><strong>{orders.filter(o=>['unpaid','partial','partially_paid'].includes(o.payment_status)).length}</strong></article></div>
+          <div className="toolbar order-toolbar"><div className="searchbox"><Search size={16}/><input value={orderSearch} onChange={e => setOrderSearch(e.target.value)} placeholder="Search order number, customer or phone"/></div><div className="order-filter-fields"><select aria-label="Filter by order status" value={orderStatusFilter} onChange={e=>setOrderStatusFilter(e.target.value)}><option value="all">All statuses</option>{['new','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select><select aria-label="Filter by payment status" value={orderPaymentFilter} onChange={e=>setOrderPaymentFilter(e.target.value)}><option value="all">All payments</option>{['unpaid','partial','partially_paid','paid','refunded'].map(v=><option key={v} value={v}>{v.replace('_',' ')}</option>)}</select></div></div>
+          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Total</th><th>Paid</th><th>Payment</th><th>Status</th><th></th></tr></thead><tbody>{orders.filter(o => [o.order_number,o.customers?.full_name,o.customers?.phone].join(' ').toLowerCase().includes(orderSearch.toLowerCase()) && (orderStatusFilter==='all'||o.status===orderStatusFilter) && (orderPaymentFilter==='all'||o.payment_status===orderPaymentFilter)).map(o => {const paid=(o.payments||[]).filter(p=>p.status==='verified').reduce((sum,p)=>sum+Number(p.amount_bdt||0),0);return <tr key={o.id}><td><strong>{o.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{o.source}</small></td><td>{o.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{o.customers?.phone || ''}</small></td><td>{new Date(o.created_at).toLocaleDateString('en-GB')}</td><td>{money(o.total_bdt)}</td><td>{money(paid)}</td><td><span className={`status ${o.payment_status === 'paid' ? 'live' : 'warning'}`}>{o.payment_status?.replace('_',' ')}</span></td><td><span className={`status ${['shipped','delivered'].includes(o.status) ? 'live' : o.status === 'cancelled' ? 'warning' : ''}`}>{o.status}</span></td><td><button className="secondary small" onClick={() => { setSelectedOrder(o); setOrderStatus(o.status); setCourierName(o.courier_name || ''); setTrackingNumber(o.courier_tracking_number || ''); setTrackingMessage(''); }}>View / Manage</button></td></tr>})}</tbody></table>{orders.length===0&&<div className="empty">No orders found yet.</div>}</div>}
         </section>}
-        {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} /> }
+        {section === 'payments' && <PaymentPanel orders={orders} onNewSale={() => setPosOpen(true)} onRecordPayment={setPaymentOrder} onReceipt={order => fetchReceiptOrder(order.id).catch(e => notify('error',e.message))} onReviewPayment={reviewPayment} saving={saving} /> }
         {section === 'customers' && <CustomerPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'loyalty' && <LoyaltyPanel customers={customers} loading={customersLoading} onRefresh={loadCustomers} onSelect={setSelectedCustomer} />}
         {section === 'intelligence' && <SalesIntelligencePanel products={products} orders={analyticsOrders} movements={stockMovements} loading={analyticsLoading} onRefresh={loadAnalytics} />}
+        {section === 'fraud' && <FraudRiskPanel />}
 
       </div>
     </main>
@@ -738,20 +757,18 @@ function App() {
     {selectedCustomer && <CustomerDetailModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onEdit={() => setCustomerEditor(selectedCustomer)} onReceipt={orderId => fetchReceiptOrder(orderId).catch(e => notify('error', e.message))} />}
     {customerEditor && <CustomerEditor customer={customerEditor} saving={saving} onClose={() => setCustomerEditor(null)} onSave={payload => saveCustomer(customerEditor.id, payload)} />}
     {selectedOrder && <OrderManager order={selectedOrder} status={orderStatus} setStatus={setOrderStatus} courier={courierName} setCourier={setCourierName} tracking={trackingNumber} setTracking={setTrackingNumber} message={trackingMessage} setMessage={setTrackingMessage} saving={saving} onClose={() => setSelectedOrder(null)} onSave={async () => {
-      const nextStatus = orderStatus;
-      const now = new Date().toISOString();
       setSaving(true);
       try {
-        const patch = { status: nextStatus, courier_name: courierName.trim() || null, courier_tracking_number: trackingNumber.trim() || null };
-        if (nextStatus === 'shipped' && !selectedOrder.shipped_at) patch.shipped_at = now;
-        if (nextStatus === 'delivered' && !selectedOrder.delivered_at) patch.delivered_at = now;
-        const { error: updateError } = await supabase.from('orders').update(patch).eq('id', selectedOrder.id);
-        if (updateError) throw updateError;
-        const eventText = trackingMessage.trim() || `Order status updated to ${nextStatus}.`;
-        const { error: eventError } = await supabase.from('order_tracking_events').insert({ order_id: selectedOrder.id, status: nextStatus, message: eventText, created_by: session.user.id });
-        if (eventError) throw eventError;
-        await loadOrders(); setSelectedOrder(null); notify('success', `Tracking updated for ${selectedOrder.order_number}.`);
-      } catch (e) { notify('error', e.message || 'Could not update order tracking.'); }
+        const { error } = await supabase.rpc('update_order_status', {
+          p_order_id: selectedOrder.id,
+          p_new_status: orderStatus,
+          p_message: trackingMessage.trim() || null,
+          p_courier_name: courierName.trim() || null,
+          p_tracking_number: trackingNumber.trim() || null
+        });
+        if (error) throw error;
+        await loadOrders(); setSelectedOrder(null); notify('success', `Order updated: ${selectedOrder.order_number}.`);
+      } catch (e) { notify('error', e.message || 'Could not update order.'); }
       finally { setSaving(false); }
     }} />}
     {editor && <ProductEditor product={editor.id ? editor : null} collections={collections.filter(c => c.is_active)} brands={brands} products={products} onClose={() => setEditor(null)} onSave={saveProduct} saving={saving}/>}
@@ -865,10 +882,10 @@ function SalesIntelligencePanel({ products, orders, movements, loading, onRefres
 }
 
 const LOYALTY_TIERS = [
-  { key: 'bronze', label: 'Bronze', min: 0, next: 10000, benefit: 'Entry membership' },
+  { key: 'bronze', label: 'Bronze', min: 0, next: 10000, benefit: 'Starting membership' },
   { key: 'silver', label: 'Silver', min: 10000, next: 25000, benefit: 'Silver membership' },
   { key: 'gold', label: 'Gold', min: 25000, next: 50000, benefit: 'Gold membership' },
-  { key: 'platinum', label: 'Platinum', min: 50000, next: null, benefit: 'Top-tier membership' }
+  { key: 'platinum', label: 'Platinum', min: 50000, next: null, benefit: 'Lifetime Platinum membership' }
 ];
 const tierLabel = tier => LOYALTY_TIERS.find(item => item.key === tier)?.label || 'Bronze';
 
@@ -896,7 +913,7 @@ function LoyaltyPanel({ customers, loading, onRefresh, onSelect }) {
 
   return <section className="panel">
     <div className="panel-head split">
-      <div><p className="eyebrow">CUSTOMER RETENTION</p><h2>Loyalty & Membership</h2><p className="muted">Points are earned only from verified payments. Membership tier is based on cumulative verified spend.</p></div>
+      <div><p className="eyebrow">CUSTOMER RETENTION</p><h2>Loyalty & Membership</h2><p className="muted">Points are credited only after an order is delivered and fully paid. Membership is lifetime once a tier is reached.</p></div>
       <button className="secondary" onClick={onRefresh}><RefreshCw size={15}/> Refresh</button>
     </div>
     <div className="loyalty-summary-grid">
@@ -913,9 +930,9 @@ function LoyaltyPanel({ customers, loading, onRefresh, onSelect }) {
     </div>
     <div className="loyalty-rules">
       <strong>Current earning rules</strong>
-      <p>1 point for each complete ৳100 in an individual verified payment. Tier qualification uses cumulative verified payments, net of refunded or rejected payments.</p>
+      <p>Qualifying spend includes payments only when the order is both Delivered and fully Paid. 1 point is earned per complete ৳100 of qualifying payment.</p>
       <small>Bronze: ৳0 · Silver: ৳10,000 · Gold: ৳25,000 · Platinum: ৳50,000</small>
-      <small>Points are tracked but cannot yet be redeemed for discounts or cash. Redemption rules must be approved before activation.</small>
+      <small>Membership tier never downgrades after qualification, including after a refund. Points/rewards redemption remains disabled until separately approved.</small>
     </div>
     <div className="toolbar customer-toolbar">
       <div className="searchbox"><Search size={16}/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search customer name or mobile"/></div>
@@ -1019,7 +1036,7 @@ function CustomerDetailModal({ customer, onClose, onEdit, onReceipt }) {
       </div>
       <div className="customer-address"><strong>Customer details</strong><p>{customer.address || 'Address not provided'}</p><p>{customer.district || 'District not provided'}</p><small>Customer since {new Date(customer.created_at).toLocaleDateString('en-GB')}</small></div>
       <div className="customer-loyalty-card">
-        <div><p className="eyebrow">LOYALTY MEMBERSHIP</p><strong className={`tier-name tier-${customer.loyalty?.tier || 'bronze'}`}>{tierLabel(customer.loyalty?.tier)}</strong><small>{Number(customer.loyalty?.points_balance || 0).toLocaleString('en-BD')} available points</small></div>
+        <div><p className="eyebrow">ZARIAH STUDIO · PRIVILEGE CLUB</p><strong className={`tier-name tier-${customer.loyalty?.tier || 'bronze'}`}>{tierLabel(customer.loyalty?.tier)}</strong><small>MEMBER ID · ZS-{customer.id.replace(/-/g, '').slice(0, 12).toUpperCase()}</small><small>{Number(customer.loyalty?.points_balance || 0).toLocaleString('en-BD')} available points</small></div>
         <div className="loyalty-profile-numbers"><span><small>Lifetime points</small><b>{Number(customer.loyalty?.lifetime_points || 0).toLocaleString('en-BD')}</b></span><span><small>Qualifying spend</small><b>{money(customer.loyalty?.lifetime_spend_bdt || 0)}</b></span></div>
       </div>
       <div className="loyalty-activity">
@@ -1060,11 +1077,65 @@ function paidTotal(order) {
   return (order.payments || []).filter(p => p.status === 'verified').reduce((sum, p) => sum + Number(p.amount_bdt || 0), 0);
 }
 
-function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt }) {
+
+function FraudRiskPanel() {
+  const [view, setView] = useState('summary');
+  const [visitorEvents, setVisitorEvents] = useState([]);
+  const [visitorLoading, setVisitorLoading] = useState(false);
+  const [visitorError, setVisitorError] = useState('');
+  const [range, setRange] = useState('7');
+  const [search, setSearch] = useState('');
+  const loadVisitorEvents = async () => {
+    setVisitorLoading(true); setVisitorError('');
+    let query = supabase.from('visitor_events').select('id,visitor_id,event_type,page_path,referrer_host,device_type,product_slug,created_at').order('created_at',{ascending:false}).limit(500);
+    if (range !== 'all') query = query.gte('created_at', new Date(Date.now() - Number(range)*86400000).toISOString());
+    const { data, error } = await query;
+    if (error) { setVisitorError(error.message || 'Visitor event data is unavailable.'); setVisitorEvents([]); }
+    else setVisitorEvents(data || []);
+    setVisitorLoading(false);
+  };
+  useEffect(() => { loadVisitorEvents(); }, [range]);
+  const uniqueVisitors = new Set(visitorEvents.map(e=>e.visitor_id)).size;
+  const productEvents = visitorEvents.filter(e=>e.event_type==='product_view');
+  const checkoutEvents = visitorEvents.filter(e=>e.event_type==='checkout_view');
+  const referrers = Object.entries(visitorEvents.reduce((acc,e)=>{const key=e.referrer_host||'Direct / None';acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const topProducts = Object.entries(productEvents.reduce((acc,e)=>{const key=e.product_slug||e.page_path;acc[key]=(acc[key]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const devices = Object.entries(visitorEvents.reduce((acc,e)=>{acc[e.device_type]=(acc[e.device_type]||0)+1;return acc;},{})).sort((a,b)=>b[1]-a[1]);
+  const filteredEvents = visitorEvents.filter(e=>[e.visitor_id,e.page_path,e.referrer_host,e.event_type,e.device_type,e.product_slug].join(' ').toLowerCase().includes(search.toLowerCase()));
+  const ranges=[['1','Today'],['7','7 Days'],['30','30 Days'],['all','All Time']];
+  return <section className="panel fraud-risk-panel visitor-intelligence-panel">
+    <div className="panel-head split"><div><p className="eyebrow">STORE ANALYTICS</p><h2>Visitor Intelligence &amp; Trackers</h2><p className="muted">First-party visitor activity, page engagement and checkout visits.</p></div><button className="secondary" onClick={loadVisitorEvents} disabled={visitorLoading}><RefreshCw size={15}/> Refresh logs</button></div>
+    <div className="visitor-topbar"><div className="visitor-tabs"><button className={view==='summary'?'active':''} onClick={()=>setView('summary')}><TrendingUp size={15}/> Executive Summary</button><button className={view==='checkout'?'active':''} onClick={()=>setView('checkout')}><ShoppingBag size={15}/> Checkout Activity</button><button className={view==='logs'?'active':''} onClick={()=>setView('logs')}><Eye size={15}/> All Visitor Logs ({visitorEvents.length})</button></div><div className="visitor-range">{ranges.map(([v,label])=><button key={v} className={range===v?'active':''} onClick={()=>setRange(v)}>{label}</button>)}</div></div>
+    {visitorError ? <div className="visitor-empty"><AlertTriangle size={24}/><h3>Visitor tracking is awaiting database setup</h3><p>{visitorError.includes('visitor_events')?'Apply the visitor-intelligence migration before visitor data can appear.':visitorError}</p><small>No existing visitor data has been changed.</small></div> : <>
+      {view==='summary' && <>
+        <div className="fraud-kpis visitor-kpis"><article><small>Unique visitors / sessions</small><strong>{uniqueVisitors.toLocaleString()}</strong><span>{visitorEvents.length.toLocaleString()} tracked events</span></article><article><small>Product views</small><strong>{productEvents.length.toLocaleString()}</strong><span>Product detail page visits</span></article><article><small>Checkout visits</small><strong>{checkoutEvents.length.toLocaleString()}</strong><span>Checkout page views</span></article><article><small>Mobile sessions</small><strong>{visitorEvents.filter(e=>e.device_type==='mobile').length.toLocaleString()}</strong><span>Recorded mobile events</span></article></div>
+        <div className="visitor-summary-grid"><section className="visitor-sources"><div className="panel-head"><h3>Customer Acquisition Sources</h3><small>Top channels</small></div>{referrers.length?referrers.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count} events</strong></div>):<p className="muted">No referrer data in this period.</p>}</section><section className="visitor-sources"><div className="panel-head"><h3>Most Viewed Products</h3><small>Trending</small></div>{topProducts.length?topProducts.map(([name,count],i)=><div className="visitor-source-row" key={name}><span>#{i+1} {name}</span><strong>{count} views</strong></div>):<p className="muted">No product views recorded yet.</p>}</section></div>
+        <section className="visitor-sources"><div className="panel-head"><h3>Device Breakdown</h3><small>Recorded events</small></div>{devices.map(([name,count])=><div className="visitor-source-row" key={name}><span>{name}</span><strong>{count}</strong></div>)}</section>
+      </>}
+      {view==='checkout' && <><div className="fraud-kpis visitor-kpis"><article><small>Checkout page visits</small><strong>{checkoutEvents.length}</strong></article><article><small>Unique checkout sessions</small><strong>{new Set(checkoutEvents.map(e=>e.visitor_id)).size}</strong></article><article><small>Mobile checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='mobile').length}</strong></article><article><small>Desktop checkout visits</small><strong>{checkoutEvents.filter(e=>e.device_type==='desktop').length}</strong></article></div><p className="fraud-disclaimer">These are checkout page visits, not confirmed abandoned carts or identified leads. No customer form data is collected by this tracker.</p><VisitorEventTable events={checkoutEvents} search={search} setSearch={setSearch}/></>}
+      {view==='logs' && <VisitorEventTable events={filteredEvents} search={search} setSearch={setSearch}/>}
+      {visitorLoading && <div className="visitor-loading"><Loading/></div>}
+      <p className="fraud-disclaimer">First-party session analytics only. No IP address, phone number, precise location or form contents are collected. Visitor IDs are session-scoped and are not linked to customer identities. Showing up to the latest 500 events.</p>
+    </>}
+  </section>;
+}
+
+function VisitorEventTable({ events, search, setSearch }) {
+  return <><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by visitor, page, referrer, device or product"/></div><span className="muted tiny">{events.length} events</span></div><div className="table-wrap"><table><thead><tr><th>Visitor / Session</th><th>Page / Product</th><th>Referrer</th><th>Device</th><th>Event</th><th>Timestamp</th></tr></thead><tbody>{events.map(e=><tr key={e.id}><td><code>{e.visitor_id.slice(0,8)}…</code></td><td><strong>{e.page_path}</strong>{e.product_slug&&<small className="muted" style={{display:'block'}}>{e.product_slug}</small>}</td><td>{e.referrer_host||'Direct / None'}</td><td><span className="status">{e.device_type}</span></td><td>{e.event_type.replace('_',' ')}</td><td>{new Date(e.created_at).toLocaleString('en-GB')}</td></tr>)}</tbody></table>{events.length===0&&<div className="empty">No visitor events found for this period.</div>}</div></>;
+}
+
+function PaymentPanel({ orders, onNewSale, onRecordPayment, onReceipt, onReviewPayment, saving }) {
   const [filter, setFilter] = useState('all');
-  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid'].includes(order.payment_status) : order.source === 'manual'));
+  const [reasons, setReasons] = useState({});
+  const rows = orders.filter(order => filter === 'all' || (filter === 'due' ? ['unpaid','partially_paid','partial'].includes(order.payment_status) : order.source === 'manual'));
+  const pending = orders.flatMap(order => (order.payments || []).filter(p => p.status === 'pending').map(payment => ({...payment, order})));
   return <section className="panel">
-    <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Record online payments, create in-store sales and share digital receipts.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
+    <div className="panel-head split"><div><p className="eyebrow">PAYMENTS & DIGITAL RECEIPTS</p><h2>Money Receipts</h2><p className="muted">Review transfer payments before they affect verified paid totals.</p></div><button className="primary" onClick={onNewSale}><Plus size={16}/> New POS Sale</button></div>
+    <section className="payment-review"><div className="panel-head"><p className="eyebrow">MANUAL VERIFICATION</p><h2>Pending payment reviews <span className="count">{pending.length}</span></h2><p className="muted">Only verified payments count toward the order's paid balance.</p></div>
+      {pending.length===0?<div className="empty">No pending payment submissions.</div>:<div className="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Method</th><th>Amount</th><th>Transaction reference</th><th>Review</th></tr></thead><tbody>
+        {pending.map(p=><tr key={p.id}><td><strong>{p.order.order_number}</strong></td><td>{p.order.customers?.full_name||'—'}<small className="muted" style={{display:'block'}}>{p.order.customers?.phone||''}</small></td><td>{p.method}</td><td>{money(p.amount_bdt)}</td><td>{p.reference||'—'}</td><td><div className="payment-review-actions"><input aria-label="Rejection reason" placeholder="Reason if rejecting" value={reasons[p.id]||''} onChange={e=>setReasons(v=>({...v,[p.id]:e.target.value}))}/><button className="primary small" disabled={saving||!p.reference||!['bkash','nagad','rocket','bank_transfer'].includes(p.method)} onClick={()=>onReviewPayment(p,'verify',null)}>Verify</button><button className="secondary small" disabled={saving||!(reasons[p.id]||'').trim()} onClick={()=>onReviewPayment(p,'reject',reasons[p.id])}>Reject</button></div></td></tr>)}
+      </tbody></table></div>}
+    </section>
     <div className="toolbar"><div className="filter-tabs"><button className={filter==='all'?'active':''} onClick={()=>setFilter('all')}>All sales</button><button className={filter==='due'?'active':''} onClick={()=>setFilter('due')}>Outstanding due</button><button className={filter==='store'?'active':''} onClick={()=>setFilter('store')}>Store sales</button></div></div>
     <div className="table-wrap"><table><thead><tr><th>Receipt / Order</th><th>Customer</th><th>Channel</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead><tbody>
       {rows.map(order => { const paid=paidTotal(order); const due=Math.max(Number(order.total_bdt||0)-paid,0); return <tr key={order.id}><td><strong>{order.receipt_number || order.order_number}</strong><small className="muted" style={{display:'block',marginTop:4}}>{order.order_number}</small></td><td>{order.customers?.full_name || '—'}<small className="muted" style={{display:'block',marginTop:4}}>{order.customers?.phone || ''}</small></td><td><span className="status">{order.source==='manual'?'In-store':'Online'}</span></td><td>{money(order.total_bdt)}</td><td>{money(paid)}</td><td><strong>{money(due)}</strong></td><td><span className={`status ${due===0?'live':'warning'}`}>{due===0?'paid':paid>0?'partially paid':'due'}</span></td><td><div className="row-actions"><button className="secondary small" onClick={()=>onReceipt(order)}><Receipt size={13}/> Receipt</button>{due>0 && <button className="primary small" onClick={()=>onRecordPayment(order)}>Paid / Add payment</button>}</div></td></tr>; })}
@@ -1115,7 +1186,7 @@ function OrderManager({ order, status, setStatus, courier, setCourier, tracking,
     <div className="order-summary"><div><small>Order total</small><strong>{money(order.total_bdt)}</strong></div><div><small>Payment</small><strong>{order.payment_status?.replace('_',' ')}</strong></div><div><small>Placed</small><strong>{new Date(order.created_at).toLocaleDateString('en-GB')}</strong></div></div>
     <div className="order-delivery-details"><strong>Delivery details</strong><p>{order.customers?.district || 'District not provided'}</p><p>{order.customers?.address || 'Address not provided'}</p>{order.customers?.email && <p>{order.customers.email}</p>}</div>
     <div className="order-items"><strong>Items</strong>{(order.order_items || []).map((item,i) => <div key={i}><span>{item.name_snapshot} <small>({item.sku_snapshot}) × {item.quantity}</small></span><b>{money(item.line_total_bdt)}</b></div>)}</div>
-    <form onSubmit={submit}><div className="form-grid"><label>Order status<select value={status} onChange={e => setStatus(e.target.value)}>{['new','confirmed','processing','shipped','delivered','cancelled','returned'].map(v => <option key={v} value={v}>{v[0].toUpperCase()+v.slice(1)}</option>)}</select></label><label>Courier name<input value={courier} onChange={e => setCourier(e.target.value)} placeholder="e.g. Pathao / Steadfast"/></label><label className="span-2">Courier tracking number<input value={tracking} onChange={e => setTracking(e.target.value)} placeholder="Enter courier consignment / tracking ID"/></label><label className="span-2">Customer-visible update message<textarea rows="3" value={message} onChange={e => setMessage(e.target.value)} placeholder="e.g. Your parcel has been handed over to the courier."/></label></div>
+    <form onSubmit={submit}><div className="form-grid"><label>Order status<select value={status} onChange={e => setStatus(e.target.value)}>{['new','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned'].map(v => <option key={v} value={v}>{v.replace('_',' ').replace(/^./, c => c.toUpperCase())}</option>)}</select></label><label>Courier name<input value={courier} onChange={e => setCourier(e.target.value)} placeholder="e.g. Pathao / Steadfast"/></label><label className="span-2">Courier tracking number<input value={tracking} onChange={e => setTracking(e.target.value)} placeholder="Enter courier consignment / tracking ID"/></label><label className="span-2">Customer-visible update message<textarea rows="3" value={message} onChange={e => setMessage(e.target.value)} placeholder="e.g. Your parcel has been handed over to the courier."/></label></div>
       {error && <p className="form-error">{error}</p>}<div className="tracking-history"><strong>Tracking history</strong>{(order.order_tracking_events || []).length ? order.order_tracking_events.map(ev => <div key={ev.id}><span className="status">{ev.status}</span><p>{ev.message}</p><small>{new Date(ev.event_time).toLocaleString('en-GB')}</small></div>) : <p className="muted tiny">No tracking updates recorded yet.</p>}</div>
       <footer className="modal-actions"><button type="button" className="secondary" onClick={onClose}>Cancel</button><button className="primary" disabled={saving}>{saving ? <LoaderCircle className="spin" size={16}/> : null} Save tracking update</button></footer>
     </form>
