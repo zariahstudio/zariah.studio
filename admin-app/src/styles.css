@@ -187,3 +187,9 @@
 .visitor-kpis article span{display:block;color:var(--muted);font-size:10px;margin-top:5px}
 .visitor-loading{padding:10px 0}
 @media(max-width:760px){.visitor-topbar{align-items:stretch}.visitor-tabs{display:grid;grid-template-columns:1fr 1fr}.visitor-tabs button{justify-content:center;padding:10px 7px;font-size:11px}.visitor-topbar .visitor-range{width:100%}.visitor-summary-grid{grid-template-columns:1fr}}
+
+
+/* Privilege Club VIP tier */
+.tier-vip{color:#8a6840}
+.tier-card-vip{background:linear-gradient(135deg,#fbf5e9,#eee0c6);border-color:#d9c39e}
+.tier-pill.tier-vip{background:#f2e7d2;color:#795a31}
