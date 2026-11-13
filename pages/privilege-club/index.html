@@ -38,9 +38,9 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 <section class="intro"><div class="eyebrow">ZARIAH STUDIO MEMBERSHIP</div><h1>Privilege Club</h1><p>Every completed purchase brings you closer to a higher membership. Sign in with the mobile number used for your ZARIAH orders to view your membership card, qualifying spend and points.</p></section>
 <section class="tiers" aria-label="Membership tiers">
 <div class="tier"><strong>Bronze</strong><small>Starting tier</small><small>৳0+</small></div>
-<div class="tier"><strong>Silver</strong><small>Lifetime tier</small><small>৳5,000+</small></div>
-<div class="tier"><strong>Gold</strong><small>Lifetime tier</small><small>৳15,000+</small></div>
-<div class="tier"><strong>Platinum</strong><small>Lifetime tier</small><small>৳30,000+</small></div>
+<div class="tier"><strong>Silver</strong><small>Lifetime tier</small><small>৳10,000+</small></div>
+<div class="tier"><strong>Gold</strong><small>Lifetime tier</small><small>৳25,000+</small></div>
+<div class="tier"><strong>Platinum</strong><small>Lifetime tier</small><small>৳50,000+</small></div>
 </section>
 <section class="login" id="loginPanel">
 <h2>Access your membership</h2><p class="hint">Enter the Bangladesh mobile number used when placing your order. We will send a one-time verification code. Your membership details are shown only after the number is verified.</p>
@@ -68,7 +68,7 @@ var clearMessage=function(){$('message').textContent='';$('message').classList.r
 var normalisePhone=function(value){var digits=String(value||'').replace(/[^0-9]/g,'');if(digits.indexOf('00880')===0)digits=digits.slice(2);if(digits.indexOf('880')===0)digits=digits.slice(3);if(digits.length===10&&digits.charAt(0)==='1')digits='0'+digits;return digits};
 var toE164=function(value){var digits=normalisePhone(value);return /^01[3-9][0-9]{8}$/.test(digits)?'+88'+digits:null};
 var money=function(value){return '৳'+Number(value||0).toLocaleString('en-BD')};
-var tiers=[{key:'bronze',label:'Bronze',next:5000},{key:'silver',label:'Silver',next:15000},{key:'gold',label:'Gold',next:30000},{key:'platinum',label:'Platinum',next:null}];
+var tiers=[{key:'bronze',label:'Bronze',next:10000},{key:'silver',label:'Silver',next:25000},{key:'gold',label:'Gold',next:50000},{key:'platinum',label:'Platinum',next:null}];
 function render(data){
 if(!data||!data.found){$('loginPanel').style.display='block';$('memberPanel').classList.remove('show');showMessage(data&&data.message?data.message:'No matching membership profile was found. Use the mobile number from your order or contact support.');return}
 $('loginPanel').style.display='none';$('memberPanel').classList.add('show');
