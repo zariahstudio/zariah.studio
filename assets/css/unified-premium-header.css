@@ -1,0 +1,102 @@
+/* ZARIAH Studio — unified premium storefront header.
+   Shared header presentation only; existing navigation links and cart hooks remain intact. */
+:root{--zs-header-paper:#fbf8f3;--zs-header-ink:#302a25;--zs-header-muted:#766d64;--zs-header-line:#e9e1d7;--zs-header-gold:#b99768}
+body:not(.admin-body) header:not(.zbag-head){
+  position:sticky!important;top:0!important;z-index:100!important;
+  background:rgba(251,248,243,.97)!important;
+  border-bottom:1px solid var(--zs-header-line)!important;
+  box-shadow:0 3px 18px rgba(50,40,30,.035)!important;
+  backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
+}
+body:not(.admin-body) header:not(.zbag-head) .hdr-inner,
+body:not(.admin-body) header.site-header,
+body:not(.admin-body) body:has(.product-layout)>header{
+  width:min(1440px,100%)!important;min-height:88px!important;height:auto!important;
+  margin:0 auto!important;padding:14px clamp(22px,4.2vw,64px)!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:clamp(20px,3vw,48px)!important;box-sizing:border-box!important;
+}
+body:not(.admin-body) header:not(.zbag-head)>.brand,
+body:not(.admin-body) header:not(.zbag-head)>.logo,
+body:not(.admin-body) header .hdr-inner>.brand,
+body:not(.admin-body) header .hdr-inner>.logo{
+  order:0!important;flex:0 0 auto!important;margin:0 auto 0 0!important;
+  display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+  justify-content:center!important;text-decoration:none!important;line-height:.88!important;
+  color:var(--zs-header-ink)!important;white-space:nowrap!important;
+}
+body:not(.admin-body) header .brand,
+body:not(.admin-body) header .logo{font-family:'Cormorant Garamond',Georgia,serif!important}
+body:not(.admin-body) header .brand{font-size:clamp(28px,2.5vw,37px)!important;letter-spacing:.13em!important;font-weight:400!important}
+body:not(.admin-body) header .logo-name{font-size:clamp(29px,2.5vw,38px)!important;letter-spacing:.13em!important;font-weight:400!important}
+body:not(.admin-body) header .brand small,
+body:not(.admin-body) header .logo-studio{display:block!important;margin:6px 0 0 2px!important;font:500 8px/1.2 Inter,Arial,sans-serif!important;letter-spacing:.46em!important;text-transform:uppercase!important;color:var(--zs-header-muted)!important}
+body:not(.admin-body) header:not(.zbag-head) nav{
+  order:1!important;flex:0 1 auto!important;min-width:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  gap:clamp(14px,2.05vw,30px)!important;margin:0 auto!important;padding:0!important;
+  border:0!important;background:transparent!important;overflow:visible!important;
+}
+body:not(.admin-body) header:not(.zbag-head) nav a{
+  flex:0 0 auto!important;padding:9px 0!important;margin:0!important;
+  color:#62584f!important;text-decoration:none!important;
+  font:500 9px/1.4 Inter,Arial,sans-serif!important;letter-spacing:.14em!important;
+  text-transform:uppercase!important;white-space:nowrap!important;
+  border:0!important;background:transparent!important;transition:color .2s ease!important;
+}
+body:not(.admin-body) header:not(.zbag-head) nav a:hover,
+body:not(.admin-body) header:not(.zbag-head) nav a[aria-current="page"],
+body:not(.admin-body) header:not(.zbag-head) nav a.active{color:var(--zs-header-gold)!important}
+body:not(.admin-body) header:not(.zbag-head) .hdr-right{
+  order:2!important;flex:0 0 auto!important;display:flex!important;align-items:center!important;
+  justify-content:flex-end!important;gap:14px!important;margin-left:auto!important;
+}
+body:not(.admin-body) header .z-cart-nav{
+  display:inline-flex!important;align-items:center!important;gap:7px!important;
+  padding:10px 14px!important;border:1px solid #d8c8b3!important;
+  color:var(--zs-header-ink)!important;background:transparent!important;
+}
+body:not(.admin-body) header .z-cart-count,
+body:not(.admin-body) header [data-cart-count]{font-variant-numeric:tabular-nums!important}
+body:not(.admin-body) header .btn-wa{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  min-height:40px!important;padding:0 17px!important;background:#302a25!important;
+  color:#fff!important;border:1px solid #302a25!important;font-size:9px!important;
+  letter-spacing:.13em!important;text-transform:uppercase!important;
+}
+body:not(.admin-body) header .hamburger,
+body:not(.admin-body) header .menu-toggle{
+  color:var(--zs-header-ink)!important;border:1px solid var(--zs-header-line)!important;
+  background:transparent!important;border-radius:0!important;min-width:40px!important;min-height:40px!important;
+}
+@media(max-width:900px){
+ body:not(.admin-body) header:not(.zbag-head) .hdr-inner,
+ body:not(.admin-body) header.site-header,
+ body:not(.admin-body) body:has(.product-layout)>header{
+  min-height:76px!important;padding:12px 22px!important;gap:16px!important
+ }
+ body:not(.admin-body) header:not(.zbag-head) nav{gap:clamp(10px,1.6vw,16px)!important}
+ body:not(.admin-body) header:not(.zbag-head) nav a{font-size:8px!important;letter-spacing:.09em!important}
+}
+@media(max-width:640px){
+ body:not(.admin-body) header:not(.zbag-head) .hdr-inner,
+ body:not(.admin-body) header.site-header,
+ body:not(.admin-body) body:has(.product-layout)>header{
+  min-height:68px!important;padding:10px 16px!important;gap:10px!important;
+  flex-direction:row!important;align-items:center!important
+ }
+ body:not(.admin-body) header .brand{font-size:28px!important}
+ body:not(.admin-body) header .logo-name{font-size:29px!important}
+ body:not(.admin-body) header:not(.zbag-head) nav{
+  flex:1 1 auto!important;justify-content:flex-start!important;gap:16px!important;
+  overflow-x:auto!important;overflow-y:hidden!important;white-space:nowrap!important;
+  scrollbar-width:none!important;-webkit-overflow-scrolling:touch!important;
+  padding:7px 0!important
+ }
+ body:not(.admin-body) header:not(.zbag-head) nav::-webkit-scrollbar{display:none!important}
+ body:not(.admin-body) header:not(.zbag-head) nav a{font-size:8px!important;letter-spacing:.08em!important}
+ body:not(.admin-body) header:not(.zbag-head) .hdr-right{gap:8px!important}
+ body:not(.admin-body) header .btn-wa,
+ body:not(.admin-body) header .z-wishlist-label{display:none!important}
+ body:not(.admin-body) header .z-cart-nav{padding:8px 9px!important;font-size:8px!important}
+}
