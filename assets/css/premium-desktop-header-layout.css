@@ -64,10 +64,27 @@
     transform:none !important;
     grid-column:2 !important;
     justify-self:end !important;
+    display:inline-flex !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
     align-items:center !important;
+    justify-content:flex-end !important;
+    gap:6px !important;
+    width:max-content !important;
+    min-width:max-content !important;
     white-space:nowrap !important;
+    line-height:1.2 !important;
     margin:0 !important;
     padding:0 0 0 8px !important;
+  }
+
+  .hdr nav[aria-label="Main navigation"] > .z-cart-nav .z-cart-count {
+    display:inline-block !important;
+    position:static !important;
+    margin:0 !important;
+    padding:0 !important;
+    line-height:1.2 !important;
+    vertical-align:middle !important;
   }
 
   .hdr-inner > .hdr-right {
