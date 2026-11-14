@@ -87,7 +87,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const ipHash = await hmacIp(ip, serviceKey);
-    const rpcResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/record_product_view`, {
+    const rpcResponse = await fetch(`${supabaseUrl}/rest/v1/rpc/record_product_view_with_ip`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,0 +1,4 @@
+project_id = "keuqvqnhxlpsglsjfopd"
+
+[functions.record-visitor-event]
+verify_jwt = false

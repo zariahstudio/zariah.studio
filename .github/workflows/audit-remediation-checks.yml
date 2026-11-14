@@ -1,0 +1,45 @@
+name: Audit remediation checks
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "zariah-visitor-tracker.js"
+      - "assets/js/homepage-product-data.js"
+      - "supabase/functions/record-visitor-event/**"
+      - "supabase/functions/record-product-view/**"
+      - "supabase/migrations/**"
+      - "supabase/tests/**"
+      - "admin-app/src/supabase.js"
+      - "admin-app/src/App.jsx"
+      - "pages/faq/index.html"
+      - "index.html"
+      - ".github/workflows/audit-remediation-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-edge-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check zariah-visitor-tracker.js
+          node --check assets/js/homepage-product-data.js
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Check product SEO PHP syntax
+        run: php -l product-seo.php
+      - name: Type-check visitor analytics Edge Function
+        run: |
+          deno check supabase/functions/record-visitor-event/index.ts
+          deno check supabase/functions/record-product-view/index.ts

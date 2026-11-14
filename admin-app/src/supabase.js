@@ -8,7 +8,8 @@ export const supabaseConfigured = Boolean(url && anonKey && !url.includes('YOUR_
 export const supabase = supabaseConfigured
   ? createClient(url, anonKey, {
       auth: {
-        persistSession: false,
+        persistSession: true,
+        storage: window.sessionStorage,
         autoRefreshToken: true,
         detectSessionInUrl: true
       }
