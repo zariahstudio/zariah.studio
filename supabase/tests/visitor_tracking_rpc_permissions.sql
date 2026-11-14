@@ -1,4 +1,5 @@
--- Run after applying 20261114000100_lock_public_tracking_rpcs.sql and 20261114000300_global_ip_unique_visitors.sql.
+-- Run after the storefront tracker has been switched to record-visitor-event, then apply 20261114000100_lock_public_tracking_rpcs.sql and 20261114000300_global_ip_unique_visitors.sql.
+-- Order lookup RPC lockdown is independently applied by 20261114000400_lock_order_tracking_rpc.sql.
 -- This is an assertion-only test; it performs no data or schema mutations.
 do $$
 begin
