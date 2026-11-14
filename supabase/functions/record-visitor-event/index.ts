@@ -19,10 +19,20 @@ function reply(data: unknown, status: number, origin: string | null) {
 function validUuid(value: unknown): value is string {
   return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
+function toHex(bytes: Uint8Array) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
 function sha256(value: string) {
   return crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)).then((digest) =>
-    Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("")
+    toHex(new Uint8Array(digest))
   );
+}
+async function hmacIp(ip: string, secret: string) {
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(ip));
+  return toHex(new Uint8Array(signature));
 }
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin");
@@ -80,7 +90,7 @@ Deno.serve(async (req: Request) => {
   const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
   try {
-    const [ipHash, visitorHash] = await Promise.all([sha256(ip), sha256(visitorId)]);
+    const [ipHash, visitorHash] = await Promise.all([hmacIp(ip, serviceKey), sha256(visitorId)]);
     const limits = await Promise.all([
       admin.rpc("consume_public_api_rate_limit", {
         p_scope: "visitor_event_ip", p_key_hash: ipHash, p_window_seconds: 900, p_max_requests: 120,
