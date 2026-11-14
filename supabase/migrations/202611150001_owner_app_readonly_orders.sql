@@ -1,5 +1,5 @@
 -- Owner-only, read-only Orders API for the isolated Owner App.
--- Review only: this migration is NOT applied to production.
+-- Review only: do not apply to production without explicit approval.
 create or replace function public.owner_app_list_orders(
   p_search text default null,
   p_status text default null,
@@ -7,28 +7,23 @@ create or replace function public.owner_app_list_orders(
   p_offset integer default 0
 )
 returns table (
-  id uuid,
-  order_number text,
-  customer_name text,
-  customer_phone text,
-  total_bdt integer,
-  amount_paid numeric,
-  payment_status text,
-  order_status text,
-  order_source text,
-  created_at timestamptz
+  id uuid, order_number text, customer_name text, customer_phone text,
+  total_bdt integer, amount_paid numeric, payment_status text,
+  order_status text, order_source text, created_at timestamptz
 )
-language plpgsql
-stable
-security definer
-set search_path to ''
+language plpgsql stable security definer set search_path to ''
 as $$
 begin
   if (select auth.uid()) is null or not private.is_admin() then
     raise exception 'Not authorized' using errcode = '42501';
   end if;
-  if p_limit < 1 or p_limit > 100 or p_offset < 0 then
+  if p_limit is null or p_limit < 1 or p_limit > 100
+     or p_offset is null or p_offset < 0 then
     raise exception 'Invalid pagination parameters' using errcode = '22023';
+  end if;
+  if p_status is not null and p_status <> ''
+     and p_status not in ('pending','confirmed','processing','ready_to_ship','shipped','delivered','cancelled','returned') then
+    raise exception 'Invalid order status filter' using errcode = '22023';
   end if;
   return query
   select o.id,o.order_number,o.customer_name,o.customer_phone,o.total_bdt,
@@ -37,9 +32,9 @@ begin
   where (nullif(btrim(p_status),'') is null or o.order_status = p_status)
     and (
       nullif(btrim(p_search),'') is null
-      or o.order_number ilike '%' || btrim(p_search) || '%'
-      or o.customer_name ilike '%' || btrim(p_search) || '%'
-      or o.customer_phone ilike '%' || btrim(p_search) || '%'
+      or o.order_number ilike '%' || left(btrim(p_search),120) || '%'
+      or o.customer_name ilike '%' || left(btrim(p_search),120) || '%'
+      or o.customer_phone ilike '%' || left(btrim(p_search),120) || '%'
     )
   order by o.created_at desc, o.id desc
   limit p_limit offset p_offset;
@@ -48,10 +43,7 @@ $$;
 
 create or replace function public.owner_app_get_order(p_order_id uuid)
 returns jsonb
-language plpgsql
-stable
-security definer
-set search_path to ''
+language plpgsql stable security definer set search_path to ''
 as $$
 declare
   v_order jsonb;
@@ -60,6 +52,9 @@ declare
 begin
   if (select auth.uid()) is null or not private.is_admin() then
     raise exception 'Not authorized' using errcode = '42501';
+  end if;
+  if p_order_id is null then
+    raise exception 'Order ID is required' using errcode = '22023';
   end if;
   select jsonb_build_object(
     'id',o.id,'order_number',o.order_number,'customer_name',o.customer_name,
@@ -72,18 +67,20 @@ begin
     'courier_name',o.courier_name,'courier_tracking_number',o.courier_tracking_number,
     'notes',o.notes,'created_at',o.created_at,'shipped_at',o.shipped_at,
     'delivered_at',o.delivered_at
-  ) into v_order
-  from public.orders o where o.id = p_order_id;
+  ) into v_order from public.orders o where o.id = p_order_id;
   if v_order is null then return null; end if;
   select coalesce(jsonb_agg(jsonb_build_object(
     'id',i.id,'product_name',i.product_name_snapshot,'sku',i.sku_snapshot,
-    'brand',i.brand_snapshot,'quantity',i.quantity,'unit_price_bdt',i.unit_price_bdt,
-    'line_total_bdt',i.line_total_bdt
+    'brand',i.brand_snapshot,'quantity',i.quantity,
+    'unit_price_bdt',coalesce(i.unit_price_bdt,round(i.unit_price)::integer),
+    'line_total_bdt',coalesce(i.line_total_bdt,round(i.line_total)::integer)
   ) order by i.created_at), '[]'::jsonb)
   into v_items from public.order_items i where i.order_id = p_order_id;
   select coalesce(jsonb_agg(jsonb_build_object(
-    'id',p.id,'amount_bdt',p.amount_bdt,'payment_method',coalesce(p.method,p.payment_method),
-    'status',coalesce(p.status,p.payment_status),'reference',coalesce(p.reference,p.transaction_reference),
+    'id',p.id,'amount_bdt',coalesce(p.amount_bdt,round(p.amount)::integer),
+    'payment_method',coalesce(p.method,p.payment_method),
+    'status',coalesce(p.status,p.payment_status),
+    'reference',coalesce(p.reference,p.transaction_reference),
     'received_at',p.received_at
   ) order by p.received_at desc), '[]'::jsonb)
   into v_payments from public.payments p where p.order_id = p_order_id;
