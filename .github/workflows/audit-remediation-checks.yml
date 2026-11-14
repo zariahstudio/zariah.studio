@@ -9,6 +9,7 @@ on:
       - "supabase/functions/record-visitor-event/**"
       - "supabase/migrations/**"
       - "admin-app/src/supabase.js"
+      - "admin-app/src/App.jsx"
       - "pages/faq/index.html"
       - "index.html"
       - ".github/workflows/audit-remediation-checks.yml"
