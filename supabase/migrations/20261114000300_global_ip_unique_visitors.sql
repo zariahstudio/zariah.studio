@@ -98,6 +98,114 @@ $function$;
 revoke all on function public.record_visitor_event_with_ip(uuid,text,text,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.record_visitor_event_with_ip(uuid,text,text,text,text,text,text) to service_role;
 
+create or replace function public.record_product_view_with_ip(
+  p_visitor_id uuid,
+  p_product_slug text,
+  p_page_path text,
+  p_referrer_host text,
+  p_device_type text,
+  p_ip_hash text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $function$
+declare
+  v_recorded boolean;
+begin
+  if p_ip_hash is null or p_ip_hash !~ '^[0-9a-f]{64}
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $function$
+declare
+  v_result jsonb;
+begin
+  if auth.uid() is null or not public.is_staff_or_admin() then
+    raise exception 'Staff access required.' using errcode='42501';
+  end if;
+
+  with filtered as (
+    select * from public.visitor_events
+    where p_since is null or created_at >= p_since
+  ),
+  sessions as (
+    select visitor_id,
+      count(*) filter (where event_type in ('page_view','product_view')) as page_count,
+      min(created_at) as first_seen, max(created_at) as last_seen
+    from filtered group by visitor_id
+  ),
+  session_first_touch as (
+    select distinct on (visitor_id) visitor_id,
+      coalesce(referrer_host,'Direct / None') as referrer_name,
+      device_type
+    from filtered
+    order by visitor_id, created_at asc
+  ),
+  referrer_rows as (
+    select referrer_name as name,count(*)::bigint as count
+    from session_first_touch group by referrer_name order by count desc limit 8
+  ),
+  product_rows as (
+    select coalesce(product_slug,page_path) as name,count(*)::bigint as count
+    from filtered where event_type='product_view'
+    group by coalesce(product_slug,page_path) order by count desc limit 8
+  ),
+  device_rows as (
+    select device_type as name,count(*)::bigint as count
+    from session_first_touch group by device_type order by count desc
+  )
+  select jsonb_build_object(
+    'total_events',(select count(*) from filtered),
+    'total_sessions',(select count(*) from sessions),
+    'unique_visitors',(
+      select count(*) from visitor_intelligence_private.ip_visitor_windows
+      where p_since is null or last_seen_at >= p_since
+    ),
+    'page_views',(select count(*) from filtered where event_type in ('page_view','product_view')),
+    'product_views',(select count(*) from filtered where event_type='product_view'),
+    'cart_views',(select count(*) from filtered where event_type='cart_view'),
+    'checkout_views',(select count(*) from filtered where event_type='checkout_view'),
+    'bounce_rate',coalesce((select round(100.0 * count(*) filter (where page_count <= 1) / nullif(count(*),0),1) from sessions),0),
+    'avg_session_seconds',(select round(avg(extract(epoch from (last_seen-first_seen)))::numeric,1) from sessions where last_seen>first_seen),
+    'referrers',coalesce((select jsonb_agg(jsonb_build_object('name',name,'count',count) order by count desc) from referrer_rows),'[]'::jsonb),
+    'top_products',coalesce((select jsonb_agg(jsonb_build_object('name',name,'count',count) order by count desc) from product_rows),'[]'::jsonb),
+    'devices',coalesce((select jsonb_agg(jsonb_build_object('name',name,'count',count) order by count desc) from device_rows),'[]'::jsonb)
+  ) into v_result;
+
+  return v_result;
+end;
+$function$;
+
+commit;
+ then
+    raise exception 'Invalid visitor IP hash.' using errcode = '22023';
+  end if;
+
+  v_recorded := public.record_product_view(
+    p_visitor_id,
+    p_product_slug,
+    p_page_path,
+    p_referrer_host,
+    p_device_type,
+    p_ip_hash
+  );
+
+  if v_recorded is distinct from true then
+    return false;
+  end if;
+
+  perform visitor_intelligence_private.record_ip_visit(p_ip_hash);
+  return true;
+end;
+$function$;
+
+revoke all on function public.record_product_view_with_ip(uuid,text,text,text,text,text) from public, anon, authenticated;
+grant execute on function public.record_product_view_with_ip(uuid,text,text,text,text,text) to service_role;
+
 create or replace function public.visitor_intelligence_summary(p_since timestamptz default null)
 returns jsonb
 language plpgsql
