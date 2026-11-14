@@ -31,5 +31,10 @@ jobs:
         run: |
           node --check zariah-visitor-tracker.js
           node --check assets/js/homepage-product-data.js
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Check product SEO PHP syntax
+        run: php -l product-seo.php
       - name: Type-check visitor analytics Edge Function
         run: deno check supabase/functions/record-visitor-event/index.ts
