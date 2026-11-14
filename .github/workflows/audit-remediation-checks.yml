@@ -1,0 +1,35 @@
+name: Audit remediation checks
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "zariah-visitor-tracker.js"
+      - "assets/js/homepage-product-data.js"
+      - "supabase/functions/record-visitor-event/**"
+      - "supabase/migrations/**"
+      - "admin-app/src/supabase.js"
+      - "pages/faq/index.html"
+      - "index.html"
+      - ".github/workflows/audit-remediation-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  syntax-and-edge-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
+      - name: Check browser JavaScript syntax
+        run: |
+          node --check zariah-visitor-tracker.js
+          node --check assets/js/homepage-product-data.js
+      - name: Type-check visitor analytics Edge Function
+        run: deno check supabase/functions/record-visitor-event/index.ts
