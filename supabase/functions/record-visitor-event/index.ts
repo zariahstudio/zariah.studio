@@ -105,8 +105,9 @@ Deno.serve(async (req: Request) => {
     }
     if (limits.some((r) => r.data[0].allowed !== true)) return reply({ error: "rate_limited" }, 429, origin);
 
-    const { data, error } = await admin.rpc("record_visitor_event", {
+    const { data, error } = await admin.rpc("record_visitor_event_with_ip", {
       p_visitor_id: visitorId,
+      p_ip_hash: ipHash,
       p_event_type: eventType,
       p_page_path: pagePath,
       p_referrer_host: referrerHost || null,
