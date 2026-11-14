@@ -1,0 +1,4 @@
+const CACHE='zariah-owner-shell-v1';
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['/owner/','/owner/manifest.webmanifest','/owner/icon.svg'])));self.skipWaiting()});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
+self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==self.location.origin)return;if(u.pathname.startsWith('/rest/')||u.pathname.startsWith('/auth/')||u.pathname.includes('/functions/'))return;if(r.mode==='navigate'&&u.pathname.startsWith('/owner/')){e.respondWith(fetch(r).catch(()=>caches.match('/owner/')));return}if(u.pathname.startsWith('/owner/'))e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(res=>{if(res.ok){const copy=res.clone();caches.open(CACHE).then(c=>c.put(r,copy))}return res}))) });
