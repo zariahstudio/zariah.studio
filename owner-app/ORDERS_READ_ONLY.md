@@ -5,14 +5,20 @@ The Owner App Orders screen uses two owner-only PostgreSQL RPCs:
 - `public.owner_app_list_orders(text,text,integer,integer)`
 - `public.owner_app_get_order(uuid)`
 
-The proposed SQL is in `supabase/migrations/202611150001_owner_app_readonly_orders.sql`.
+The reviewed SQL is retained in `supabase/migrations/202611150001_owner_app_readonly_orders.sql`.
 
-## Important deployment gate
+## Production status
 
-The migration has been committed to the feature branch for review only. It has NOT been applied to the production Supabase project. Until an authorized operator reviews and applies it, the Orders screen will report that the read-only API is not installed.
+The two RPCs have been applied to the production Supabase project `keuqvqnhxlpsglsjfopd` using the reviewed SQL. Read-only catalog verification confirmed both functions exist, are SECURITY DEFINER, and have EXECUTE granted to `authenticated` but not to `anon` or `PUBLIC`.
 
-The functions check the authenticated user's admin role using `private.is_admin()`, are SECURITY DEFINER with an empty search_path, return only the fields needed by the Owner App, and grant EXECUTE only to authenticated users. They do not update order, payment, inventory, or customer records.
+The functions check the authenticated user's admin role using `private.is_admin()`, use an empty search_path, and return only the fields needed by the Owner App. They do not update order, payment, inventory, or customer records.
+
+## Screen capabilities
 
 The screen supports searching by order number, customer name, or phone; filtering by order status; viewing order items and payment history; and reviewing courier details. There are no edit, status-change, payment, cancellation, or delete controls.
+
+## Verification limitation
+
+The database function definitions and grants have been verified. A real end-to-end UI test still requires the owner to sign in through the deployed or locally configured Owner App with their own credentials. No credentials were requested or accessed during this work.
 
 Do not expose the underlying tables directly to the Owner App as a workaround. Keep the existing staff policies and operational RPCs unchanged.
