@@ -40,4 +40,6 @@ jobs:
       - name: Check product SEO PHP syntax
         run: php -l product-seo.php
       - name: Type-check visitor analytics Edge Function
-        run: deno check supabase/functions/record-visitor-event/index.ts
+        run: |
+          deno check supabase/functions/record-visitor-event/index.ts
+          deno check supabase/functions/record-product-view/index.ts
