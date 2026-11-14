@@ -8,6 +8,7 @@ on:
       - "assets/js/homepage-product-data.js"
       - "supabase/functions/record-visitor-event/**"
       - "supabase/migrations/**"
+      - "supabase/tests/**"
       - "admin-app/src/supabase.js"
       - "admin-app/src/App.jsx"
       - "pages/faq/index.html"
