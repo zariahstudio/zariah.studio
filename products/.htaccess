@@ -1,5 +1,0 @@
-# Route product URLs through the server-rendered SEO page.
-# Existing product layout, CSS and commerce scripts are preserved by product-seo.php.
-Options -MultiViews
-RewriteEngine On
-RewriteRule ^([A-Za-z0-9-]+)/?$ /product-seo.php?slug=$1 [L,QSA]
