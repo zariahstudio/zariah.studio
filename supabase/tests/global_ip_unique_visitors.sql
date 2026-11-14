@@ -19,7 +19,8 @@ begin
   end if;
 
   update visitor_intelligence_private.ip_visitor_windows
-  set last_seen_at = now() - interval '25 hours'
+  set first_seen_at = now() - interval '25 hours',
+      last_seen_at = now() - interval '25 hours'
   where ip_hash = v_hash;
 
   perform visitor_intelligence_private.record_ip_visit(v_hash);
