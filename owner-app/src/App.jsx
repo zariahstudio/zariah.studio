@@ -7,7 +7,8 @@ function Metric({icon:Icon,label,value,note}){return <article className="metric"
 
 function POSModule(){
  const[products,setProducts]=useState([]),[search,setSearch]=useState(''),[cart,setCart]=useState([]),[customer,setCustomer]=useState({full_name:'',phone:'',email:''}),[method,setMethod]=useState('cash'),[paid,setPaid]=useState(''),[reference,setReference]=useState(''),[notes,setNotes]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[result,setResult]=useState(null),[key,setKey]=useState(()=>crypto.randomUUID()),[loading,setLoading]=useState(true);
- async function loadProducts(){setLoading(true);const{data,error}=await supabase.from('products').select('id,sku,name,price_bdt,is_sold_out').eq('is_published',true).order('name').limit(250);if(error)setError('Product catalogue: '+error.message);else{setError('');setProducts(data||[])}setLoading(false)}\n useEffect(()=>{loadProducts()},[]);
+ async function loadProducts(){setLoading(true);const{data,error}=await supabase.from('products').select('id,sku,name,price_bdt,is_sold_out').eq('is_published',true).order('name').limit(250);if(error)setError('Product catalogue: '+error.message);else{setError('');setProducts(data||[])}setLoading(false)}
+ useEffect(()=>{loadProducts()},[]);
  const total=cart.reduce((sum,p)=>sum+Number(p.price_bdt)*p.quantity,0);
  const renew=()=>{setKey(crypto.randomUUID());setResult(null)};
  function add(p){renew();setCart(c=>{const old=c.find(x=>x.id===p.id);return old?c.map(x=>x.id===p.id?{...x,quantity:Math.min(20,x.quantity+1)}:x):[...c,{...p,quantity:1}]})}
