@@ -58,16 +58,23 @@
     });
   }
   function record(type,slug,eventPath){
-    return client.rpc('record_visitor_event',{
-      p_visitor_id:visitorId,
-      p_event_type:type,
-      p_page_path:(eventPath||path).slice(0,500),
-      p_referrer_host:referrerHost||null,
-      p_device_type:device,
-      p_product_slug:slug||null
-    }).then(function(result){
-      if(result&&result.error)throw result.error;
-      return result;
+    var config=w.ZARIAH_SUPABASE_CONFIG||{};
+    if(!config.url||!config.publishableKey)return Promise.reject(new Error('Supabase tracking configuration is incomplete'));
+    return w.fetch(config.url+'/functions/v1/record-visitor-event',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':config.publishableKey},
+      body:JSON.stringify({
+        visitor_id:visitorId,
+        event_type:type,
+        page_path:(eventPath||path).slice(0,500),
+        referrer_host:referrerHost||null,
+        device_type:device,
+        product_slug:slug||null
+      }),
+      keepalive:true
+    }).then(function(response){
+      if(!response.ok)throw new Error('Visitor event endpoint returned HTTP '+response.status);
+      return response.json();
     });
   }
 
@@ -94,7 +101,7 @@
     if(flushing){flushAgain=true;return Promise.resolve();}
     flushing=true;
     var failed=false;
-    return loadClient().then(function(){
+    return Promise.resolve().then(function(){
       var chain=Promise.resolve();
       if(!sessionStarted){
         chain=chain.then(function(){return record('session_start',null,path);}).then(function(){
