@@ -70,7 +70,17 @@ if (!is_array($product) || empty($product['slug'])) {
     if (is_file($staticProductPage) && is_readable($staticProductPage)) {
         header('Content-Type: text/html; charset=UTF-8');
         header('X-Robots-Tag: index, follow');
-        readfile($staticProductPage);
+        $staticHtml = file_get_contents($staticProductPage);
+        if ($staticHtml === false) {
+            http_response_code(500);
+            exit('Product page could not be loaded');
+        }
+        $staticHtml = str_replace(
+            '/zariah-visitor-tracker.js',
+            '/zariah-visitor-tracker.js?v=20261114-ip-dedup1',
+            $staticHtml
+        );
+        echo $staticHtml;
         exit;
     }
 
