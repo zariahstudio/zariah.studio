@@ -32,6 +32,16 @@ begin
     raise exception 'service_role must execute record_visitor_event_with_ip';
   end if;
 
+  if has_function_privilege('anon', 'public.record_product_view_with_ip(uuid,text,text,text,text,text)', 'EXECUTE') then
+    raise exception 'anon must not execute record_product_view_with_ip';
+  end if;
+  if has_function_privilege('authenticated', 'public.record_product_view_with_ip(uuid,text,text,text,text,text)', 'EXECUTE') then
+    raise exception 'authenticated must not execute record_product_view_with_ip';
+  end if;
+  if not has_function_privilege('service_role', 'public.record_product_view_with_ip(uuid,text,text,text,text,text)', 'EXECUTE') then
+    raise exception 'service_role must execute record_product_view_with_ip';
+  end if;
+
   if has_table_privilege('anon', 'visitor_intelligence_private.ip_visitor_windows', 'SELECT') or
      has_table_privilege('authenticated', 'visitor_intelligence_private.ip_visitor_windows', 'SELECT') or
      has_table_privilege('service_role', 'visitor_intelligence_private.ip_visitor_windows', 'SELECT') then
