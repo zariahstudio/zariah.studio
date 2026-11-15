@@ -691,3 +691,11 @@ body.z-homepage-route .z-hero-slide:focus-visible {
     font: 600 11px/1.4 var(--z-atelier-sans) !important;
   }
 }
+
+@media (max-width: 768px) {
+  /* The legacy mobile stylesheet hides these shared sections by default.
+     Explicitly restore them only when the existing renderer has populated them. */
+  body.z-homepage-route .z-mobile-home-section:not([hidden]) {
+    display: block !important;
+  }
+}
