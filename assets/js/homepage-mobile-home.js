@@ -34,12 +34,9 @@
       return product.isFeatured === true ||
         ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
     };
-    const tagged = products.filter(isTagged);
-    const taggedIds = new Set(tagged.map(function (product) { return String(product.id); }));
-    // Tagged products lead; the remaining published catalogue fills the eight-card edit.
-    const matches = tagged.concat(products.filter(function (product) {
-      return !taggedIds.has(String(product.id));
-    })).slice(0, 8);
+    // Only explicitly tagged products belong in editorial merchandising sections.
+    // Never label an untagged product as a New Arrival or Best Seller.
+    const matches = tagged.slice(0, 8);
 
     section.hidden = matches.length === 0;
     if (!matches.length) {
@@ -60,6 +57,7 @@
           '<img src="' + image + '" alt="' + name + '" loading="lazy" decoding="async">' +
         '</span>' +
         '<span class="z-mobile-home-name">' + name + '</span>' +
+        '<span class="z-mobile-home-brand">' + escapeHtml(product.brand || '') + '</span>' +
         '<span class="z-mobile-home-price">' + price + '</span>' +
       '</a>';
     }).join('');
