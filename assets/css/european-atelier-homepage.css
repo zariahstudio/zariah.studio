@@ -699,3 +699,15 @@ body.z-homepage-route .z-hero-slide:focus-visible {
     display: block !important;
   }
 }
+
+/* Tablet merchandising density: retain a comfortable two-column product grid
+   between small laptop and tablet widths, after the desktop cascade overrides. */
+@media (min-width: 769px) and (max-width: 1100px) {
+  body.z-homepage-route .z-mobile-home-inner {
+    width: calc(100% - 56px) !important;
+  }
+  body.z-homepage-route .z-mobile-home-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 24px 18px !important;
+  }
+}
