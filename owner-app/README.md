@@ -33,3 +33,12 @@ The client-side admin role gate is not a replacement for database authorization.
 - POS submission creates a real sale, payment and potentially stock movement. Do not test with a live transaction without explicit owner approval.
 - Test receipt output on target Android printers; browser print support alone does not prove hardware compatibility.
 - Confirm /owner/ is live after cPanel Git deployment and verify static assets, manifest and service worker.
+
+## Android APK (Capacitor)
+- Android packaging uses Capacitor 7 and the same React application; it is not a separate native rewrite.
+- Build web assets with `npm run build:android` so Vite emits relative asset paths for the Android WebView. Normal website builds continue using `/owner/`.
+- Generate the Android platform with `npm run android:add` once, then synchronize with `npm run android:sync`.
+- Open the generated `android/` project in Android Studio to create a signed release APK/AAB. Never commit signing keystores or passwords.
+- GitHub Actions creates an unsigned debug APK artifact for installation/testing. It is not a Play Store release.
+- Native thermal-printer Bluetooth integration is not included in this first wrapper milestone; the existing browser print UI must be tested separately and native printer support requires model-specific implementation.
+- Native Android build and physical-device testing are required before production use.
