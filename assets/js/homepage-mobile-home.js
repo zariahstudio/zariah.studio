@@ -31,7 +31,7 @@
       if (config.badge === 'bestseller') {
         return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
       }
-      return product.isFeatured === true ||
+      return product.isFeatured === true || product.isNew === true || product.is_new === true ||
         ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
     };
     // Only explicitly tagged products belong in editorial merchandising sections.
