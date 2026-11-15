@@ -114,8 +114,8 @@ function ProductEditor({ product, collections, brands, products, onClose, onSave
       <form onSubmit={submit}>
         <div className="form-grid">
           <label>Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
-          <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
-          <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+          <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="BAG-001"/></label>
+          <label>Internal catalogue group *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose internal group</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
           <label>Bag category<input list="zariah-bag-category-options" value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Choose or add a bag category"/><datalist id="zariah-bag-category-options">{[...new Set(['Shoulder Bag','Crossbody','Tote','Top Handle','East-West','Flap Bag','Satchel','Bucket Bag','Bowling Bag','Underarm Bag',...products.map(item => item.product_type).filter(Boolean)])].sort((x,y)=>x.localeCompare(y)).map(type=><option key={type} value={type}/>)}</datalist></label>
           <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
           <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
@@ -248,10 +248,7 @@ function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) 
 const MEDIA_SLOTS = [
   {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
   {key:'hero.mobile',label:'Hero — Mobile',group:'Hero'},
-  {key:'collection.essence.cover',label:'Essence Collection Cover',group:'Collections'},
-  {key:'collection.signature.cover',label:'Signature Collection Cover',group:'Collections'},
-  {key:'collection.noir.cover',label:'Noir Collection Cover',group:'Collections'},
-  {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
+    {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
   {key:'lookbook.main',label:'Lookbook Editorial Image',group:'Editorial'},
   {key:'about.main',label:'About Us Image',group:'Editorial'},
   {key:'brand.footer',label:'Footer Brand Visual',group:'Brand'}
