@@ -3,7 +3,7 @@ name: Owner App build check
 on:
   push:
     branches:
-      - feature/zariah-owner-app
+      - "**"
     paths:
       - 'owner-app/**'
       - '.github/workflows/owner-app-check.yml'
@@ -30,8 +30,24 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
+          node-version: 22
+      - name: Generate and install locked dependencies
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          npm ci --no-audit --no-fund
       - name: Build isolated Owner App
-        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://keuqvqnhxlpsglsjfopd.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            VITE_SUPABASE_ANON_KEY="$(sed -n "s/.*publishableKey: '\\([^']*\\)'.*/\\1/p" ../storefront-config.js)"
+          fi
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "ERROR: No Supabase Publishable/anon key was found."
+            exit 1
+          fi
+          export VITE_SUPABASE_ANON_KEY
+          npm run build
+          test -s dist/index.html
+          grep -q '/owner/assets/' dist/index.html
