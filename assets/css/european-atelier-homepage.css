@@ -1121,3 +1121,46 @@ body.z-homepage-route .z-mobile-home-card:after {
   body.z-homepage-route .z-mobile-home-media img,
   body.z-homepage-route .z-hero-cta { transition: none !important; }
 }
+
+
+/* Typography-only refinement: increase readability without changing layout,
+   spacing, dimensions, colours, imagery, or interaction behaviour. */
+@media (min-width: 769px) {
+  body.z-homepage-route .logo-name { font-size: 34px !important; }
+  body.z-homepage-route .logo-studio { font-size: 9px !important; }
+  body.z-homepage-route .nav-links a { font-size: 12px !important; }
+  body.z-homepage-route .z-wishlist-trigger { font-size: 10px !important; }
+  body.z-homepage-route .btn-wa { font-size: 9px !important; }
+  body.z-homepage-route .z-hero-copy small { font-size: 10px !important; }
+  body.z-homepage-route .z-hero-copy h1 { font-size: clamp(64px, 7.6vw, 104px) !important; }
+  body.z-homepage-route .z-hero-copy p { font-size: 14px !important; }
+  body.z-homepage-route .z-hero-cta { font-size: 9px !important; }
+  body.z-homepage-route .z-mobile-home-kicker { font-size: 10px !important; }
+  body.z-homepage-route .z-mobile-home-title { font-size: clamp(46px, 4.8vw, 66px) !important; }
+  body.z-homepage-route .z-mobile-home-link { font-size: 9px !important; }
+  body.z-homepage-route .z-mobile-home-name { font-size: 22px !important; }
+  body.z-homepage-route .z-mobile-home-brand { font-size: 10px !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 14px !important; }
+  body.z-homepage-route .z-mobile-home-card:after { font-size: 8px !important; }
+}
+@media (max-width: 768px) {
+  body.z-homepage-route .logo-name { font-size: 27px !important; }
+  body.z-homepage-route .logo-studio { font-size: 8px !important; }
+  body.z-homepage-route .z-wishlist-trigger { font-size: 9px !important; }
+  body.z-homepage-route .z-hero-copy small { font-size: 8px !important; }
+  body.z-homepage-route .z-hero-copy h1 { font-size: clamp(48px, 12.5vw, 66px) !important; }
+  body.z-homepage-route .z-hero-copy p { font-size: 12px !important; }
+  body.z-homepage-route .z-hero-cta { font-size: 8px !important; }
+  body.z-homepage-route .z-mobile-home-kicker { font-size: 8px !important; }
+  body.z-homepage-route .z-mobile-home-title { font-size: clamp(35px, 9vw, 43px) !important; }
+  body.z-homepage-route .z-mobile-home-link { font-size: 8px !important; }
+  body.z-homepage-route .z-mobile-home-name { font-size: 18px !important; line-height: 1.15 !important; }
+  body.z-homepage-route .z-mobile-home-brand { font-size: 9px !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 12px !important; }
+  body.z-homepage-route .z-mobile-home-card:after { font-size: 7px !important; }
+  body.z-homepage-route .z-mobile-home-badge { font-size: 7px !important; }
+}
+@media (max-width: 380px) {
+  body.z-homepage-route .z-mobile-home-name { font-size: 17px !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 12px !important; }
+}
