@@ -115,7 +115,7 @@ function ProductEditor({ product, collections, brands, products, onClose, onSave
         <div className="form-grid">
           <label>Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
           <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="BAG-001"/></label>
-          <label>Internal catalogue group *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose internal group</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+          <label>Internal catalogue group *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose internal group</option>{collections.map(c => <option key={c.id} value={c.id}>{['Essence','Signature','Noir'].includes(c.name) ? 'General' : c.name}</option>)}</select></label>
           <label>Bag category<input list="zariah-bag-category-options" value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Choose or add a bag category"/><datalist id="zariah-bag-category-options">{[...new Set(['Shoulder Bag','Crossbody','Tote','Top Handle','East-West','Flap Bag','Satchel','Bucket Bag','Bowling Bag','Underarm Bag',...products.map(item => item.product_type).filter(Boolean)])].sort((x,y)=>x.localeCompare(y)).map(type=><option key={type} value={type}/>)}</datalist></label>
           <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
           <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
@@ -233,7 +233,7 @@ function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) 
   };
   const cancelEdit = () => { setEditing(null); setForm(emptyForm); setError(''); };
   return <section className="panel">
-    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create, edit and manage the collections shown in the published catalogue. Hiding a collection does not delete its products.</p></div></div>
+    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Catalogue Groups</h2><p className="muted">Internal product grouping used by the catalogue system. Customer browsing is organised by brand.</p></div></div>
     <form className="inline-create" onSubmit={submit}>
       <input required maxLength="60" value={form.name} onChange={e => setForm(v => ({...v, name:e.target.value}))} placeholder="Catalogue group name"/>
       <input maxLength="240" value={form.description} onChange={e => setForm(v => ({...v, description:e.target.value}))} placeholder="Short description (optional)"/>
@@ -621,7 +621,7 @@ function App() {
       const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length, sort_order: collections.length });
       if (error) throw error;
       await loadData();
-      notify('success', 'Collection created.');
+      notify('success', 'Catalogue group created.');
     } catch (error) { notify('error', error.message || 'Could not create collection.'); throw error; }
     finally { setSaving(false); }
   };
@@ -634,7 +634,7 @@ function App() {
       }).eq('id', id);
       if (error) throw error;
       await loadData();
-      notify('success', 'Collection details updated.');
+      notify('success', 'Catalogue group details updated.');
     } catch (error) { notify('error', error.message || 'Could not update collection.'); throw error; }
     finally { setSaving(false); }
   };
@@ -678,7 +678,7 @@ function App() {
 
   const toggleCollection = async (collection) => {
     const { error } = await supabase.from('collections').update({ is_active: !collection.is_active }).eq('id', collection.id);
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection updated.'); }
+    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Catalogue group updated.'); }
   };
 
   const adjustStock = async (product, nextValue) => {
@@ -705,7 +705,7 @@ function App() {
   if (!session || !profile) return <><Login onLogin={signIn} onReset={requestPasswordReset} busy={loginBusy} resetBusy={resetBusy} resetMessage={resetMessage} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Catalogue groups',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
     ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Visitor Intelligence',Eye],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
