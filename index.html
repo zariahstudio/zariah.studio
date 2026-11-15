@@ -726,21 +726,21 @@
   <section class="z-next-brands" id="zBrandDirectory" aria-labelledby="zBrandDirectoryTitle">
     <div class="z-next-wrap">
       <div class="z-next-section-head">
-        <div class="z-next-eyebrow">LABELS IN OUR COLLECTION</div>
+        <div class="z-next-eyebrow">HANDBAG LABELS</div>
         <h2 id="zBrandDirectoryTitle">Discover Handbag Brands</h2>
-        <p>Explore the labels currently featured at ZARIAH Studio.</p>
+        <p>Browse each brand and discover its handbag selection.</p>
       </div>
       <div class="z-brand-directory-grid" aria-label="Handbag selection">
-        <div class="z-brand-directory-item">Aurelle</div>
-        <div class="z-brand-directory-item">Amoura</div>
-        <div class="z-brand-directory-item">Cavera</div>
-        <div class="z-brand-directory-item">Celestine</div>
-        <div class="z-brand-directory-item">Elvera</div>
-        <div class="z-brand-directory-item">Marelle</div>
-        <div class="z-brand-directory-item">Novelle</div>
-        <div class="z-brand-directory-item">Solenne</div>
-        <div class="z-brand-directory-item">Velora</div>
-        <div class="z-brand-directory-item">Virelle</div>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Aurelle">Aurelle</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Amoura">Amoura</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Cavera">Cavera</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Celestine">Celestine</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Elvera">Elvera</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Marelle">Marelle</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Novelle">Novelle</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Solenne">Solenne</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Velora">Velora</a>
+        <a class="z-brand-directory-item" href="/collections/all-bags/?brand=Virelle">Virelle</a>
       </div>
     </div>
   </section>
@@ -934,15 +934,13 @@
     <div class="products-header reveal">
       <div class="prod-intro">
         <h2 class="ttl prod-ttl" id="products-heading">Chosen To Be Carried.</h2>
-        <p class="coll-names">Curated Handbag Collection</p>
+        <p class="coll-names">Browse the labels we carry</p>
         <div class="prod-count-line" id="prodCountLine">Showing 18 Products</div>
       </div>
       <!-- JS state sync only: fcol-tabs and ftabs hidden, never rendered -->
       <div aria-hidden="true" style="display:none">
         <button class="fcol-tab active" data-coll="all" aria-pressed="true">All<span class="fcol-tab-count" id="fcol-count-all"></span></button>
-        <button class="fcol-tab" data-coll="Essence" aria-pressed="false">Essence<span class="fcol-tab-count" id="fcol-count-essence"></span></button>
-        <button class="fcol-tab" data-coll="Signature" aria-pressed="false">Signature<span class="fcol-tab-count" id="fcol-count-signature"></span></button>
-        <button class="fcol-tab" data-coll="Noir" aria-pressed="false">Noir<span class="fcol-tab-count" id="fcol-count-noir"></span></button>
+        
         <button class="ftab active" data-type="all" aria-pressed="true">All</button>
         <button class="ftab" data-type="Shoulder Bag" aria-pressed="false">Shoulder</button>
         <button class="ftab" data-type="Crossbody" aria-pressed="false">Crossbody</button>
@@ -959,14 +957,7 @@
           Filter<span class="filter-active-label" id="filterActiveLabel"></span>
         </button>
         <!-- Mobile collection tab bar -->
-        <div class="mob-coll-bar" role="group" aria-label="Filter by collection">
-          <div class="mob-coll-track">
-            <button class="mob-coll-tab active" data-mobcoll="all" aria-pressed="true">All</button>
-            <button class="mob-coll-tab" data-mobcoll="Essence" aria-pressed="false">Essence</button>
-            <button class="mob-coll-tab" data-mobcoll="Signature" aria-pressed="false">Signature</button>
-            <button class="mob-coll-tab" data-mobcoll="Noir" aria-pressed="false">Noir</button>
-          </div>
-        </div>
+        <div class="mob-coll-bar" role="group" aria-label="Browse all bags"><div class="mob-coll-track"><span class="mob-coll-tab active">All Bags</span></div></div>
         <!-- Mobile type + sort selects -->
         <div class="mob-controls-row">
           <div class="mob-ctrl-wrap">
@@ -1005,25 +996,14 @@
     <div class="dfbar" id="desktopFilterBar" role="group" aria-label="Filter and sort products">
       <div class="dfbar-inner">
         <div class="dfbar-left">
-          <span class="dfbar-sect-lbl">Collections</span>
+          <span class="dfbar-sect-lbl">Browse</span>
           <div class="dftabs" role="group" aria-label="Filter by collection">
             <button class="dftab active" data-dfcoll="all" aria-pressed="true" aria-label="Show all collections">
-              <span class="dftab-name">All</span>
-              <span class="dftab-desc">All Collections</span>
+              <span class="dftab-name">All Bags</span>
+              <span class="dftab-desc">Every brand</span>
               <span class="dftab-count" id="dfcount-all"></span>
             </button>
-            <button class="dftab" data-dfcoll="Essence" aria-pressed="false" aria-label="Show Essence collection">
-              <span class="dftab-name">Essence<span class="dftab-count" id="dfcount-essence"></span></span>
-              <span class="dftab-desc">Everyday Elegance</span>
-            </button>
-            <button class="dftab" data-dfcoll="Signature" aria-pressed="false" aria-label="Show Signature collection">
-              <span class="dftab-name">Signature<span class="dftab-count" id="dfcount-signature"></span></span>
-              <span class="dftab-desc">Timeless Luxury</span>
-            </button>
-            <button class="dftab" data-dfcoll="Noir" aria-pressed="false" aria-label="Show Noir collection">
-              <span class="dftab-name">Noir<span class="dftab-count" id="dfcount-noir"></span></span>
-              <span class="dftab-desc">Bold Statements</span>
-            </button>
+            
           </div>
         </div>
         <div class="dfbar-right">
