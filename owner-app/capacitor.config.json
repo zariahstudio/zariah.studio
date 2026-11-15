@@ -1,0 +1,6 @@
+{
+  "appId": "com.zariahstudio.owner",
+  "appName": "ZARIAH Owner",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
