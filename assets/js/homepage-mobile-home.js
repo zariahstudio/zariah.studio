@@ -4,7 +4,7 @@
   'use strict';
 
   const sections = [
-    { id: 'zMobileNewCollection', gridId: 'zMobileNewCollectionGrid', badge: 'new', label: 'New Collection' },
+    { id: 'zMobileNewCollection', gridId: 'zMobileNewCollectionGrid', badge: 'new', label: 'New Arrivals' },
     { id: 'zMobileBestSellers', gridId: 'zMobileBestSellersGrid', badge: 'bestseller', label: 'Best Sellers' }
   ];
 
