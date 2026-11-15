@@ -263,7 +263,7 @@ function renderProducts() {
    FAQ
 ═══════════════════════════════════════ */
 const FAQ_DATA = [
-  { q: "Do you sell local and international handbag brands?", a: "Yes. ZARIAH Studio brings together a curated selection of handbags from local and international brands. Brand and product information is shown on each listing where available." },
+  { q: "What handbag brands can I explore?", a: "ZARIAH Studio brings together a considered selection of handbag styles. Brand and product information is shown on each listing where available." },
   { q: "How can I place an order?", a: "Choose the bag you want, add it to your shopping bag, proceed to checkout and submit your delivery details. If you need help before ordering, contact our customer support team." },
   { q: "Where can I find a bag's brand and product details?", a: "Open the product page to review the available brand, style, colour, dimensions, price and availability information. Details may vary by item. Contact us if you need clarification." },
   { q: "Are imported and locally sourced bags identified?", a: "We aim to show relevant brand and origin information on each product listing when it has been confirmed. If the origin or another detail is not shown, please ask our team before ordering." },
@@ -1649,13 +1649,13 @@ function syncIndividualCollectionRoute(){
 function syncCollectionsRoute(){
  const isCollections=location.pathname.replace(/\/+$/,'')==='/collections' && !location.search.includes('product=');
  document.body.classList.toggle('z-collections-route',isCollections);
- if(isCollections){document.title='Collections | ZARIAH Studio';const meta=document.querySelector('meta[name=description]');if(meta)meta.content='Explore handbags from local and international brands at ZARIAH Studio.';const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/collections/';}
- else if(!new URLSearchParams(location.search).get('product')){document.title='ZARIAH Studio — Local & International Handbag Brands';const meta=document.querySelector('meta[name=description]');if(meta)meta.content="Discover handbags from local and international brands at ZARIAH Studio. Delivery across Bangladesh and Cash on Delivery.";const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/';}
+ if(isCollections){document.title='Collections | ZARIAH Studio';const meta=document.querySelector('meta[name=description]');if(meta)meta.content='Explore thoughtfully curated handbags at ZARIAH Studio.';const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/collections/';}
+ else if(!new URLSearchParams(location.search).get('product')){document.title='ZARIAH Studio — Curated Handbags';const meta=document.querySelector('meta[name=description]');if(meta)meta.content="Discover thoughtfully curated handbags at ZARIAH Studio, with delivery across Bangladesh and Cash on Delivery.";const canonical=document.querySelector('link[rel=canonical]');if(canonical)canonical.href='https://www.zariahstudio.com/';}
 }
 window.addEventListener('popstate',syncCollectionsRoute);
 syncCollectionsRoute();
 syncIndividualCollectionRoute();
-function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Local & International Handbag Brands';zRenderRecentlyViewed();}}
+function syncProductRoute(){const id=new URLSearchParams(location.search).get('product');if(id)renderProductDetailsPage(id);else{const host=document.getElementById('zProductPage');if(host)host.hidden=true;document.body.classList.remove('z-product-route');document.title='ZARIAH Studio — Curated Handbags';zRenderRecentlyViewed();}}
 window.addEventListener('popstate',syncProductRoute);
 
 syncProductRoute();
