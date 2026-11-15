@@ -36,6 +36,7 @@
     };
     // Only explicitly tagged products belong in editorial merchandising sections.
     // Never label an untagged product as a New Arrival or Best Seller.
+    const tagged = products.filter(isTagged);
     const matches = tagged.slice(0, 8);
 
     section.hidden = matches.length === 0;
