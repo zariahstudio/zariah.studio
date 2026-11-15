@@ -1694,3 +1694,105 @@ body.z-homepage-route .z-contact-footer .z-simple-footer-bottom a {
   body.z-homepage-route .z-next-service,
   body.z-homepage-route #zBrandDirectory .z-brand-directory-item { transition: none !important; }
 }
+
+
+/* FINAL TYPOGRAPHY SYSTEM — homepage only.
+   Normalized type scale and font hierarchy for desktop and mobile.
+   No layout, spacing, colour, image, or interaction changes. */
+body.z-homepage-route {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body.z-homepage-route :is(p,li,dd,dt,label,input,textarea,select,button,a) {
+  font-family: var(--z-atelier-sans, Inter, Arial, sans-serif);
+}
+body.z-homepage-route :is(h1,h2,h3,h4,.logo-name,.logo-studio,.z-mobile-home-name,.z-next-service h3,.z-next-benefit-grid h3) {
+  font-family: var(--z-atelier-serif, "Cormorant Garamond", Georgia, serif);
+  font-weight: 400;
+}
+@media (min-width: 769px) {
+  body.z-homepage-route .logo-name { font-size: 32px !important; line-height: .98 !important; letter-spacing: .16em !important; }
+  body.z-homepage-route .logo-studio { font-size: 9px !important; line-height: 1.2 !important; letter-spacing: .42em !important; }
+  body.z-homepage-route .nav-links a { font-size: 11px !important; line-height: 1.4 !important; letter-spacing: .11em !important; }
+  body.z-homepage-route .z-wishlist-trigger { font-size: 11px !important; line-height: 1.35 !important; }
+  body.z-homepage-route .btn-wa { font-size: 10px !important; line-height: 1.3 !important; letter-spacing: .09em !important; }
+  body.z-homepage-route .z-hero-copy small { font-size: 11px !important; line-height: 1.5 !important; letter-spacing: .2em !important; }
+  body.z-homepage-route .z-hero-copy h1 { font-size: clamp(60px,6.2vw,88px) !important; line-height: .98 !important; letter-spacing: -.035em !important; }
+  body.z-homepage-route .z-hero-copy p { max-width: 540px; font-size: 16px !important; line-height: 1.65 !important; letter-spacing: 0 !important; }
+  body.z-homepage-route .z-hero-copy a { font-size: 11px !important; line-height: 1.35 !important; letter-spacing: .1em !important; }
+  body.z-homepage-route .z-mobile-home-kicker { font-size: 10px !important; line-height: 1.45 !important; letter-spacing: .19em !important; }
+  body.z-homepage-route .z-mobile-home-title { font-size: clamp(44px,4.2vw,58px) !important; line-height: 1.02 !important; letter-spacing: -.025em !important; }
+  body.z-homepage-route .z-mobile-home-link { font-size: 10px !important; line-height: 1.35 !important; letter-spacing: .1em !important; }
+  body.z-homepage-route .z-mobile-home-name { font-size: 22px !important; line-height: 1.16 !important; letter-spacing: -.015em !important; }
+  body.z-homepage-route .z-mobile-home-brand { font-size: 10px !important; line-height: 1.4 !important; letter-spacing: .13em !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 15px !important; line-height: 1.4 !important; letter-spacing: .01em !important; }
+  body.z-homepage-route .z-mobile-home-badge { font-size: 9px !important; line-height: 1.3 !important; letter-spacing: .1em !important; }
+  body.z-homepage-route .z-mobile-home-card:after { font-size: 9px !important; line-height: 1.4 !important; letter-spacing: .12em !important; }
+  body.z-homepage-route .z-next-eyebrow { font-size: 10px !important; line-height: 1.45 !important; letter-spacing: .18em !important; }
+  body.z-homepage-route .z-next-section-head h2,
+  body.z-homepage-route .z-next-services h2,
+  body.z-homepage-route .z-store-location-copy h2 { font-size: clamp(42px,4.1vw,56px) !important; line-height: 1.03 !important; letter-spacing: -.03em !important; }
+  body.z-homepage-route .z-next-section-head p,
+  body.z-homepage-route .z-store-location-copy>p { font-size: 14px !important; line-height: 1.75 !important; }
+  body.z-homepage-route .z-next-service h3,
+  body.z-homepage-route .z-next-benefit-grid h3 { font-size: 21px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-next-service p,
+  body.z-homepage-route .z-next-benefit-grid p { font-size: 13px !important; line-height: 1.7 !important; }
+  body.z-homepage-route #zBrandDirectory .z-brand-directory-item { font-size: 21px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-store-location-address strong { font-size: 15px !important; line-height: 1.45 !important; }
+  body.z-homepage-route .z-store-location-address small { font-size: 12px !important; line-height: 1.5 !important; }
+  body.z-homepage-route .z-store-directions { font-size: 10px !important; line-height: 1.35 !important; letter-spacing: .12em !important; }
+  body.z-homepage-route .z-contact-footer-intro .footer-name { font-size: clamp(29px,3vw,38px) !important; line-height: 1.05 !important; }
+  body.z-homepage-route .z-contact-footer-intro>p { font-size: 12px !important; line-height: 1.6 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-column h2 { font-size: 21px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-column>a { font-size: 11px !important; line-height: 1.5 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link small { font-size: 9px !important; line-height: 1.35 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link strong { font-size: 11px !important; line-height: 1.45 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link em,
+  body.z-homepage-route .z-contact-footer .z-footer-follow-note { font-size: 10px !important; line-height: 1.55 !important; }
+  body.z-homepage-route .z-contact-footer .z-simple-footer-bottom { font-size: 10px !important; line-height: 1.45 !important; }
+}
+@media (max-width: 768px) {
+  body.z-homepage-route .logo-name { font-size: 27px !important; line-height: .98 !important; letter-spacing: .15em !important; }
+  body.z-homepage-route .logo-studio { font-size: 8px !important; line-height: 1.2 !important; letter-spacing: .4em !important; }
+  body.z-homepage-route .z-wishlist-trigger { font-size: 10px !important; line-height: 1.3 !important; }
+  body.z-homepage-route .z-hero-copy small { font-size: 9px !important; line-height: 1.4 !important; letter-spacing: .17em !important; }
+  body.z-homepage-route .z-hero-copy h1 { font-size: clamp(42px,11vw,58px) !important; line-height: .98 !important; letter-spacing: -.035em !important; }
+  body.z-homepage-route .z-hero-copy p { font-size: 13px !important; line-height: 1.6 !important; letter-spacing: 0 !important; }
+  body.z-homepage-route .z-hero-copy a { font-size: 9px !important; line-height: 1.35 !important; letter-spacing: .09em !important; }
+  body.z-homepage-route .z-mobile-home-kicker { font-size: 9px !important; line-height: 1.4 !important; letter-spacing: .16em !important; }
+  body.z-homepage-route .z-mobile-home-title { font-size: clamp(34px,8.8vw,42px) !important; line-height: 1.02 !important; letter-spacing: -.025em !important; }
+  body.z-homepage-route .z-mobile-home-link { font-size: 9px !important; line-height: 1.35 !important; letter-spacing: .07em !important; }
+  body.z-homepage-route .z-mobile-home-name { font-size: clamp(17px,4.6vw,19px) !important; line-height: 1.18 !important; letter-spacing: -.01em !important; }
+  body.z-homepage-route .z-mobile-home-brand { font-size: 9px !important; line-height: 1.4 !important; letter-spacing: .12em !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 13px !important; line-height: 1.4 !important; letter-spacing: .01em !important; }
+  body.z-homepage-route .z-mobile-home-badge { font-size: 8px !important; line-height: 1.3 !important; letter-spacing: .08em !important; }
+  body.z-homepage-route .z-mobile-home-card:after { font-size: 8px !important; line-height: 1.4 !important; letter-spacing: .1em !important; }
+  body.z-homepage-route .z-next-eyebrow { font-size: 9px !important; line-height: 1.4 !important; letter-spacing: .16em !important; }
+  body.z-homepage-route .z-next-section-head h2,
+  body.z-homepage-route .z-next-services h2,
+  body.z-homepage-route .z-store-location-copy h2 { font-size: clamp(34px,8.8vw,41px) !important; line-height: 1.04 !important; letter-spacing: -.025em !important; }
+  body.z-homepage-route .z-next-section-head p,
+  body.z-homepage-route .z-store-location-copy>p { font-size: 13px !important; line-height: 1.65 !important; }
+  body.z-homepage-route .z-next-service h3,
+  body.z-homepage-route .z-next-benefit-grid h3 { font-size: 19px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-next-service p,
+  body.z-homepage-route .z-next-benefit-grid p { font-size: 12px !important; line-height: 1.65 !important; }
+  body.z-homepage-route #zBrandDirectory .z-brand-directory-item { font-size: 18px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-store-location-address strong { font-size: 14px !important; line-height: 1.4 !important; }
+  body.z-homepage-route .z-store-location-address small { font-size: 11px !important; line-height: 1.45 !important; }
+  body.z-homepage-route .z-store-directions { font-size: 9px !important; line-height: 1.35 !important; letter-spacing: .1em !important; }
+  body.z-homepage-route .z-contact-footer-intro .footer-name { font-size: 27px !important; line-height: 1.05 !important; }
+  body.z-homepage-route .z-contact-footer-intro>p { font-size: 11px !important; line-height: 1.5 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-column h2 { font-size: 19px !important; line-height: 1.2 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-column>a { font-size: 11px !important; line-height: 1.45 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link small { font-size: 8px !important; line-height: 1.3 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link strong { font-size: 10px !important; line-height: 1.4 !important; }
+  body.z-homepage-route .z-contact-footer .z-footer-contact-link em,
+  body.z-homepage-route .z-contact-footer .z-footer-follow-note { font-size: 9px !important; line-height: 1.5 !important; }
+  body.z-homepage-route .z-contact-footer .z-simple-footer-bottom { font-size: 9px !important; line-height: 1.4 !important; }
+}
+@media (max-width: 380px) {
+  body.z-homepage-route .z-mobile-home-name { font-size: 16px !important; }
+  body.z-homepage-route .z-mobile-home-price { font-size: 12px !important; }
+}
