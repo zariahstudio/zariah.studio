@@ -1,0 +1,37 @@
+name: Owner App build check
+
+on:
+  push:
+    branches:
+      - feature/zariah-owner-app
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/owner-app-check.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/owner-app-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-owner-app:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: owner-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build isolated Owner App
+        run: npm run build
