@@ -111,9 +111,21 @@ for dir in "${REQUIRED_DIRS[@]}"; do
   fi
 done
 
-# If the Admin entry point exists, its built assets must also exist.
-if [[ -s "${REPO_ROOT}/admin/index.html" && ! -d "${REPO_ROOT}/admin/assets" ]]; then
-  echo "ERROR: Admin build exists but admin/assets is missing."
+# Both prebuilt apps are mandatory for a clean deployment.
+if [[ ! -s "${REPO_ROOT}/admin/index.html" || ! -d "${REPO_ROOT}/admin/assets" ]]; then
+  echo "ERROR: Prebuilt Admin is missing or incomplete."
+  exit 1
+fi
+if [[ ! -s "${REPO_ROOT}/owner/index.html" ||
+      ! -s "${REPO_ROOT}/owner/manifest.webmanifest" ||
+      ! -s "${REPO_ROOT}/owner/sw.js" ||
+      ! -s "${REPO_ROOT}/owner/icon.svg" ||
+      ! -d "${REPO_ROOT}/owner/assets" ]]; then
+  echo "ERROR: Prebuilt Owner App is missing or incomplete. Refusing clean deployment."
+  exit 1
+fi
+if ! grep -q '/owner/assets/' "${REPO_ROOT}/owner/index.html"; then
+  echo "ERROR: Owner App asset base path is not /owner/."
   exit 1
 fi
 
@@ -145,9 +157,12 @@ if [[ -s "${REPO_ROOT}/admin/index.html" ]]; then
   mkdir -p "${STAGE_DIR}/admin"
   /bin/cp -Rp "${REPO_ROOT}/admin/." "${STAGE_DIR}/admin/"
   echo "INFO: Prebuilt Admin will be deployed."
-else
-  echo "INFO: No prebuilt Admin found; Admin deployment will be skipped."
 fi
+
+# Deploy only the prebuilt Owner PWA; never expose source code.
+mkdir -p "${STAGE_DIR}/owner"
+/bin/cp -Rp "${REPO_ROOT}/owner/." "${STAGE_DIR}/owner/"
+echo "INFO: Prebuilt Owner App will be deployed."
 
 # Preserve domain-validation files used by SSL providers.
 if [[ -d "${DEPLOYPATH}/.well-known" ]]; then
@@ -172,6 +187,11 @@ for dir in "${REQUIRED_DIRS[@]}"; do
     exit 1
   fi
 done
+
+if [[ ! -s "${STAGE_DIR}/owner/index.html" || ! -d "${STAGE_DIR}/owner/assets" ]]; then
+  echo "ERROR: Owner App staging validation failed."
+  exit 1
+fi
 
 echo "STEP 3/5: Staging validation passed."
 
@@ -200,6 +220,11 @@ for dir in "${REQUIRED_DIRS[@]}"; do
     false
   fi
 done
+
+if [[ ! -s "${DEPLOYPATH}/owner/index.html" || ! -d "${DEPLOYPATH}/owner/assets" ]]; then
+  echo "ERROR: Published Owner App is missing or incomplete."
+  false
+fi
 
 echo "STEP 5/5: Deployment verification passed."
 echo "SUCCESS: ZARIAH Studio clean deployment completed."
