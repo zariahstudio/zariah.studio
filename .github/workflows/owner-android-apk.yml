@@ -1,0 +1,70 @@
+name: ZARIAH Owner Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'owner-app/**'
+      - '.github/workflows/owner-android-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: owner-app
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: owner-app/package-lock.json
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build Android web bundle
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://keuqvqnhxlpsglsjfopd.supabase.co' }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            VITE_SUPABASE_ANON_KEY="$(sed -n "s/.*publishableKey: '\\([^']*\\)'.*/\\1/p" ../storefront-config.js)"
+          fi
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "Missing Supabase publishable/anon key."
+            exit 1
+          fi
+          export VITE_SUPABASE_ANON_KEY
+          npm run build:android
+          test -s dist/index.html
+          if grep -q '/owner/assets/' dist/index.html; then
+            echo "Android bundle contains web-only absolute asset paths."
+            exit 1
+          fi
+      - name: Add Android platform
+        run: npx cap add android
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: zariah-owner-android-debug
+          path: owner-app/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
