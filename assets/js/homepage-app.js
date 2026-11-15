@@ -387,6 +387,21 @@ function setBrandFilter(brand) {
     el.setAttribute('aria-label', activeBrand === 'all' ? 'Filter by brand' : 'Brand: ' + activeBrand);
   });
 }
+function syncDynamicBrandDirectory() {
+  const host = document.querySelector('.z-brand-directory-grid');
+  if (!host || !Array.isArray(PRODUCTS)) return;
+  const brands = [...new Set(PRODUCTS.map(p => String(p.brand || '').trim()).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
+  if (!brands.length) return;
+  host.replaceChildren();
+  brands.forEach(name => {
+    const link = document.createElement('a');
+    link.className = 'z-brand-directory-item';
+    link.href = '/collections/all-bags/?brand=' + encodeURIComponent(name);
+    link.textContent = name;
+    host.appendChild(link);
+  });
+}
 function syncDynamicBrandFilters() {
   const brands = [...new Set(PRODUCTS.map(p => String(p.brand || '').trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
   ['dfbarBrand','mobileBrandSelect'].forEach(id => {
@@ -400,6 +415,7 @@ function syncDynamicBrandFilters() {
     select.setAttribute('aria-label', brands.length ? 'Filter by brand' : 'Brand filter available when branded products are added');
   });
   if (!brands.includes(activeBrand)) activeBrand = 'all';
+  syncDynamicBrandDirectory();
 }
 function syncDynamicTypeFilters() {
   const types = [...new Set(PRODUCTS.map(p => String(p.type || '').trim()).filter(Boolean))]
