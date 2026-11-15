@@ -204,7 +204,7 @@ function renderProducts() {
       art.querySelector('.btn-notify').addEventListener('click', (e) => {
         e.stopPropagation();
         fbTrack('Contact', { content_name: 'Notify Me — ' + p.name, content_category: 'Back In Stock' });
-        fbTrackCustom('WhatsAppClick', { location: 'notify_btn', product: p.name, collection: p.collection });
+        fbTrackCustom('WhatsAppClick', { location: 'notify_btn', product: p.name, brand: p.brand });
         if (typeof gtag !== 'undefined') {
           gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.brand || p.type });
         }
@@ -1276,8 +1276,8 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
   const price = document.getElementById('oProductPrice').textContent;
   const parenMatch = fullProductText.match(/^(.+?)\s+\((.+?)\)$/);
   const productName = parenMatch ? parenMatch[1].trim() : fullProductText;
-  const collection = parenMatch ? parenMatch[2].trim() : '';
-  const productObj = PRODUCTS.find(p => p.name === productName && p.collection === collection);
+  const brand = parenMatch ? parenMatch[2].trim() : '';
+  const productObj = PRODUCTS.find(p => p.name === productName && (p.brand || 'Handbag') === brand);
   const productCode = productObj ? (productObj.sku || productObj.id) : '';
 
   if (!productCode) {
@@ -1339,7 +1339,7 @@ document.getElementById('btnSubmitOrder').addEventListener('click', async () => 
         deliveryLine.style.cssText = 'opacity:.6;font-size:11px';
         deliveryLine.textContent = 'Delivery to: ' + address.substring(0,60) + (address.length > 60 ? '...' : '');
         detail.append(orderLine, document.createElement('br'), productLine);
-        detail.append(document.createTextNode(' · ' + collection + ' Collection'), document.createElement('br'));
+        detail.append(document.createTextNode(' · ' + brand), document.createElement('br'));
         detail.append(document.createTextNode(price + ' · Qty: ' + qty), document.createElement('br'), deliveryLine);
       }
     }
