@@ -711,3 +711,17 @@ body.z-homepage-route .z-hero-slide:focus-visible {
     gap: 24px 18px !important;
   }
 }
+
+
+/* Brand-first merchandising details */
+body.z-homepage-route .z-mobile-home-brand {
+  display: block;
+  margin-top: 5px;
+  color: #8A7966;
+  font: 600 8px/1.4 var(--z-atelier-sans);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+@media (min-width: 769px) {
+  body.z-homepage-route .z-mobile-home-brand { font-size: 9px; margin-top: 6px; }
+}
