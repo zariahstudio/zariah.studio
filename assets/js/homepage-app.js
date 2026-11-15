@@ -1,13 +1,11 @@
 /* ═══════════════════════════════════════
    BAG ILLUSTRATION SYSTEM
 ═══════════════════════════════════════ */
-function getStroke(collection) {
-  return collection === 'Noir' ? 'rgba(160,140,200,0.55)' : 'rgba(184,150,90,0.5)';
+function getStroke() {
+  return 'rgba(184,150,90,0.5)';
 }
-function getCardBg(p) {
-  if (p.collection === 'Essence')   return 'linear-gradient(145deg,#A69C94 0%,#77716D 100%)';
-  if (p.collection === 'Signature') return 'linear-gradient(145deg,#9A9088 0%,#625D59 100%)';
-  return 'linear-gradient(145deg,#18181e 0%,#0e0e14 100%)';
+function getCardBg() {
+  return 'linear-gradient(145deg,#e8dfd3 0%,#cfc3b5 100%)';
 }
 const BAG_SVGS = {
   'Shoulder Bag': (s) => `<svg viewBox="0 0 300 380" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:75%;position:absolute;top:50%;left:50%;transform:translate(-50%,-52%)" aria-hidden="true"><rect x="18" y="110" width="264" height="255" rx="5" fill="rgba(184,150,90,0.06)" stroke="${s}" stroke-width="1.5"/><path d="M18 110 Q18 64 60 52 L240 52 Q282 52 282 110" fill="rgba(184,150,90,0.04)" stroke="${s}" stroke-width="1.5"/><path d="M80 52 Q80 20 100 16 Q130 12 130 52" stroke="${s}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M170 52 Q170 20 200 16 Q220 12 220 52" stroke="${s}" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="125" y="95" width="50" height="28" rx="3" fill="rgba(184,150,90,0.15)" stroke="${s}" stroke-width="1.5"/><circle cx="150" cy="109" r="7" fill="rgba(184,150,90,0.4)"/><line x1="18" y1="240" x2="282" y2="240" stroke="${s}" stroke-width="1" opacity="0.5"/><rect x="30" y="123" width="240" height="228" rx="2" fill="none" stroke="${s}" stroke-width="0.8" stroke-dasharray="4 5" opacity="0.5"/></svg>`,
@@ -44,8 +42,8 @@ function getGalleryImages(product) {
 
 function getGalleryImagesFallback(product, idx) {
   const labels = ['Front','Side','Back','Detail','Lifestyle','Inside'];
-  const c1 = product.collection === 'Noir' ? '%2318181e' : '%231e3828';
-  const c2 = product.collection === 'Noir' ? '%230e0e14' : '%230e2218';
+  const c1 = '%23e8dfd3';
+  const c2 = '%23cfc3b5';
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750"><defs><linearGradient id="g${idx}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:${c1};stop-opacity:1"/><stop offset="100%" style="stop-color:${c2};stop-opacity:1"/></linearGradient></defs><rect width="600" height="750" fill="url(%23g${idx})"/><text x="300" y="460" text-anchor="middle" fill="rgba(184,150,90,0.2)" font-family="serif" font-size="64" font-style="italic" letter-spacing="8">${product.name.charAt(0)}</text><text x="300" y="710" text-anchor="middle" fill="rgba(184,150,90,0.3)" font-family="sans-serif" font-size="11" letter-spacing="6">${labels[idx].toUpperCase()}</text><rect x="60" y="60" width="480" height="640" rx="4" fill="none" stroke="rgba(184,150,90,0.14)" stroke-width="1"/></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
@@ -53,13 +51,7 @@ function getGalleryImagesFallback(product, idx) {
 /* ═══════════════════════════════════════
    STATE
 ═══════════════════════════════════════ */
-let activeCollection = (() => {
-  const path = location.pathname.toLowerCase();
-  if (path.startsWith('/collections/essence')) return 'Essence';
-  if (path.startsWith('/collections/signature')) return 'Signature';
-  if (path.startsWith('/collections/noir')) return 'Noir';
-  return 'all';
-})();
+let activeCollection = 'all';
 let activeType = 'all';
 let activeBrand = 'all';
 let activeSortOrder = 'featured';
@@ -216,7 +208,7 @@ function renderProducts() {
         if (typeof gtag !== 'undefined') {
           gtag('event', 'whatsapp_click', { method: 'WhatsApp', location: 'notify_btn', item_name: p.name, item_category: p.brand || p.type });
         }
-        const msg = encodeURIComponent(`Hello ZARIAH Studio! 🌿\n\nI'd like to be notified when the *${p.name}* (${p.collection} Collection) is back in stock.\n\nPlease let me know as soon as it's available. Thank you!`);
+        const msg = encodeURIComponent(`Hello ZARIAH Studio! 🌿\n\nI'd like to be notified when the *${p.name}* (${p.brand || 'selected brand'}) is back in stock.\n\nPlease let me know as soon as it's available. Thank you!`);
         window.open(`https://wa.me/8801642779056?text=${msg}`, '_blank', 'noopener,noreferrer');
       });
     } else {
@@ -333,8 +325,7 @@ function updateFilterStatus(visibleCount) {
   const resetBtn  = document.getElementById('filterResetBtn');
   if (!statusBar || !statusTxt) return;
 
-  const collLabels = { all: 'All Collections', Essence: 'Essence Collection', Signature: 'Signature Collection', Noir: 'Noir Collection' };
-  const collLabel = activeBrand !== 'all' ? `${activeBrand} Brand` : (collLabels[activeCollection] || (activeCollection === 'all' ? 'All Collections' : `${activeCollection} Collection`));
+  const collLabel = activeBrand !== 'all' ? `${activeBrand} Brand` : 'All Bags';
   const isFiltered = activeCollection !== 'all' || activeType !== 'all' || activeBrand !== 'all' || activeSortOrder !== 'featured';
 
   statusTxt.innerHTML = `Showing <em>${collLabel}</em> &mdash; <strong>${visibleCount} ${visibleCount === 1 ? 'Product' : 'Products'}</strong>`;
@@ -344,7 +335,7 @@ function updateFilterStatus(visibleCount) {
   const countLine = document.getElementById('prodCountLine');
   if (countLine) {
     if (isFiltered) {
-      const collShort = activeBrand !== 'all' ? activeBrand : ({ all: 'All', Essence: 'Essence', Signature: 'Signature', Noir: 'Noir' }[activeCollection] || activeCollection);
+      const collShort = activeBrand !== 'all' ? activeBrand : 'All Bags';
       const typeLabel = (activeBrand !== 'all' ? ' — ' + activeBrand : '') + (activeType !== 'all' ? ' — ' + activeType : '');
       countLine.textContent = 'Showing ' + collShort + typeLabel + ' — ' + visibleCount + ' ' + (visibleCount === 1 ? 'Product' : 'Products');
     } else {
@@ -947,7 +938,7 @@ function openPModal(id) {
     gtag('event', 'view_item', {
       currency: 'BDT',
       value: parsePrice(p.price),
-      items: [{ item_id: p.id, item_name: p.name, item_category: p.collection, price: parsePrice(p.price) }]
+      items: [{ item_id: p.id, item_name: p.name, item_category: p.brand || 'Handbags', price: parsePrice(p.price) }]
     });
   }
 
@@ -1114,11 +1105,11 @@ function openOModal(id, fromPModal) {
     gtag('event', 'begin_checkout', {
       currency: 'BDT',
       value: parsePrice(p.price),
-      items: [{ item_id: p.id, item_name: p.name, item_category: p.collection, price: parsePrice(p.price) }]
+      items: [{ item_id: p.id, item_name: p.name, item_category: p.brand || 'Handbags', price: parsePrice(p.price) }]
     });
   }
 
-  document.getElementById('oProductName').textContent = `${p.name} (${p.collection})`;
+  document.getElementById('oProductName').textContent = `${p.name} (${p.brand || 'selected brand'})`;
   document.getElementById('oProductPrice').textContent = p.price;
   ['oName','oPhone','oDistrict','oArea','oAddress'].forEach(field => { document.getElementById(field).value = ''; });
   const orderError = document.getElementById('oCheckoutError');
@@ -1609,7 +1600,7 @@ function renderProductDetailsPage(id){
  document.getElementById('zDetailReserve').addEventListener('click',()=>openOModal(p.id));
  host.querySelectorAll('[data-related]').forEach(el=>el.addEventListener('click',()=>navigateToProduct(el.dataset.related)));
  if(typeof fbq!=='undefined')fbq('track','ViewContent',{content_ids:[p.id],content_name:p.name,content_type:'product',value:parsePrice(p.price),currency:'BDT'});
- if(typeof gtag!=='undefined')gtag('event','view_item',{currency:'BDT',value:parsePrice(p.price),items:[{item_id:p.id,item_name:p.name,item_category:p.collection,price:parsePrice(p.price)}]});
+ if(typeof gtag!=='undefined')gtag('event','view_item',{currency:'BDT',value:parsePrice(p.price),items:[{item_id:p.id,item_name:p.name,item_category:p.brand || 'Handbags',price:parsePrice(p.price)}]});
  document.title=p.name+' | ZARIAH Studio';
 }
 function zQueueVisitorEvent(type,productId){
@@ -1633,7 +1624,7 @@ function syncIndividualCollectionRoute(){
  const path=location.pathname.replace(/\/+$/,'').toLowerCase();
  const match=path.match(/^\/collections\/([^/]+)$/);
  const requestedSlug=match?.[1]||'';
- const collection=PRODUCTS.map(p=>p.collection).find(name=>zCollectionSlug(name)===requestedSlug)||null;
+ const collection=null; // Storefront categories are brand-led; legacy grouping is internal only.
  const isCollectionRoute=Boolean(collection);
  document.body.classList.toggle('z-individual-collection-route',isCollectionRoute);
  if(collection){
@@ -1665,7 +1656,7 @@ document.getElementById('zWishlistOpen')?.addEventListener('click',zOpenWishlist
 // Load the published catalogue without changing the existing storefront components.
 // The embedded 18-product catalogue remains the fail-safe if Supabase is unavailable.
 function syncDynamicStorefrontFilters() {
-  const collectionNames = [...new Set(PRODUCTS.map(p => p.collection).filter(Boolean))];
+  const collectionNames = []; // Brand-led storefront navigation; legacy grouping remains internal only.
   const activeNames = new Set(collectionNames);
   const hiddenFilterHost = document.querySelector('.products-header > div[aria-hidden="true"]');
   const mobileCollectionHost = document.querySelector('.mob-coll-track');
@@ -1771,8 +1762,6 @@ async function loadPublishedProductsFromSupabase() {
           if (desktop) heroImage.src = desktop;
           if (media['hero.desktop']?.alt_text) heroImage.alt = media['hero.desktop'].alt_text;
         }
-        const collectionSlots = [['essence','collection.essence.cover'],['signature','collection.signature.cover'],['noir','collection.noir.cover']];
-        collectionSlots.forEach(([slug,key]) => { const node=document.querySelector('.bg-'+slug); if(node && media[key]?.public_url) node.style.backgroundImage='url("'+media[key].public_url.replace(/"/g,'%22')+'")'; });
         const campaign = media['campaign.main'];
         const campaignNode = document.querySelector('[data-media-slot="campaign.main"]');
         if (campaignNode && campaign?.public_url) campaignNode.style.backgroundImage='url("'+campaign.public_url.replace(/"/g,'%22')+'")';
