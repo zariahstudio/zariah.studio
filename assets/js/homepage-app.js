@@ -1194,7 +1194,7 @@ const GFORM_FIELDS = {
   address:     'entry.669354498',   // Delivery address
   district:    'entry.1796616796',  // Area / District
   productName: 'entry.1763700777',  // Product name (e.g. "The Maison Tote")
-  productCode: 'entry.1834361909',  // Product code (e.g. "Noir01")
+  productCode: 'entry.1834361909',  // Product code
   notes:       'entry.648796592',   // Customer notes ONLY — no product data
 };
 
@@ -1208,7 +1208,7 @@ function submitToGoogleForm(data) {
     body.append(GFORM_FIELDS.address,     data.address);
     body.append(GFORM_FIELDS.district,    data.district || '');
     body.append(GFORM_FIELDS.productName, data.productName);   // e.g. "Crescent Shoulder Bag"
-    body.append(GFORM_FIELDS.productCode, data.productCode);   // e.g. "Essence01"
+    body.append(GFORM_FIELDS.productCode, data.productCode);
     body.append(GFORM_FIELDS.notes,       data.notes || '');   // customer notes only
 
     fetch(GFORM_ACTION, {
