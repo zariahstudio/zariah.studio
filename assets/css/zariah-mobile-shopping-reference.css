@@ -62,3 +62,19 @@
  body:has(.product-layout)>header{padding-left:12px!important;padding-right:12px!important}
  body.z-commerce-checkout .form-section{padding:18px 14px!important}
 }
+
+@media(max-width:760px){
+ body.z-commerce-checkout>header{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;position:sticky!important;top:0!important;z-index:120!important;background:#fbf8f3!important}
+ body.z-commerce-checkout>header .brand{margin:0!important;text-align:left!important}
+ body.z-commerce-checkout>header nav{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex;align-items:center;gap:16px;margin-left:auto}
+ body.z-commerce-checkout .z-checkout-mobile-tools a,body.z-commerce-checkout .z-checkout-mobile-tools button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:38px;min-height:44px;padding:0;border:0;background:transparent;color:#292522;text-decoration:none;font:400 20px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-mobile-tools span{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 5px;border-radius:50%;background:#bd9560;color:#fff;font:600 11px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-mobile-wishlist-panel{position:fixed;right:14px;top:84px;z-index:1000;width:min(340px,calc(100vw - 28px));padding:16px;background:#fff;border:1px solid #e8e0d7;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+ body.z-commerce-checkout .z-checkout-wishlist-panel{position:fixed;right:14px;top:84px;z-index:1000;width:min(340px,calc(100vw - 28px));padding:16px;background:#fff;border:1px solid #e8e0d7;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+ body.z-commerce-checkout .z-checkout-wishlist-panel[hidden]{display:none}
+ body.z-commerce-checkout .z-checkout-wishlist-panel-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #e8e0d7;font:500 13px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-wishlist-panel-head button{border:0;background:none;font-size:24px}
+ body.z-commerce-checkout .z-checkout-wishlist-items a{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee8e1;font:500 12px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-wishlist-items a span,body.z-commerce-checkout .z-checkout-wishlist-items p{color:#81776f;font:400 11px/1.6 Inter,sans-serif}
+}
