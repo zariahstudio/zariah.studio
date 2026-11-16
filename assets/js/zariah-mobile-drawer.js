@@ -3,7 +3,7 @@
 (function(){
   'use strict';
   function init(){
-    const trigger=document.getElementById('hamburger')||document.getElementById('zMobileMenuToggle');
+    const trigger=document.getElementById('hamburger')||document.getElementById('zMobileMenuToggle')||document.getElementById('menuToggle');
     const drawer=document.getElementById('zMobileDrawer');
     if(!trigger||!drawer||drawer.dataset.navigationReady==='true')return;
     drawer.dataset.navigationReady='true';
