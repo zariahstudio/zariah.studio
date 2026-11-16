@@ -214,3 +214,9 @@ body.z-commerce-checkout .z-checkout-mobile-tools{display:none!important}
  body.z-commerce-checkout .desktop-area-field{display:none!important}
  body.z-commerce-checkout .z-checkout-mobile-tools{display:flex!important}
 }
+
+.mobile-product-qty{display:none}
+@media(max-width:760px){
+ body.z-commerce-checkout .summary .product-name{display:inline!important}
+ body.z-commerce-checkout .summary .mobile-product-qty{display:inline!important;color:#292522!important;font:600 16px/1.5 Inter,sans-serif!important}
+}
