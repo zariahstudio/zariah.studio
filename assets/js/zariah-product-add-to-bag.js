@@ -75,7 +75,7 @@
           buyNow.style.setProperty('text-transform', 'uppercase', 'important');
           button.insertAdjacentElement('afterend', buyNow);
         }
-        buyNow.addEventListener('click', () => addProduct(button, buyNow));
+        buyNow.addEventListener('click', () => { if (window.ZariahProductOrder && typeof window.ZariahProductOrder.open === 'function') { window.ZariahProductOrder.open(button); return; } addProduct(button, buyNow); });
       }
       button.addEventListener('click', () => addProduct(button, null));
     });
