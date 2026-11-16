@@ -119,3 +119,5 @@
     display:inline-flex!important;margin:0 0 0 auto!important;
   }
 }
+
+@media(max-width:760px){body:has(#zMobileDrawer) .mobile-nav{display:none!important}}
