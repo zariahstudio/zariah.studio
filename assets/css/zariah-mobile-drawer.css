@@ -15,7 +15,7 @@
 .z-mobile-drawer.is-open .z-mobile-drawer-backdrop{opacity:1}
 .z-mobile-drawer-panel{
   position:absolute;inset:0 auto 0 0;
-  display:flex;flex-direction:column;
+  display:flex;flex-direction:column;box-sizing:border-box;
   width:min(88vw,390px);height:100%;height:100dvh;
   overflow-y:auto;overscroll-behavior:contain;
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
