@@ -1,0 +1,219 @@
+/* ZARIAH Studio — zs design system
+   Phase 1 foundation: scoped tokens and semantic component styles.
+   Loaded after legacy homepage styles. No application logic or data hooks changed. */
+
+body.z-homepage-route {
+  --zs-color-canvas: #f8f6f2;
+  --zs-color-surface: #fffdf9;
+  --zs-color-surface-muted: #f1ece5;
+  --zs-color-surface-deep: #e9e1d7;
+  --zs-color-ink: #302b26;
+  --zs-color-ink-soft: #655b50;
+  --zs-color-muted: #897d70;
+  --zs-color-line: #e2d9ce;
+  --zs-color-line-strong: #cdbb9e;
+  --zs-color-accent: #a88b63;
+  --zs-color-accent-deep: #806744;
+  --zs-color-footer: #302b26;
+  --zs-color-footer-ink: #f7f0e7;
+  --zs-font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --zs-font-ui: Inter, Manrope, Arial, sans-serif;
+  --zs-type-display-xl: clamp(3.5rem, 7vw, 6.25rem);
+  --zs-type-display-lg: clamp(2.5rem, 4.6vw, 3.75rem);
+  --zs-type-display-md: clamp(2rem, 3.2vw, 2.75rem);
+  --zs-type-title: clamp(1.125rem, 1.55vw, 1.375rem);
+  --zs-type-body: 0.875rem;
+  --zs-type-body-sm: 0.75rem;
+  --zs-type-label: 0.6875rem;
+  --zs-type-micro: 0.625rem;
+  --zs-leading-display: .98;
+  --zs-leading-heading: 1.12;
+  --zs-leading-body: 1.7;
+  --zs-space-1: 4px;
+  --zs-space-2: 8px;
+  --zs-space-3: 12px;
+  --zs-space-4: 16px;
+  --zs-space-5: 20px;
+  --zs-space-6: 24px;
+  --zs-space-8: 32px;
+  --zs-space-10: 40px;
+  --zs-space-12: 48px;
+  --zs-space-16: 64px;
+  --zs-radius-sm: 4px;
+  --zs-radius-md: 8px;
+  --zs-radius-lg: 12px;
+  --zs-shadow-card: 0 7px 22px rgba(48, 39, 29, .055);
+  --zs-shadow-card-hover: 0 15px 34px rgba(48, 39, 29, .11);
+  --zs-content-width: 1260px;
+  color: var(--zs-color-ink);
+  background: var(--zs-color-canvas);
+}
+
+/* Semantic type and shared controls */
+body.z-homepage-route .z-next-eyebrow,
+body.z-homepage-route .z-mobile-home-kicker {
+  color: var(--zs-color-accent-deep);
+  font-family: var(--zs-font-ui);
+  font-size: var(--zs-type-label);
+  font-weight: 600;
+  letter-spacing: .2em;
+  line-height: 1.5;
+}
+
+body.z-homepage-route .z-next-section-head h2,
+body.z-homepage-route .z-next-services h2,
+body.z-homepage-route .z-store-location-copy h2 {
+  color: var(--zs-color-ink);
+  font-family: var(--zs-font-display);
+  font-weight: 400;
+  line-height: var(--zs-leading-display);
+  letter-spacing: -.035em;
+}
+
+body.z-homepage-route .z-next-section-head p,
+body.z-homepage-route .z-next-service p,
+body.z-homepage-route .z-next-benefit-grid p,
+body.z-homepage-route .z-store-location-copy > p {
+  color: var(--zs-color-ink-soft);
+  font-family: var(--zs-font-ui);
+  font-size: var(--zs-type-body-sm);
+  line-height: var(--zs-leading-body);
+}
+
+body.z-homepage-route .z-mobile-home-title {
+  color: var(--zs-color-ink);
+  font-family: var(--zs-font-display);
+  font-weight: 400;
+  line-height: var(--zs-leading-display);
+  letter-spacing: -.035em;
+}
+
+body.z-homepage-route .z-mobile-home-name {
+  color: var(--zs-color-ink);
+  font-family: var(--zs-font-display);
+  font-weight: 500;
+  line-height: 1.12;
+}
+
+body.z-homepage-route .z-mobile-home-brand {
+  color: var(--zs-color-muted);
+  font-family: var(--zs-font-ui);
+  font-size: var(--zs-type-label);
+  font-weight: 600;
+  letter-spacing: .14em;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+body.z-homepage-route .z-mobile-home-price {
+  color: var(--zs-color-ink);
+  font-family: var(--zs-font-ui);
+  font-size: var(--zs-type-body);
+  font-weight: 600;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Shared visual language for editorial sections */
+body.z-homepage-route .z-next-services,
+body.z-homepage-route .z-next-benefits {
+  color: var(--zs-color-ink);
+  background: var(--zs-color-canvas);
+}
+
+body.z-homepage-route #zBrandDirectory {
+  color: var(--zs-color-ink);
+  background: var(--zs-color-surface-muted);
+}
+
+body.z-homepage-route .z-next-service,
+body.z-homepage-route .z-next-benefit-grid article {
+  border: 1px solid var(--zs-color-line);
+  border-radius: var(--zs-radius-md);
+  background: var(--zs-color-surface);
+  box-shadow: var(--zs-shadow-card);
+}
+
+body.z-homepage-route #zBrandDirectory .z-brand-directory-item {
+  border: 1px solid var(--zs-color-line-strong);
+  border-radius: var(--zs-radius-sm);
+  background: rgba(255, 253, 249, .78);
+  color: var(--zs-color-ink);
+  font-family: var(--zs-font-display);
+}
+
+body.z-homepage-route .z-store-location {
+  background: var(--zs-color-surface-muted);
+}
+
+body.z-homepage-route .z-store-location-inner {
+  overflow: hidden;
+  border: 1px solid var(--zs-color-line);
+  border-radius: var(--zs-radius-lg);
+  background: var(--zs-color-surface);
+  box-shadow: var(--zs-shadow-card);
+}
+
+body.z-homepage-route .z-store-directions {
+  border-radius: var(--zs-radius-sm);
+  background: var(--zs-color-ink);
+  color: var(--zs-color-footer-ink);
+  font-family: var(--zs-font-ui);
+}
+
+/* Footer tokens are isolated to the homepage contact footer. */
+body.z-homepage-route .z-contact-footer {
+  background: var(--zs-color-footer);
+  color: var(--zs-color-footer-ink);
+}
+
+body.z-homepage-route .z-contact-footer .z-footer-column h2 {
+  color: var(--zs-color-footer-ink);
+  font-family: var(--zs-font-display);
+  font-weight: 400;
+}
+
+body.z-homepage-route .z-contact-footer .z-simple-footer-bottom {
+  border-color: rgba(224, 207, 184, .2);
+  color: #cfc2b2;
+}
+
+body.z-homepage-route .z-contact-footer .z-simple-footer-bottom a {
+  color: #d8bd94;
+}
+
+/* Desktop baseline: preserve the four-column product layout. */
+@media (min-width: 1101px) {
+  body.z-homepage-route .z-mobile-home-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Responsive token adjustments */
+@media (max-width: 768px) {
+  body.z-homepage-route {
+    --zs-type-body: .8125rem;
+    --zs-type-body-sm: .75rem;
+    --zs-type-label: .625rem;
+    --zs-type-display-lg: clamp(2.125rem, 9vw, 2.75rem);
+    --zs-content-width: 100%;
+  }
+
+  body.z-homepage-route .z-next-section-head h2,
+  body.z-homepage-route .z-next-services h2 {
+    font-size: var(--zs-type-display-lg);
+  }
+
+  body.z-homepage-route .z-next-service,
+  body.z-homepage-route .z-next-benefit-grid article {
+    border-radius: var(--zs-radius-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.z-homepage-route *,
+  body.z-homepage-route *::before,
+  body.z-homepage-route *::after {
+    scroll-behavior: auto;
+  }
+}

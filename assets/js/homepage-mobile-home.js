@@ -4,7 +4,7 @@
   'use strict';
 
   const sections = [
-    { id: 'zMobileNewCollection', gridId: 'zMobileNewCollectionGrid', badge: 'new', label: 'New Collection' },
+    { id: 'zMobileNewCollection', gridId: 'zMobileNewCollectionGrid', badge: 'new', label: 'New Arrivals' },
     { id: 'zMobileBestSellers', gridId: 'zMobileBestSellersGrid', badge: 'bestseller', label: 'Best Sellers' }
   ];
 
@@ -31,15 +31,13 @@
       if (config.badge === 'bestseller') {
         return product.isBestseller === true || badge === 'bestseller' || badge === 'bestsellers';
       }
-      return product.isFeatured === true ||
+      return product.isFeatured === true || product.isNew === true || product.is_new === true ||
         ['new', 'newarrival', 'newarrivals', 'justarrived', 'newcollection'].includes(badge);
     };
+    // Only explicitly tagged products belong in editorial merchandising sections.
+    // Never label an untagged product as a New Arrival or Best Seller.
     const tagged = products.filter(isTagged);
-    const taggedIds = new Set(tagged.map(function (product) { return String(product.id); }));
-    // Tagged products lead; the remaining published catalogue fills the eight-card edit.
-    const matches = tagged.concat(products.filter(function (product) {
-      return !taggedIds.has(String(product.id));
-    })).slice(0, 8);
+    const matches = tagged.slice(0, 8);
 
     section.hidden = matches.length === 0;
     if (!matches.length) {
@@ -60,6 +58,7 @@
           '<img src="' + image + '" alt="' + name + '" loading="lazy" decoding="async">' +
         '</span>' +
         '<span class="z-mobile-home-name">' + name + '</span>' +
+        '<span class="z-mobile-home-brand">' + escapeHtml(product.brand || '') + '</span>' +
         '<span class="z-mobile-home-price">' + price + '</span>' +
       '</a>';
     }).join('');

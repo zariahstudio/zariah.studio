@@ -114,8 +114,8 @@ function ProductEditor({ product, collections, brands, products, onClose, onSave
       <form onSubmit={submit}>
         <div className="form-grid">
           <label>Product name *<input required value={form.name} onChange={e => change('name', e.target.value)} placeholder="Crescent Shoulder Bag"/></label>
-          <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="Essence07"/></label>
-          <label>Collection *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose collection</option>{collections.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label>
+          <label>SKU *<input required value={form.sku} onChange={e => change('sku', e.target.value)} placeholder="BAG-001"/></label>
+          <label>Internal catalogue group *<select required value={form.collection_id} onChange={e => change('collection_id', e.target.value)}><option value="">Choose internal group</option>{collections.map(c => <option key={c.id} value={c.id}>{['Essence','Signature','Noir'].includes(c.name) ? 'General' : c.name}</option>)}</select></label>
           <label>Bag category<input list="zariah-bag-category-options" value={form.product_type || ''} onChange={e => change('product_type', e.target.value)} placeholder="Choose or add a bag category"/><datalist id="zariah-bag-category-options">{[...new Set(['Shoulder Bag','Crossbody','Tote','Top Handle','East-West','Flap Bag','Satchel','Bucket Bag','Bowling Bag','Underarm Bag',...products.map(item => item.product_type).filter(Boolean)])].sort((x,y)=>x.localeCompare(y)).map(type=><option key={type} value={type}/>)}</datalist></label>
           <label>Brand<select value={form.brand_id || ''} onChange={e=>{const id=e.target.value;change('brand_id',id);change('brand',brands.find(b=>b.id===id)?.name||'');}}><option value="">Unassigned</option>{brands.filter(b=>b.is_active).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select></label>
           <label>Authenticity status<select value={form.authenticity_status || 'not_yet_verified'} onChange={e=>change('authenticity_status',e.target.value)}><option value="not_yet_verified">Not yet verified</option><option value="sourcing_documented">Sourcing documented</option><option value="verified" disabled>Verified — requires evidence review</option><option value="not_applicable">Not applicable</option></select></label>
@@ -224,7 +224,7 @@ function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) 
       else await onCreate(name, form.description.trim());
       setForm(emptyForm);
       setEditing(null);
-    } catch (err) { setError(err.message || 'Could not save collection.'); }
+    } catch (err) { setError(err.message || 'Could not save catalogue group.'); }
   };
   const startEdit = collection => {
     setEditing(collection);
@@ -233,25 +233,22 @@ function CollectionPanel({ collections, onCreate, onUpdate, onToggle, saving }) 
   };
   const cancelEdit = () => { setEditing(null); setForm(emptyForm); setError(''); };
   return <section className="panel">
-    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Collections</h2><p className="muted">Create, edit and manage the collections shown in the published catalogue. Hiding a collection does not delete its products.</p></div></div>
+    <div className="panel-head"><div><p className="eyebrow">CATALOGUE ORGANISATION</p><h2>Catalogue Groups</h2><p className="muted">Internal product grouping used by the catalogue system. Customer browsing is organised by brand.</p></div></div>
     <form className="inline-create" onSubmit={submit}>
-      <input required maxLength="60" value={form.name} onChange={e => setForm(v => ({...v, name:e.target.value}))} placeholder="Collection name"/>
+      <input required maxLength="60" value={form.name} onChange={e => setForm(v => ({...v, name:e.target.value}))} placeholder="Catalogue group name"/>
       <input maxLength="240" value={form.description} onChange={e => setForm(v => ({...v, description:e.target.value}))} placeholder="Short description (optional)"/>
-      <button className="primary" disabled={saving || !form.name.trim()}>{editing ? <Pencil size={16}/> : <Plus size={16}/>} {editing ? 'Save changes' : 'Add collection'}</button>
+      <button className="primary" disabled={saving || !form.name.trim()}>{editing ? <Pencil size={16}/> : <Plus size={16}/>} {editing ? 'Save changes' : 'Add catalogue group'}</button>
       {editing && <button type="button" className="secondary" onClick={cancelEdit}>Cancel</button>}
     </form>
     {error && <p className="form-error">{error}</p>}
-    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{c.name}</strong><small>{c.slug}{c.description ? ' · ' + c.description : ''}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => startEdit(c)}><Pencil size={13}/> Edit</button><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
+    <div className="collection-list">{collections.map(c => <div className="collection-row" key={c.id}><div><strong>{['Essence','Signature','Noir'].includes(c.name) ? 'General' : c.name}</strong><small>{c.description ? ' · ' + c.description : ''}</small></div><span className={c.is_active ? 'status live' : 'status'}>{c.is_active ? 'Active' : 'Hidden'}</span><button className="secondary small" onClick={() => startEdit(c)}><Pencil size={13}/> Edit</button><button className="secondary small" onClick={() => onToggle(c)}>{c.is_active ? 'Hide' : 'Activate'}</button></div>)}</div>
   </section>;
 }
 
 const MEDIA_SLOTS = [
   {key:'hero.desktop',label:'Hero — Desktop',group:'Hero'},
   {key:'hero.mobile',label:'Hero — Mobile',group:'Hero'},
-  {key:'collection.essence.cover',label:'Essence Collection Cover',group:'Collections'},
-  {key:'collection.signature.cover',label:'Signature Collection Cover',group:'Collections'},
-  {key:'collection.noir.cover',label:'Noir Collection Cover',group:'Collections'},
-  {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
+    {key:'campaign.main',label:'Main Promotional Banner',group:'Campaigns'},
   {key:'lookbook.main',label:'Lookbook Editorial Image',group:'Editorial'},
   {key:'about.main',label:'About Us Image',group:'Editorial'},
   {key:'brand.footer',label:'Footer Brand Visual',group:'Brand'}
@@ -261,9 +258,7 @@ function mediaDimensions(slotKey) {
     'hero.desktop': [1920,1080], 'hero.mobile': [1080,1600],
     'campaign.main': [1920,900], 'lookbook.main': [1200,1800],
     'about.main': [1600,1200], 'brand.footer': [1600,900],
-    'collection.essence.cover': [1200,1600],
-    'collection.signature.cover': [1200,1600],
-    'collection.noir.cover': [1200,1600]
+    
   })[slotKey] || [1920,1920];
 }
 function MediaPanel({assets,onUpload,onToggle,saving}) {
@@ -626,7 +621,7 @@ function App() {
       const { error } = await supabase.from('collections').insert({ name, slug, description, display_order: collections.length, sort_order: collections.length });
       if (error) throw error;
       await loadData();
-      notify('success', 'Collection created.');
+      notify('success', 'Catalogue group created.');
     } catch (error) { notify('error', error.message || 'Could not create collection.'); throw error; }
     finally { setSaving(false); }
   };
@@ -639,7 +634,7 @@ function App() {
       }).eq('id', id);
       if (error) throw error;
       await loadData();
-      notify('success', 'Collection details updated.');
+      notify('success', 'Catalogue group details updated.');
     } catch (error) { notify('error', error.message || 'Could not update collection.'); throw error; }
     finally { setSaving(false); }
   };
@@ -683,7 +678,7 @@ function App() {
 
   const toggleCollection = async (collection) => {
     const { error } = await supabase.from('collections').update({ is_active: !collection.is_active }).eq('id', collection.id);
-    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Collection updated.'); }
+    if (error) notify('error', error.message); else { await loadData(); notify('success', 'Catalogue group updated.'); }
   };
 
   const adjustStock = async (product, nextValue) => {
@@ -710,7 +705,7 @@ function App() {
   if (!session || !profile) return <><Login onLogin={signIn} onReset={requestPasswordReset} busy={loginBusy} resetBusy={resetBusy} resetMessage={resetMessage} error={loginError}/></>;
 
   const nav = [
-    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Collections',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
+    ['dashboard','Overview',LayoutDashboard],['products','Products',Package],['collections','Catalogue groups',Layers3],['brands','Brands & Suppliers',Users],['media','Website Images',ImagePlus],['inventory','Inventory',Warehouse],
     ['orders','Orders',ShoppingBag],['customers','Customers & Members',Users],['loyalty','Loyalty & Rewards',Award],['intelligence','Sales Intelligence',TrendingUp],['fraud','Visitor Intelligence',Eye],['payments','Payments',CreditCard]
   ];
   const title = nav.find(n => n[0] === section)?.[1] || 'Overview';
@@ -736,12 +731,12 @@ function App() {
         {section === 'dashboard' && <div className="dashboard-page">
           <section className="dashboard-hero"><div><p className="eyebrow">STORE CONTROL CENTER</p><h2>Welcome back, {profile.display_name || 'Admin'}.</h2><p>Here’s what’s happening across your store today.</p><span className="hero-status"><CheckCircle2 size={14}/> Your admin workspace is secure</span></div><div className="hero-monogram">Z</div></section>
           <div className="dashboard-section-heading"><div><p className="eyebrow">AT A GLANCE</p><h2>Store performance</h2></div><span>Live store data</span></div>
-          <div className="stat-grid"><Stat icon={Package} label="Total products" value={products.length}/><Stat icon={CheckCircle2} label="Published products" value={published}/><Stat icon={Layers3} label="Collections" value={collections.length}/><Stat icon={AlertCircle} label="Low stock alerts" value={lowStock}/></div>
-          <div className="dashboard-lower"><section className="panel dashboard-actions"><div className="panel-head"><div><p className="eyebrow">SHORTCUTS</p><h2>Get things done</h2><p className="muted">Common store tasks, one click away.</p></div></div><div className="quick-actions"><button className="quick-card" onClick={() => { setEditor({}); setSection('products'); }}><span className="quick-icon"><Plus/></span><strong>Add a product</strong><small>Create a new catalogue listing</small></button><button className="quick-card" onClick={() => setSection('collections')}><span className="quick-icon"><Layers3/></span><strong>Manage collections</strong><small>Organise your product ranges</small></button><button className="quick-card" onClick={() => setSection('inventory')}><span className="quick-icon"><Warehouse/></span><strong>Update inventory</strong><small>Keep stock quantities accurate</small></button></div></section>
+          <div className="stat-grid"><Stat icon={Package} label="Total products" value={products.length}/><Stat icon={CheckCircle2} label="Published products" value={published}/><Stat icon={Layers3} label="Catalogue groups" value={collections.length}/><Stat icon={AlertCircle} label="Low stock alerts" value={lowStock}/></div>
+          <div className="dashboard-lower"><section className="panel dashboard-actions"><div className="panel-head"><div><p className="eyebrow">SHORTCUTS</p><h2>Get things done</h2><p className="muted">Common store tasks, one click away.</p></div></div><div className="quick-actions"><button className="quick-card" onClick={() => { setEditor({}); setSection('products'); }}><span className="quick-icon"><Plus/></span><strong>Add a product</strong><small>Create a new catalogue listing</small></button><button className="quick-card" onClick={() => setSection('collections')}><span className="quick-icon"><Layers3/></span><strong>Manage catalogue groups</strong><small>Organise your product ranges</small></button><button className="quick-card" onClick={() => setSection('inventory')}><span className="quick-icon"><Warehouse/></span><strong>Update inventory</strong><small>Keep stock quantities accurate</small></button></div></section>
           <aside className="dashboard-sidecard"><p className="eyebrow">WORKSPACE GUIDE</p><h3>Everything in one place.</h3><p>Manage products, orders, customer relationships and store performance from your admin workspace.</p><div className="guide-link" onClick={() => setSection('orders')} role="button" tabIndex="0"><ShoppingBag size={17}/> Go to order management <span>→</span></div><div className="guide-link" onClick={() => setSection('intelligence')} role="button" tabIndex="0"><TrendingUp size={17}/> View sales intelligence <span>→</span></div></aside></div>
         </div>}
-        {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU, brand or collection"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
-          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Collection</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{p.collections?.name || '—'}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
+        {section === 'products' && <section className="panel"><div className="panel-head split"><div><p className="eyebrow">CATALOGUE</p><h2>Products <span className="count">{products.length}</span></h2><p className="muted">Add, edit, publish or archive products. No website code edits needed.</p></div><button className="primary" onClick={() => setEditor({})}><Plus size={16}/> Add product</button></div><div className="toolbar"><div className="searchbox"><Search size={16}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, SKU or brand"/></div><button className="secondary" onClick={loadData}><RefreshCw size={15}/> Refresh</button></div>
+          {dataLoading ? <Loading/> : <div className="table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Internal group</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead><tbody>{filtered.map(p => <tr key={p.id}><td><div className="product-cell">{p.product_images?.[0]?.public_url ? <img src={p.product_images[0].public_url} alt="" /> : <div className="thumb-placeholder"><ImagePlus size={16}/></div>}<div><strong>{p.name}</strong><small>{p.product_type || '—'}</small></div></div></td><td>{p.sku}</td><td>{['Essence','Signature','Noir'].includes(p.collections?.name) ? 'General' : (p.collections?.name || '—')}</td><td>{p.brand || 'Independent / Unbranded'}</td><td>{money(p.price_bdt)}</td><td>{p.inventory?.[0]?.on_hand ?? 0}</td><td><span className={`status ${p.is_published ? 'live' : ''}`}>{p.is_published ? 'Published' : 'Draft'}</span></td><td><div className="row-actions"><button className="icon-btn" title="Edit" onClick={() => setEditor(p)}><Pencil size={16}/></button><button className="icon-btn" title="Archive" onClick={() => archiveProduct(p)}><Archive size={16}/></button></div></td></tr>)}</tbody></table>{filtered.length === 0 && <div className="empty">No products found. Add your first product.</div>}</div>}
         </section>}
         {section === 'collections' && <CollectionPanel collections={collections} onCreate={createCollection} onUpdate={updateCollection} onToggle={toggleCollection} saving={saving}/>}
         {section === 'brands' && <BrandSupplierPanel brands={brands} suppliers={suppliers} products={products} sources={productSources} evidence={authenticityEvidence} onSaveEvidence={saveAuthenticityEvidence} onViewEvidence={viewAuthenticityEvidence} onVerifyEvidence={verifyAuthenticityEvidence} onSaveBrand={saveBrand} onUpdateBrand={updateBrand} onToggleBrand={toggleBrand} onSaveSupplier={saveSupplier} onToggleSupplier={toggleSupplier} onSaveSource={saveProductSource} saving={saving}/>} 

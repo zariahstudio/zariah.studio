@@ -1,0 +1,16 @@
+/* Keep the existing desktop commerce presentation untouched. */
+@media(max-width:760px){
+/* ZARIAH Studio — order tracking visual layer. */
+.z-commerce-track .z-content-hero{padding:48px 18px 28px;text-align:center;background:linear-gradient(180deg,#f4efe9 0%,#faf8f5 100%)}
+.z-commerce-track .z-content-hero .z-coll-desc{margin-inline:auto}
+.z-commerce-track .z-content-body{width:min(680px,calc(100% - 44px));margin:30px auto 64px}
+.z-commerce-track .z-track-card{padding:30px;border:1px solid var(--z-border-subtle);border-radius:var(--z-radius-md);background:var(--z-bg-card);box-shadow:var(--z-shadow-card)}
+.z-commerce-track .z-form-field{display:flex;flex-direction:column;gap:8px;margin:0 0 16px}
+.z-commerce-track .z-form-label{color:var(--z-text-secondary);font:600 9px/1.4 var(--z-font-sans);letter-spacing:.1em;text-transform:uppercase}
+.z-commerce-track .z-form-input{width:100%;min-height:49px;padding:13px 14px;border:1px solid var(--z-border-medium);border-radius:4px;background:#fffdfa;color:var(--z-text-primary);font:400 14px var(--z-font-sans)}
+.z-commerce-track .z-form-input:focus{outline:0;border-color:var(--z-accent-brass);box-shadow:0 0 0 3px rgba(184,149,98,.12)}
+.z-commerce-track .z-btn-primary{width:100%;min-height:50px}
+.z-commerce-track .track-card{padding:24px;border:1px solid var(--z-border-subtle);border-radius:var(--z-radius-md);background:#fff;box-shadow:var(--z-shadow-subtle)}
+@media(max-width:650px){.z-commerce-track .z-content-hero{padding:36px 15px 22px}.z-commerce-track .z-content-body{width:calc(100% - 28px);margin:20px auto 40px}.z-commerce-track .z-track-card{padding:20px 15px}}
+
+}

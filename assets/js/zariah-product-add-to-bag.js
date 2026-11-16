@@ -26,6 +26,12 @@
       showToast(result.reason === 'limit' ? 'Maximum quantity reached for this bag.' : 'This bag could not be added. Please try again.');
       return false;
     }
+    const quantityInput=document.getElementById('zProductQuantity');
+    const requestedQuantity=Math.max(1,Math.min(10,Math.floor(Number(quantityInput?.value)||1)));
+    if(requestedQuantity>1){
+      const quantityResult=cart.setQuantity(button.dataset.productId,requestedQuantity);
+      if(!quantityResult.ok){showToast('Please check the selected quantity and try again.');return false;}
+    }
     if (buyNow) {
       buyNow.disabled = true;
       buyNow.textContent = 'PROCEEDING TO CHECKOUT…';
@@ -69,7 +75,7 @@
           buyNow.style.setProperty('text-transform', 'uppercase', 'important');
           button.insertAdjacentElement('afterend', buyNow);
         }
-        buyNow.addEventListener('click', () => addProduct(button, buyNow));
+        buyNow.addEventListener('click', () => { if (window.ZariahProductOrder && typeof window.ZariahProductOrder.open === 'function') { window.ZariahProductOrder.open(button); return; } addProduct(button, buyNow); });
       }
       button.addEventListener('click', () => addProduct(button, null));
     });

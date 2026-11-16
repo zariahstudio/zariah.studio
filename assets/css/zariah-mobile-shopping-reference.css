@@ -1,0 +1,222 @@
+/* Mobile shopping reference: product page and checkout. Desktop styles are intentionally untouched. */
+@media(max-width:760px){
+ html:has(body .product-layout),body:has(.product-layout){width:100%;max-width:100%;overflow-x:clip}
+ body:has(.product-layout) .ann{display:grid!important;grid-template-columns:1fr auto 1fr;align-items:center;gap:7px;padding:10px 12px!important;min-height:76px;background:#211d1a!important;color:#e4c9a5!important;font:500 9px/1.65 Inter,sans-serif!important;letter-spacing:.14em!important;text-align:center!important;text-transform:uppercase}
+ body:has(.product-layout) .ann span:first-child{text-align:center}
+ body:has(.product-layout) .ann .ann-separator{color:#bd9560}
+ body:has(.product-layout) .ann span:last-child{text-align:center}
+ body:has(.product-layout)>header{height:84px!important;min-height:84px!important;padding:10px 16px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;position:sticky!important;top:0!important;z-index:120!important;background:#fbf8f3!important;border-bottom:1px solid #e8e0d7!important}
+ body:has(.product-layout)>header .brand{flex:0 0 auto!important;margin:0!important;text-align:left!important;font:400 29px/.9 'Cormorant Garamond',Georgia,serif!important;letter-spacing:.12em!important}
+ body:has(.product-layout)>header .brand small{margin:5px 0 0 3px!important;text-align:center!important;font:500 8px/1.2 Inter,sans-serif!important;letter-spacing:.42em!important}
+ body:has(.product-layout)>header nav{display:none!important}
+ body:has(.product-layout) .z-product-mobile-tools{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,3vw,18px);margin-left:auto}
+ body:has(.product-layout) .z-product-mobile-tools a,body:has(.product-layout) .z-product-mobile-tools button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:34px;min-height:44px;padding:0;border:0;background:transparent;color:#292522;text-decoration:none;font:400 20px/1 Inter,sans-serif}
+ body:has(.product-layout) .z-product-mobile-tools .z-product-tool-count{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 5px;border-radius:50%;background:#bd9560;color:#fff;font:600 11px/1 Inter,sans-serif}
+ body:has(.product-layout)>header .z-mobile-menu-toggle{display:inline-flex!important;flex:0 0 40px!important;width:40px!important;height:44px!important;align-items:center!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;color:#292522!important;font-size:28px!important}
+ body:has(.product-layout) main{width:100%;max-width:100%;padding:0 16px 44px!important;overflow-x:clip}
+ body:has(.product-layout) .product-layout{width:100%;min-width:0;display:flex!important;flex-direction:column!important;gap:0!important;padding:0 0 34px!important}
+ body:has(.product-layout) .gallery,body:has(.product-layout) .product-copy{width:100%;max-width:100%;min-width:0}
+ body:has(.product-layout) .product-copy{padding:22px 0 0!important}
+ body:has(.product-layout) .product-copy .specs strong{max-width:62%;overflow-wrap:anywhere}
+ body:has(.product-layout) .z-product-quantity{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:22px 0 16px;padding-top:18px;border-top:1px solid #e8e0d7}
+ body:has(.product-layout) .z-product-quantity label{font:500 10px/1 Inter,sans-serif;letter-spacing:.14em;color:#81776f}
+ body:has(.product-layout) .z-product-qty-control{display:inline-flex;align-items:center;min-height:48px;border:1px solid #ded5ca;background:#fff}
+ body:has(.product-layout) .z-product-qty-control button{width:48px;height:46px;border:0;background:transparent;color:#292522;font-size:19px}
+ body:has(.product-layout) .z-product-qty-control input{width:42px;height:46px;border:0!important;padding:0!important;text-align:center;background:transparent;font:500 14px Inter,sans-serif}
+ body:has(.product-layout) .z-product-actions{display:grid;grid-template-columns:1fr;gap:10px}
+ body:has(.product-layout) .z-product-actions .order-btn{width:100%;min-height:56px;margin:0!important;padding:16px!important}
+ body:has(.product-layout) .z-product-actions .z-product-buy-now{background:#bd9560!important;border-color:#bd9560!important;color:#fff!important}
+ body:has(.product-layout) .z-product-wishlist{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;margin-top:2px;border:0;border-top:1px solid #e8e0d7;border-bottom:1px solid #e8e0d7;background:transparent;color:#292522;font:500 10px Inter,sans-serif;letter-spacing:.13em;text-transform:uppercase}
+ body:has(.product-layout) .z-product-wishlist[aria-pressed=true]{color:#a77d4d}
+ body:has(.product-layout) .z-product-trust{display:grid;gap:14px;margin:28px -16px 0;padding:22px 18px;background:#f4eee9;color:#5f574f}
+ body:has(.product-layout) .z-product-trust p{display:grid;grid-template-columns:20px 1fr;gap:10px;margin:0;font:400 12px/1.75 Inter,sans-serif}
+ body:has(.product-layout) .z-product-trust b{color:#b89562;font-size:15px}
+ body:has(.product-layout) .more{margin-top:32px;padding:34px 0!important}
+ body:has(.product-layout) .pd-related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.z-commerce-checkout header{height:74px!important;min-height:74px!important;padding:8px 18px!important}
+ body.z-commerce-checkout main{width:100%;padding:22px 16px 48px!important}
+ body.z-commerce-checkout .layout{display:flex!important;flex-direction:column!important;gap:24px!important}
+ body.z-commerce-checkout .form-section{padding:22px 18px!important;margin-bottom:18px!important;border:1px solid #e6dfd7!important;border-radius:12px!important;background:#fff!important;box-shadow:0 4px 18px rgba(41,37,34,.035)}
+ body.z-commerce-checkout .section-heading{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:center;gap:12px;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid #e8e0d7}
+ body.z-commerce-checkout .section-number{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#211d1a;color:#fff;font:600 14px Inter,sans-serif}
+ body.z-commerce-checkout .section-title{font:400 clamp(25px,7vw,31px)/1.12 'Cormorant Garamond',Georgia,serif!important;margin:0!important;color:#292522}
+ body.z-commerce-checkout .section-caption{font:400 12px/1.65 Inter,sans-serif;color:#81776f;margin:4px 0 0}
+ body.z-commerce-checkout .delivery-choice-grid,body.z-commerce-checkout .payment-options{display:grid;grid-template-columns:1fr!important;gap:12px!important;margin-top:18px}
+ body.z-commerce-checkout .delivery-choice,body.z-commerce-checkout .payment-option{display:flex;align-items:flex-start;gap:12px;min-height:86px;padding:18px!important;border:1px solid #dcd5cc!important;border-radius:7px!important;background:#fbf8f4!important}
+ body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .payment-option.is-selected{border-color:#bd9560!important;background:#fff!important;box-shadow:0 0 0 1px rgba(189,149,96,.18)}
+ body.z-commerce-checkout .delivery-choice-icon{display:none}
+ body.z-commerce-checkout .delivery-choice-copy strong,body.z-commerce-checkout .payment-option strong{font:600 14px/1.4 Inter,sans-serif!important;color:#292522}
+ body.z-commerce-checkout .delivery-choice-copy small,body.z-commerce-checkout .payment-option small{display:block;margin-top:5px;font:400 12px/1.6 Inter,sans-serif!important;color:#81776f}
+ body.z-commerce-checkout .hint{font:400 12px/1.75 Inter,sans-serif!important;color:#a18460!important;margin-top:16px}
+ body.z-commerce-checkout .cod-note{margin-top:18px;padding:18px;background:#f8f4ee;border:1px solid #e8e0d7;border-radius:6px;font:400 13px/1.8 Inter,sans-serif}
+ body.z-commerce-checkout .fields{grid-template-columns:1fr!important;gap:16px!important}
+ body.z-commerce-checkout .field.full{grid-column:1}
+ body.z-commerce-checkout .field label{font:600 11px Inter,sans-serif!important;letter-spacing:.1em}
+ body.z-commerce-checkout input:not([type=radio]),body.z-commerce-checkout textarea,body.z-commerce-checkout select{min-height:58px!important;padding:16px!important;border:1px solid #dcd5cc!important;border-radius:5px!important;background:#fff!important;font:400 15px Inter,sans-serif!important}
+ body.z-commerce-checkout textarea{min-height:110px!important}
+ body.z-commerce-checkout .submit{min-height:58px!important;width:100%;background:#211d1a!important;color:#fff!important;font:500 11px Inter,sans-serif!important;letter-spacing:.14em}
+ body.z-commerce-checkout .summary{width:100%;position:static!important;padding:22px 18px!important;border:1px solid #e6dfd7!important;border-radius:10px!important;background:#fff}
+}
+@media(max-width:380px){
+ body:has(.product-layout) .z-product-mobile-tools{gap:7px}
+ body:has(.product-layout)>header{padding-left:12px!important;padding-right:12px!important}
+ body.z-commerce-checkout .form-section{padding:18px 14px!important}
+}
+
+@media(max-width:760px){
+ body.z-commerce-checkout>header{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;position:sticky!important;top:0!important;z-index:120!important;background:#fbf8f3!important}
+ body.z-commerce-checkout>header .brand{margin:0!important;text-align:left!important}
+ body.z-commerce-checkout>header nav{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex;align-items:center;gap:16px;margin-left:auto}
+ body.z-commerce-checkout .z-checkout-mobile-tools a,body.z-commerce-checkout .z-checkout-mobile-tools button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:38px;min-height:44px;padding:0;border:0;background:transparent;color:#292522;text-decoration:none;font:400 20px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-mobile-tools span{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 5px;border-radius:50%;background:#bd9560;color:#fff;font:600 11px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-mobile-wishlist-panel{position:fixed;right:14px;top:84px;z-index:1000;width:min(340px,calc(100vw - 28px));padding:16px;background:#fff;border:1px solid #e8e0d7;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+ body.z-commerce-checkout .z-checkout-wishlist-panel{position:fixed;right:14px;top:84px;z-index:1000;width:min(340px,calc(100vw - 28px));padding:16px;background:#fff;border:1px solid #e8e0d7;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+ body.z-commerce-checkout .z-checkout-wishlist-panel[hidden]{display:none}
+ body.z-commerce-checkout .z-checkout-wishlist-panel-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid #e8e0d7;font:500 13px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-wishlist-panel-head button{border:0;background:none;font-size:24px}
+ body.z-commerce-checkout .z-checkout-wishlist-items a{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee8e1;font:500 12px Inter,sans-serif}
+ body.z-commerce-checkout .z-checkout-wishlist-items a span,body.z-commerce-checkout .z-checkout-wishlist-items p{color:#81776f;font:400 11px/1.6 Inter,sans-serif}
+}
+@media(max-width:760px){
+ body.z-commerce-checkout .delivery-choice input,body.z-commerce-checkout .payment-option input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important;margin:0!important}
+ body.z-commerce-checkout .delivery-choice:focus-within,body.z-commerce-checkout .payment-option:focus-within{outline:2px solid #bd9560;outline-offset:2px}
+ body.z-commerce-checkout .payment-option .payment-tag{margin-left:auto;padding:5px 8px;background:#f3ece2;color:#8b704d;border-radius:4px;font:600 9px Inter,sans-serif}
+ body.z-commerce-checkout .payment-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+ body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .payment-option.is-selected{border:1.5px solid #bd9560!important}
+}
+/* Pixel-match pass for the supplied ZARIAH mobile checkout reference. */
+@media(max-width:760px){
+ body.z-commerce-checkout{background:#faf7f3!important;color:#292522!important}
+ body.z-commerce-checkout>.announcement{display:none!important}
+ body.z-commerce-checkout>header{height:74px!important;min-height:74px!important;padding:8px 28px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;background:#fbf8f3!important;border-bottom:1px solid #e8e0d7!important;box-shadow:0 2px 10px rgba(40,32,24,.035)!important}
+ body.z-commerce-checkout>header .brand{display:block!important;flex:0 0 auto!important;margin:0!important;padding:0!important;text-align:left!important;color:#211e1b!important;font:400 30px/.9 'Cormorant Garamond',Georgia,serif!important;letter-spacing:.14em!important}
+ body.z-commerce-checkout>header .brand small{display:block!important;margin:6px 0 0 4px!important;text-align:center!important;font:500 8px/1 Inter,sans-serif!important;letter-spacing:.42em!important}
+ body.z-commerce-checkout>header nav{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:clamp(12px,4vw,24px)!important;margin-left:auto!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools a,body.z-commerce-checkout .z-checkout-mobile-tools button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:40px!important;min-height:46px!important;padding:0!important;border:0!important;background:transparent!important;color:#292522!important;text-decoration:none!important;font:400 21px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools span{display:inline-grid!important;place-items:center!important;min-width:24px!important;height:24px!important;padding:0 5px!important;border-radius:50%!important;background:#bd9560!important;color:#fff!important;font:600 12px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout>header .z-mobile-menu-toggle{display:inline-flex!important;flex:0 0 42px!important;width:42px!important;height:46px!important;align-items:center!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;color:#292522!important;font-size:29px!important}
+ body.z-commerce-checkout main{width:100%!important;max-width:720px!important;margin:0 auto!important;padding:22px 18px 54px!important}
+ body.z-commerce-checkout .crumb{font-size:9px!important;letter-spacing:.12em!important}
+ body.z-commerce-checkout .checkout-heading{display:block!important;margin:16px 0 20px!important}
+ body.z-commerce-checkout .checkout-heading h1{font:400 38px/1.02 'Cormorant Garamond',Georgia,serif!important}
+ body.z-commerce-checkout .checkout-heading .intro{font:400 12px/1.65 Inter,sans-serif!important;margin:7px 0 0!important}
+ body.z-commerce-checkout .checkout-assurance{display:block!important;margin-top:8px!important;font:500 8px/1.5 Inter,sans-serif!important}
+ body.z-commerce-checkout .checkout-steps{gap:6px!important;margin:0 0 18px!important}
+ body.z-commerce-checkout .checkout-step{justify-content:center!important;gap:6px!important;min-height:42px!important;padding:7px 5px!important;font:500 7px/1.35 Inter,sans-serif!important}
+ body.z-commerce-checkout #checkoutRoot>.layout{display:flex!important;flex-direction:column!important;gap:20px!important}
+ body.z-commerce-checkout #guestCheckout{display:flex!important;flex-direction:column!important;gap:0!important;min-width:0!important}
+ body.z-commerce-checkout #guestCheckout>.form-section{width:100%!important;padding:28px 24px 30px!important;margin:0 0 28px!important;border:1px solid #e3ddd6!important;border-radius:13px!important;background:#fff!important;box-shadow:0 2px 8px rgba(38,32,27,.025)!important}
+ body.z-commerce-checkout #guestCheckout .section-heading{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;align-items:center!important;gap:16px!important;padding:0 0 25px!important;margin:0 0 25px!important;border-bottom:1px solid #e5e0da!important}
+ body.z-commerce-checkout #guestCheckout .section-number{width:42px!important;height:42px!important;min-width:42px!important;border:0!important;border-radius:50%!important;background:#211e1c!important;color:#fff!important;font:600 14px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout #guestCheckout .section-title{margin:0!important;color:#292522!important;font:400 clamp(27px,7vw,34px)/1.12 'Cormorant Garamond',Georgia,serif!important}
+ body.z-commerce-checkout #guestCheckout .section-caption{margin:5px 0 0!important;color:#8b837c!important;font:400 12px/1.75 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice-grid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin:0!important}
+ body.z-commerce-checkout .delivery-choice{position:relative!important;display:flex!important;align-items:center!important;gap:12px!important;min-height:100px!important;padding:20px 22px!important;border:2px solid #dedbd6!important;border-radius:7px!important;background:#fbf8f5!important;box-shadow:none!important}
+ body.z-commerce-checkout .delivery-choice input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important}
+ body.z-commerce-checkout .delivery-choice-icon{display:none!important}
+ body.z-commerce-checkout .delivery-choice-copy{display:flex!important;flex-direction:column!important;gap:8px!important}
+ body.z-commerce-checkout .delivery-choice-copy strong{color:#292522!important;font:600 15px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice-copy small{color:#81776f!important;font:400 14px/1.55 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .delivery-choice:has(input:checked){border:2px solid #bd9560!important;background:#fff!important;box-shadow:0 0 0 1px rgba(189,149,96,.08)!important}
+ body.z-commerce-checkout .delivery-choice:focus-within{outline:2px solid #bd9560!important;outline-offset:3px!important}
+ body.z-commerce-checkout #guestCheckout .hint{margin:22px 0 0!important;color:#a18460!important;font:400 14px/1.7 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-options{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:0!important}
+ body.z-commerce-checkout .payment-option{position:relative!important;display:flex!important;align-items:center!important;gap:14px!important;min-height:96px!important;padding:18px 20px!important;border:2px solid #dedbd6!important;border-radius:7px!important;background:#fbf8f5!important;box-shadow:none!important}
+ body.z-commerce-checkout .payment-option input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important}
+ body.z-commerce-checkout .payment-copy{display:flex!important;flex-direction:column!important;gap:7px!important;min-width:0!important}
+ body.z-commerce-checkout .payment-option strong{color:#292522!important;font:600 15px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-option small{color:#81776f!important;font:400 14px/1.55 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-tag{margin-left:auto!important;padding:5px 8px!important;background:#f3ece2!important;color:#8b704d!important;border-radius:4px!important;font:600 9px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-option:has(input:checked){border:2px solid #bd9560!important;background:#fff!important;box-shadow:0 0 0 1px rgba(189,149,96,.08)!important}
+ body.z-commerce-checkout .payment-option:focus-within{outline:2px solid #bd9560!important;outline-offset:3px!important}
+ body.z-commerce-checkout .cod-note{margin:24px 0 0!important;padding:20px 18px!important;border:1px solid #e5ded6!important;border-radius:6px!important;background:#f8f4ef!important;color:#292522!important;font:400 15px/1.8 Inter,sans-serif!important}
+ body.z-commerce-checkout .cod-note strong{font-weight:700!important}
+ body.z-commerce-checkout .mfs-payment-details{margin-top:16px!important;padding:18px!important;border:1px solid #e5ded6!important;border-radius:6px!important;background:#fbf8f4!important}
+ body.z-commerce-checkout .fields{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+ body.z-commerce-checkout .field.full{grid-column:1!important}
+ body.z-commerce-checkout .field{gap:9px!important}
+ body.z-commerce-checkout .field label{color:#665e57!important;font:600 12px/1.4 Inter,sans-serif!important;letter-spacing:.1em!important}
+ body.z-commerce-checkout input:not([type=radio]),body.z-commerce-checkout textarea,body.z-commerce-checkout select{width:100%!important;min-height:66px!important;padding:18px 20px!important;border:1px solid #dcd7d1!important;border-radius:6px!important;background:#fff!important;color:#292522!important;font:400 16px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout textarea{min-height:120px!important}
+ body.z-commerce-checkout .summary{width:100%!important;position:static!important;padding:24px 20px!important;border:1px solid #e3ddd6!important;border-radius:12px!important;background:#fff!important}
+ body.z-commerce-checkout .submit{width:100%!important;min-height:64px!important;margin:10px 0 0!important;background:#211e1c!important;color:#fff!important;font:500 12px/1.4 Inter,sans-serif!important;letter-spacing:.14em!important}
+ body.z-commerce-checkout .checkout-trust{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;padding:18px!important}
+ body.z-commerce-checkout .free-delivery-offer{padding:20px!important}
+ body.z-commerce-checkout footer{padding:22px 16px!important}
+}
+@media(max-width:390px){
+ body.z-commerce-checkout>header{padding-left:18px!important;padding-right:18px!important}
+ body.z-commerce-checkout>header .brand{font-size:27px!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{gap:9px!important}
+ body.z-commerce-checkout main{padding-left:14px!important;padding-right:14px!important}
+ body.z-commerce-checkout #guestCheckout>.form-section{padding:24px 18px 26px!important}
+ body.z-commerce-checkout .delivery-choice{padding:18px!important;min-height:90px!important}
+ body.z-commerce-checkout .payment-option{padding:17px!important;min-height:88px!important}
+}
+
+/* Exact checkout composition from the supplied demo reference. */
+@media(max-width:760px){
+ body.z-commerce-checkout>.announcement{display:none!important}
+ body.z-commerce-checkout main{padding-top:42px!important}
+ body.z-commerce-checkout #checkoutRoot>.layout{gap:28px!important}
+ body.z-commerce-checkout #guestCheckout>.form-section{padding:42px 48px 44px!important;margin-bottom:52px!important;border-radius:14px!important}
+ body.z-commerce-checkout #guestCheckout .section-heading{grid-template-columns:48px minmax(0,1fr)!important;gap:16px!important;padding-bottom:28px!important;margin-bottom:28px!important}
+ body.z-commerce-checkout #guestCheckout .section-number{width:42px!important;height:64px!important;min-width:42px!important;border-radius:50%!important;font-size:14px!important}
+ body.z-commerce-checkout #guestCheckout .section-title{font-size:clamp(29px,6vw,36px)!important}
+ body.z-commerce-checkout #guestCheckout .section-caption{font-size:14px!important;line-height:1.8!important}
+ body.z-commerce-checkout .delivery-choice-grid{gap:16px!important}
+ body.z-commerce-checkout .delivery-choice{min-height:132px!important;padding:22px 30px!important;border-width:2px!important;border-radius:7px!important}
+ body.z-commerce-checkout .delivery-choice-copy strong{font-size:17px!important}
+ body.z-commerce-checkout .delivery-choice-copy small{font-size:15px!important}
+ body.z-commerce-checkout #guestCheckout .hint{font-size:15px!important;line-height:1.75!important;margin-top:26px!important}
+ body.z-commerce-checkout .payment-options{gap:14px!important}
+ body.z-commerce-checkout .payment-option{min-height:164px!important;padding:22px 30px!important;border-width:2px!important;border-radius:7px!important}
+ body.z-commerce-checkout .payment-option strong{font-size:17px!important}
+ body.z-commerce-checkout .payment-option small{font-size:15px!important}
+ body.z-commerce-checkout .cod-note{margin-top:24px!important;padding:22px 24px!important;font-size:15px!important;line-height:1.85!important}
+ body.z-commerce-checkout .fields{gap:22px!important}
+ body.z-commerce-checkout .field label{font-size:13px!important}
+ body.z-commerce-checkout input:not([type=radio]),body.z-commerce-checkout textarea,body.z-commerce-checkout select{min-height:72px!important;padding:19px 22px!important;font-size:17px!important}
+ body.z-commerce-checkout textarea{min-height:150px!important}
+ body.z-commerce-checkout #guestCheckout>.submit{min-height:74px!important;margin:0 0 24px!important;font-size:14px!important;letter-spacing:.14em!important}
+ body.z-commerce-checkout .summary{padding:30px 38px!important;border-radius:14px!important}
+ body.z-commerce-checkout .summary h2{padding-bottom:22px!important;margin:0 0 18px!important;border-bottom:1px solid #e5e0da!important;font-size:34px!important}
+ body.z-commerce-checkout .summary .product{grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important;padding:20px 0!important;border-bottom:0!important}
+ body.z-commerce-checkout .summary .product img{display:none!important}
+ body.z-commerce-checkout .summary .product-name{font:600 16px/1.5 Inter,sans-serif!important;color:#292522!important}
+ body.z-commerce-checkout .summary .product-meta{margin-top:5px!important;font:400 13px/1.5 Inter,sans-serif!important;color:#81776f!important}
+ body.z-commerce-checkout .summary .product-price{font:400 17px/1.4 Inter,sans-serif!important;color:#292522!important}
+ body.z-commerce-checkout .summary .summary-subtitle,body.z-commerce-checkout .summary .first-order-discount-row,body.z-commerce-checkout .summary .checkout-product-controls,body.z-commerce-checkout .summary .checkout-remove-item,body.z-commerce-checkout .summary .back{display:none!important}
+ body.z-commerce-checkout .summary .row{font-size:16px!important;margin:20px 0!important;color:#625b54!important}
+ body.z-commerce-checkout .summary .row.total{padding-top:28px!important;margin-top:26px!important;font-size:20px!important;color:#292522!important}
+ body.z-commerce-checkout .summary .row.total strong:last-child{font-size:28px!important}
+ body.z-commerce-checkout .summary .summary-note{margin:28px 0 0!important;padding:0!important;background:transparent!important;color:#81776f!important;font:400 14px/1.8 Inter,sans-serif!important}
+}
+@media(max-width:430px){
+ body.z-commerce-checkout #guestCheckout>.form-section{padding:28px 22px 30px!important;margin-bottom:34px!important}
+ body.z-commerce-checkout #guestCheckout .section-heading{grid-template-columns:42px minmax(0,1fr)!important;gap:12px!important}
+ body.z-commerce-checkout #guestCheckout .section-number{width:38px!important;height:58px!important;min-width:38px!important}
+ body.z-commerce-checkout .delivery-choice{min-height:112px!important;padding:18px 22px!important}
+ body.z-commerce-checkout .payment-option{min-height:132px!important;padding:18px 22px!important}
+ body.z-commerce-checkout .summary{padding:24px 24px!important}
+ body.z-commerce-checkout .summary .row{font-size:14px!important}
+ body.z-commerce-checkout .summary .row.total strong:last-child{font-size:24px!important}
+}
+
+/* Responsive-only controls: retain the existing desktop checkout composition. */
+body.z-commerce-checkout .z-checkout-mobile-tools{display:none!important}
+@media(max-width:760px){
+ body.z-commerce-checkout .desktop-checkout-only,
+ body.z-commerce-checkout .desktop-only-payment-option,
+ body.z-commerce-checkout .desktop-only-payment-badge,
+ body.z-commerce-checkout .desktop-area-field{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex!important}
+}
+
+.mobile-product-qty{display:none}
+@media(max-width:760px){
+ body.z-commerce-checkout .summary .product-name{display:inline!important}
+ body.z-commerce-checkout .summary .mobile-product-qty{display:inline!important;color:#292522!important;font:600 16px/1.5 Inter,sans-serif!important}
+}
