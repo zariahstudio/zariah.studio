@@ -278,7 +278,7 @@ footer{background:#f8f5ef}
 }
 </style>
 <link rel="stylesheet" href="/assets/css/zariah-luxury-core.css?v=20261116-visual1"><link rel="stylesheet" href="/assets/css/zariah-shopping.css?v=20261116-commerce3"><link rel="stylesheet" href="/assets/css/zariah-content.css?v=20261116-visual1"><script src="/assets/js/zariah-commerce-visual-bridge.js?v=20261116-commerce2" defer></script>
-</head>
+<link rel="stylesheet" href="/assets/css/zariah-mobile-shopping-reference.css?v=20261116-mobile-ref1"></head>
 <body class="z-commerce-page z-commerce-checkout">
 <div class="announcement">Complimentary Delivery Across Bangladesh · Doorstep Inspection &amp; Cash on Delivery</div>
 <header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/cart/">Your Bag</a><a href="/pages/search/" aria-label="Search">Search</a></nav><button class="z-mobile-menu-toggle" id="zMobileMenuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-haspopup="dialog" aria-controls="zMobileDrawer"><span aria-hidden="true">☰</span></button></header>
@@ -304,20 +304,20 @@ root.innerHTML=`
 <div class="layout">
 <form id="guestCheckout" novalidate>
 <section class="form-section delivery-choice-section">
-  <div class="section-heading"><span class="section-number">01</span><div><h2 class="section-title">Select Delivery City</h2><p class="section-caption">Choose where your order should be delivered.</p></div></div>
+  <div class="section-heading"><span class="section-number">01</span><div><h2 class="section-title">Select Delivery Zone</h2><p class="section-caption">Choose your destination for accurate transit time and rate.</p></div></div>
   <div class="delivery-choice-grid" role="radiogroup" aria-label="Select delivery city">
     <label class="delivery-choice"><input type="radio" name="deliveryZone" value="inside_chattogram" required><span class="delivery-choice-icon" aria-hidden="true">⌂</span><span class="delivery-choice-copy"><strong>Inside Chattogram</strong><small>1–2 Days · ৳70</small></span></label>
-    <label class="delivery-choice"><input type="radio" name="deliveryZone" value="outside_chattogram" required><span class="delivery-choice-icon" aria-hidden="true">⌖</span><span class="delivery-choice-copy"><strong>Outside Chattogram</strong><small>2–4 Days · ৳150</small></span></label>
+    <label class="delivery-choice"><input type="radio" name="deliveryZone" value="outside_chattogram" required><span class="delivery-choice-icon" aria-hidden="true">⌖</span><span class="delivery-choice-copy"><strong>All Other Districts (Nationwide)</strong><small>2–4 Days · ৳150</small></span></label>
   </div>
   <p class="hint">Orders with product subtotal of ৳2,500 or more qualify for free delivery.</p>
 </section>
 <section class="form-section payment-section">
-  <div class="section-heading"><span class="section-number">02</span><div><h2 class="section-title">Choose Payment Method</h2><p class="section-caption">Select how you would like to pay.</p></div></div>
+  <div class="section-heading"><span class="section-number">02</span><div><h2 class="section-title">Choose Payment Method</h2><p class="section-caption">Select your preferred method. Cash on Delivery requires zero advance payment.</p></div></div>
   <div class="payment-options" role="radiogroup" aria-label="Choose payment method">
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span class="payment-copy"><strong>Cash on Delivery</strong><small>Pay when your parcel arrives at your doorstep.</small></span><span class="payment-tag">No Advance Needed</span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-copy"><strong>bKash Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-copy"><strong>Nagad Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
-    <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-copy"><strong>Rocket Online Payment</strong><small>Manual payment verification by our team.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="cash_on_delivery" checked><span class="payment-copy"><strong>Cash on Delivery</strong><small>Pay upon doorstep arrival</small></span><span class="payment-tag">No Advance Needed</span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="bkash"><span class="payment-copy"><strong>bKash Online</strong><small>Manual payment verification by our team.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="nagad"><span class="payment-copy"><strong>Nagad Online</strong><small>Manual payment verification by our team.</small></span></label>
+    <label class="payment-option"><input type="radio" name="paymentMethod" value="rocket"><span class="payment-copy"><strong>Rocket Online</strong><small>Manual payment verification by our team.</small></span></label>
   </div>
   <div id="mfsPaymentDetails" class="mfs-payment-details" hidden>
     <p><strong>Send payment to this number only after our team confirms your final payable amount.</strong></p>
@@ -329,11 +329,11 @@ root.innerHTML=`
   <div id="codNote" class="cod-note"><strong>100% নিশ্চিন্তে অর্ডার করুন</strong><br>অগ্রিম কোনো টাকা দিতে হবে না। পার্সেল হাতে পেয়ে দেখে বুঝে পেমেন্ট করুন।</div>
 </section>
 <section class="form-section delivery-info-section">
-  <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Delivery Information</h2><p class="section-caption">Enter your details so we can deliver your order.</p></div></div>
+  <div class="section-heading"><span class="section-number">03</span><div><h2 class="section-title">Recipient & Delivery Address</h2><p class="section-caption">Where should we deliver your packaged handbag?</p></div></div>
   <div class="fields">
-    <div class="field full"><label for="fullName">Your Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name" required maxlength="80"></div>
+    <div class="field full"><label for="fullName">Full Name *</label><input id="fullName" name="fullName" autocomplete="name" placeholder="Your full name" required maxlength="80"></div>
     <div class="field full"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01XXXXXXXXX" required maxlength="16"></div>
-    <div class="field full"><label for="district">District / City *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
+    <div class="field full"><label for="district">City / District *</label><input id="district" name="district" autocomplete="address-level2" placeholder="e.g. Chattogram" required maxlength="60"></div>
     <div class="field full"><label for="area">Area / Thana *</label><input id="area" name="area" placeholder="Your area or thana" required maxlength="80"></div>
     <div class="field full"><label for="address">Full Address (House, Road, Area, Thana) *</label><textarea id="address" name="address" autocomplete="street-address" placeholder="House / Flat, Road, Area, Thana and nearby landmark" required maxlength="400"></textarea></div>
     <div class="field full"><label for="notes">Special Delivery Instructions (Optional)</label><textarea id="notes" name="notes" placeholder="Any special instructions for delivery?" maxlength="300"></textarea></div>
