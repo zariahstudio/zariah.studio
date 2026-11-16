@@ -25,11 +25,14 @@ function mount(){
   qty.querySelector('input').addEventListener('change',e=>{e.target.value=String(Math.max(1,Math.min(10,Math.floor(Number(e.target.value)||1))));});
  }
  if(add&&!document.querySelector('.z-product-actions')){
+  const originalParent=add.parentNode;
+  const buy=originalParent.querySelector('.z-product-buy-now');
+  const wa=originalParent.querySelector('.z-wa-enquire');
   const actions=document.createElement('div');actions.className='z-product-actions';
-  add.parentNode.insertBefore(actions,add);
+  originalParent.insertBefore(actions,add);
   actions.appendChild(add);
-  const buy=add.parentNode.querySelector('.z-product-buy-now');if(buy)actions.appendChild(buy);
-  const wa=add.parentNode.querySelector('.z-wa-enquire');if(wa)actions.appendChild(wa);
+  if(buy)actions.appendChild(buy);
+  if(wa)actions.appendChild(wa);
  }
  const copy=document.querySelector('.product-copy');
  if(copy&&!copy.querySelector('.z-product-wishlist')){
