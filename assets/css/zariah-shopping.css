@@ -1,3 +1,5 @@
+/* Keep the existing desktop commerce presentation untouched. */
+@media(max-width:760px){
 /* ZARIAH Studio — cart and checkout visual layer; page-scoped compatibility selectors. */
 .z-commerce-cart .z-cart-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);gap:clamp(28px,4vw,56px);align-items:start;padding:34px 0 64px}
 .z-commerce-cart .z-cart-item{display:grid;grid-template-columns:100px minmax(0,1fr) auto;gap:18px;align-items:center;padding:22px 0;border-bottom:1px solid var(--z-border-subtle)}
@@ -44,4 +46,6 @@
  .z-commerce-checkout .z-form-grid,.z-commerce-checkout .z-radio-cards{grid-template-columns:minmax(0,1fr)}
  .z-commerce-checkout .z-form-grid .full{grid-column:auto}
  .z-commerce-checkout .z-order-summary-box{position:static}
+}
+
 }
