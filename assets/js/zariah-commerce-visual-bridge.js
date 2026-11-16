@@ -26,6 +26,7 @@ function decorate(root=document){
   root.querySelectorAll('.summary .delivery-note').forEach(e=>add(e,'z-summary-note'));
  }
  if(page==='checkout'){
+  root.querySelectorAll('.layout').forEach(e=>add(e,'z-checkout-layout'));
   root.querySelectorAll('.form-section').forEach(e=>add(e,'z-form-section'));
   root.querySelectorAll('.section-heading').forEach(e=>add(e,'z-form-section-head'));
   root.querySelectorAll('.section-number').forEach(e=>add(e,'z-form-section-num'));
