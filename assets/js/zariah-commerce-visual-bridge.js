@@ -52,6 +52,6 @@ function decorate(root=document){
  }
 }
 decorate();
-const observer=new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes)if(n.nodeType===1)decorate(n);});
+const observer=new MutationObserver(records=>{for(const r of records)for(const n of r.addedNodes)if(n.nodeType===1)decorate(n.parentElement||n);});
 observer.observe(document.body,{childList:true,subtree:true});
 })();
