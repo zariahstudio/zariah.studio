@@ -1,0 +1,88 @@
+/* ZARIAH Studio — isolated mobile navigation drawer.
+   Deliberately scoped; does not restyle the existing header or desktop layout. */
+.z-mobile-drawer{
+  position:fixed;inset:0;z-index:100500;
+  visibility:hidden;pointer-events:none;
+  transition:visibility .28s ease;
+}
+.z-mobile-drawer.is-open{visibility:visible;pointer-events:auto}
+.z-mobile-drawer-backdrop{
+  position:absolute;inset:0;
+  background:rgba(28,24,20,.42);
+  opacity:0;transition:opacity .28s ease;
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+}
+.z-mobile-drawer.is-open .z-mobile-drawer-backdrop{opacity:1}
+.z-mobile-drawer-panel{
+  position:absolute;inset:0 auto 0 0;
+  display:flex;flex-direction:column;
+  width:min(88vw,390px);height:100%;height:100dvh;
+  overflow-y:auto;overscroll-behavior:contain;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  background:#fbf8f3;color:#302a25;
+  box-shadow:12px 0 36px rgba(28,24,20,.16);
+  transform:translateX(-102%);
+  transition:transform .28s cubic-bezier(.22,.61,.36,1);
+  z-index:1;
+}
+.z-mobile-drawer.is-open .z-mobile-drawer-panel{transform:translateX(0)}
+.z-mobile-drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  min-height:82px;padding:16px 22px;
+  border-bottom:1px solid #e8dfd4;
+}
+.z-mobile-drawer-brand{
+  display:flex;flex-direction:column;align-items:flex-start;
+  color:#302a25;text-decoration:none;line-height:.9;
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:27px;letter-spacing:.14em;
+}
+.z-mobile-drawer-brand small{
+  margin:6px 0 0 2px;color:#8b7865;
+  font:500 8px/1.2 Inter,Arial,sans-serif;
+  letter-spacing:.46em;text-transform:uppercase;
+}
+.z-mobile-drawer-close{
+  display:grid;place-items:center;width:42px;height:42px;
+  padding:0;border:1px solid #ded4c8;border-radius:0;
+  background:transparent;color:#302a25;font-size:23px;line-height:1;
+  cursor:pointer;
+}
+.z-mobile-drawer-group{padding:20px 22px;border-bottom:1px solid #e8dfd4}
+.z-mobile-drawer-heading{
+  margin:0 0 12px;color:#9a8060;
+  font:600 9px/1.4 Inter,Arial,sans-serif;
+  letter-spacing:.2em;text-transform:uppercase;
+}
+.z-mobile-drawer-links{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.z-mobile-drawer-links a,
+.z-mobile-drawer-links button{
+  display:flex;align-items:center;justify-content:space-between;
+  width:100%;min-height:46px;padding:10px 0;
+  border:0;border-bottom:1px solid rgba(224,213,199,.65);
+  background:transparent;color:#302a25;text-align:left;text-decoration:none;
+  font:400 16px/1.35 'Cormorant Garamond',Georgia,serif;
+  cursor:pointer;
+}
+.z-mobile-drawer-links li:last-child a,
+.z-mobile-drawer-links li:last-child button{border-bottom:0}
+.z-mobile-drawer-links a:focus-visible,
+.z-mobile-drawer-links button:focus-visible,
+.z-mobile-drawer-close:focus-visible{
+  outline:2px solid #ad8c60;outline-offset:3px;
+}
+.z-mobile-drawer-arrow{color:#a88a64;font:400 16px/1 Inter,Arial,sans-serif}
+.z-mobile-drawer-count{
+  display:inline-grid;place-items:center;min-width:21px;height:21px;
+  margin-left:8px;padding:0 5px;border:1px solid #d9c9b4;
+  color:#78644b;font:500 10px/1 Inter,Arial,sans-serif;
+}
+.z-mobile-drawer-footer{
+  margin-top:auto;padding:20px 22px 24px;
+  background:#f1ebe3;color:#74695e;
+  font:400 11px/1.7 Inter,Arial,sans-serif;
+}
+.z-mobile-drawer-footer a{color:#55483a;text-decoration:underline;text-underline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  .z-mobile-drawer,.z-mobile-drawer-backdrop,.z-mobile-drawer-panel{transition:none}
+}
