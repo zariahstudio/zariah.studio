@@ -12,7 +12,6 @@
     const closeButton=drawer.querySelector('.z-mobile-drawer-close');
     const focusableSelector='a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])';
     let previousOverflow='';
-    let wasOpen=false;
 
     function openDrawer(){
       if(drawer.classList.contains('is-open'))return;
@@ -54,7 +53,7 @@
         event.preventDefault();
         closeDrawer(false);
         const wishlistTrigger=document.getElementById('zWishlistOpen');
-        if(wishlistTrigger)wishlistTrigger.click();
+        if(wishlistTrigger){wishlistTrigger.focus();wishlistTrigger.click();}
       });
     }
 
