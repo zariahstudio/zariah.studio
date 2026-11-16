@@ -86,3 +86,36 @@
 @media(prefers-reduced-motion:reduce){
   .z-mobile-drawer,.z-mobile-drawer-backdrop,.z-mobile-drawer-panel{transition:none}
 }
+
+/* Shared mobile header controls for collection, product and content pages.
+   All rules are mobile-only; desktop header presentation is untouched. */
+.z-mobile-menu-toggle{
+  display:none;align-items:center;justify-content:center;
+  flex:0 0 42px;width:42px;height:42px;min-width:42px;min-height:42px;
+  padding:0;border:1px solid #ded4c8;border-radius:0;
+  background:transparent;color:#302a25;cursor:pointer;
+  font:400 22px/1 Inter,Arial,sans-serif;
+}
+.z-mobile-menu-toggle:focus-visible{outline:2px solid #ad8c60;outline-offset:3px}
+@media(max-width:760px){
+  body:not(.admin-body) header:has(#zMobileMenuToggle),
+  body:not(.admin-body):has(.product-layout) header:has(#zMobileMenuToggle){
+    box-sizing:border-box!important;
+    display:flex!important;flex-direction:row!important;
+    align-items:center!important;justify-content:space-between!important;
+    gap:12px!important;width:100%!important;height:auto!important;
+    min-height:68px!important;padding:10px 16px!important;
+    text-align:left!important;overflow:visible!important;
+  }
+  body:not(.admin-body) header:has(#zMobileMenuToggle)>.brand{
+    display:flex!important;flex:0 1 auto!important;
+    flex-direction:column!important;align-items:flex-start!important;
+    margin:0!important;text-align:left!important;
+  }
+  body:not(.admin-body) header:has(#zMobileMenuToggle)>nav{
+    display:none!important;
+  }
+  body:not(.admin-body) header:has(#zMobileMenuToggle)>.z-mobile-menu-toggle{
+    display:inline-flex!important;margin:0 0 0 auto!important;
+  }
+}
