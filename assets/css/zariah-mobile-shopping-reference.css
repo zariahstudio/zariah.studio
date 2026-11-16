@@ -78,3 +78,10 @@
  body.z-commerce-checkout .z-checkout-wishlist-items a{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #eee8e1;font:500 12px Inter,sans-serif}
  body.z-commerce-checkout .z-checkout-wishlist-items a span,body.z-commerce-checkout .z-checkout-wishlist-items p{color:#81776f;font:400 11px/1.6 Inter,sans-serif}
 }
+@media(max-width:760px){
+ body.z-commerce-checkout .delivery-choice input,body.z-commerce-checkout .payment-option input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important;margin:0!important}
+ body.z-commerce-checkout .delivery-choice:focus-within,body.z-commerce-checkout .payment-option:focus-within{outline:2px solid #bd9560;outline-offset:2px}
+ body.z-commerce-checkout .payment-option .payment-tag{margin-left:auto;padding:5px 8px;background:#f3ece2;color:#8b704d;border-radius:4px;font:600 9px Inter,sans-serif}
+ body.z-commerce-checkout .payment-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+ body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .payment-option.is-selected{border:1.5px solid #bd9560!important}
+}
