@@ -204,3 +204,13 @@
  body.z-commerce-checkout .summary .row{font-size:14px!important}
  body.z-commerce-checkout .summary .row.total strong:last-child{font-size:24px!important}
 }
+
+/* Responsive-only controls: retain the existing desktop checkout composition. */
+body.z-commerce-checkout .z-checkout-mobile-tools{display:none!important}
+@media(max-width:760px){
+ body.z-commerce-checkout .desktop-checkout-only,
+ body.z-commerce-checkout .desktop-only-payment-option,
+ body.z-commerce-checkout .desktop-only-payment-badge,
+ body.z-commerce-checkout .desktop-area-field{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex!important}
+}
