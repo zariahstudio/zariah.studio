@@ -85,3 +85,73 @@
  body.z-commerce-checkout .payment-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
  body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .payment-option.is-selected{border:1.5px solid #bd9560!important}
 }
+/* Pixel-match pass for the supplied ZARIAH mobile checkout reference. */
+@media(max-width:760px){
+ body.z-commerce-checkout{background:#faf7f3!important;color:#292522!important}
+ body.z-commerce-checkout>.announcement{display:none!important}
+ body.z-commerce-checkout>header{height:74px!important;min-height:74px!important;padding:8px 28px!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;background:#fbf8f3!important;border-bottom:1px solid #e8e0d7!important;box-shadow:0 2px 10px rgba(40,32,24,.035)!important}
+ body.z-commerce-checkout>header .brand{display:block!important;flex:0 0 auto!important;margin:0!important;padding:0!important;text-align:left!important;color:#211e1b!important;font:400 30px/.9 'Cormorant Garamond',Georgia,serif!important;letter-spacing:.14em!important}
+ body.z-commerce-checkout>header .brand small{display:block!important;margin:6px 0 0 4px!important;text-align:center!important;font:500 8px/1 Inter,sans-serif!important;letter-spacing:.42em!important}
+ body.z-commerce-checkout>header nav{display:none!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:clamp(12px,4vw,24px)!important;margin-left:auto!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools a,body.z-commerce-checkout .z-checkout-mobile-tools button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:40px!important;min-height:46px!important;padding:0!important;border:0!important;background:transparent!important;color:#292522!important;text-decoration:none!important;font:400 21px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools span{display:inline-grid!important;place-items:center!important;min-width:24px!important;height:24px!important;padding:0 5px!important;border-radius:50%!important;background:#bd9560!important;color:#fff!important;font:600 12px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout>header .z-mobile-menu-toggle{display:inline-flex!important;flex:0 0 42px!important;width:42px!important;height:46px!important;align-items:center!important;justify-content:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;color:#292522!important;font-size:29px!important}
+ body.z-commerce-checkout main{width:100%!important;max-width:720px!important;margin:0 auto!important;padding:22px 18px 54px!important}
+ body.z-commerce-checkout .crumb{font-size:9px!important;letter-spacing:.12em!important}
+ body.z-commerce-checkout .checkout-heading{display:block!important;margin:16px 0 20px!important}
+ body.z-commerce-checkout .checkout-heading h1{font:400 38px/1.02 'Cormorant Garamond',Georgia,serif!important}
+ body.z-commerce-checkout .checkout-heading .intro{font:400 12px/1.65 Inter,sans-serif!important;margin:7px 0 0!important}
+ body.z-commerce-checkout .checkout-assurance{display:block!important;margin-top:8px!important;font:500 8px/1.5 Inter,sans-serif!important}
+ body.z-commerce-checkout .checkout-steps{gap:6px!important;margin:0 0 18px!important}
+ body.z-commerce-checkout .checkout-step{justify-content:center!important;gap:6px!important;min-height:42px!important;padding:7px 5px!important;font:500 7px/1.35 Inter,sans-serif!important}
+ body.z-commerce-checkout #checkoutRoot>.layout{display:flex!important;flex-direction:column!important;gap:20px!important}
+ body.z-commerce-checkout #guestCheckout{display:flex!important;flex-direction:column!important;gap:0!important;min-width:0!important}
+ body.z-commerce-checkout #guestCheckout>.form-section{width:100%!important;padding:28px 24px 30px!important;margin:0 0 28px!important;border:1px solid #e3ddd6!important;border-radius:13px!important;background:#fff!important;box-shadow:0 2px 8px rgba(38,32,27,.025)!important}
+ body.z-commerce-checkout #guestCheckout .section-heading{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;align-items:center!important;gap:16px!important;padding:0 0 25px!important;margin:0 0 25px!important;border-bottom:1px solid #e5e0da!important}
+ body.z-commerce-checkout #guestCheckout .section-number{width:42px!important;height:42px!important;min-width:42px!important;border:0!important;border-radius:50%!important;background:#211e1c!important;color:#fff!important;font:600 14px/1 Inter,sans-serif!important}
+ body.z-commerce-checkout #guestCheckout .section-title{margin:0!important;color:#292522!important;font:400 clamp(27px,7vw,34px)/1.12 'Cormorant Garamond',Georgia,serif!important}
+ body.z-commerce-checkout #guestCheckout .section-caption{margin:5px 0 0!important;color:#8b837c!important;font:400 12px/1.75 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice-grid{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin:0!important}
+ body.z-commerce-checkout .delivery-choice{position:relative!important;display:flex!important;align-items:center!important;gap:12px!important;min-height:100px!important;padding:20px 22px!important;border:2px solid #dedbd6!important;border-radius:7px!important;background:#fbf8f5!important;box-shadow:none!important}
+ body.z-commerce-checkout .delivery-choice input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important}
+ body.z-commerce-checkout .delivery-choice-icon{display:none!important}
+ body.z-commerce-checkout .delivery-choice-copy{display:flex!important;flex-direction:column!important;gap:8px!important}
+ body.z-commerce-checkout .delivery-choice-copy strong{color:#292522!important;font:600 15px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice-copy small{color:#81776f!important;font:400 14px/1.55 Inter,sans-serif!important}
+ body.z-commerce-checkout .delivery-choice.is-selected,body.z-commerce-checkout .delivery-choice:has(input:checked){border:2px solid #bd9560!important;background:#fff!important;box-shadow:0 0 0 1px rgba(189,149,96,.08)!important}
+ body.z-commerce-checkout .delivery-choice:focus-within{outline:2px solid #bd9560!important;outline-offset:3px!important}
+ body.z-commerce-checkout #guestCheckout .hint{margin:22px 0 0!important;color:#a18460!important;font:400 14px/1.7 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-options{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;margin:0!important}
+ body.z-commerce-checkout .payment-option{position:relative!important;display:flex!important;align-items:center!important;gap:14px!important;min-height:96px!important;padding:18px 20px!important;border:2px solid #dedbd6!important;border-radius:7px!important;background:#fbf8f5!important;box-shadow:none!important}
+ body.z-commerce-checkout .payment-option input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:1px!important}
+ body.z-commerce-checkout .payment-copy{display:flex!important;flex-direction:column!important;gap:7px!important;min-width:0!important}
+ body.z-commerce-checkout .payment-option strong{color:#292522!important;font:600 15px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-option small{color:#81776f!important;font:400 14px/1.55 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-tag{margin-left:auto!important;padding:5px 8px!important;background:#f3ece2!important;color:#8b704d!important;border-radius:4px!important;font:600 9px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout .payment-option:has(input:checked){border:2px solid #bd9560!important;background:#fff!important;box-shadow:0 0 0 1px rgba(189,149,96,.08)!important}
+ body.z-commerce-checkout .payment-option:focus-within{outline:2px solid #bd9560!important;outline-offset:3px!important}
+ body.z-commerce-checkout .cod-note{margin:24px 0 0!important;padding:20px 18px!important;border:1px solid #e5ded6!important;border-radius:6px!important;background:#f8f4ef!important;color:#292522!important;font:400 15px/1.8 Inter,sans-serif!important}
+ body.z-commerce-checkout .cod-note strong{font-weight:700!important}
+ body.z-commerce-checkout .mfs-payment-details{margin-top:16px!important;padding:18px!important;border:1px solid #e5ded6!important;border-radius:6px!important;background:#fbf8f4!important}
+ body.z-commerce-checkout .fields{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important}
+ body.z-commerce-checkout .field.full{grid-column:1!important}
+ body.z-commerce-checkout .field{gap:9px!important}
+ body.z-commerce-checkout .field label{color:#665e57!important;font:600 12px/1.4 Inter,sans-serif!important;letter-spacing:.1em!important}
+ body.z-commerce-checkout input:not([type=radio]),body.z-commerce-checkout textarea,body.z-commerce-checkout select{width:100%!important;min-height:66px!important;padding:18px 20px!important;border:1px solid #dcd7d1!important;border-radius:6px!important;background:#fff!important;color:#292522!important;font:400 16px/1.4 Inter,sans-serif!important}
+ body.z-commerce-checkout textarea{min-height:120px!important}
+ body.z-commerce-checkout .summary{width:100%!important;position:static!important;padding:24px 20px!important;border:1px solid #e3ddd6!important;border-radius:12px!important;background:#fff!important}
+ body.z-commerce-checkout .submit{width:100%!important;min-height:64px!important;margin:10px 0 0!important;background:#211e1c!important;color:#fff!important;font:500 12px/1.4 Inter,sans-serif!important;letter-spacing:.14em!important}
+ body.z-commerce-checkout .checkout-trust{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;padding:18px!important}
+ body.z-commerce-checkout .free-delivery-offer{padding:20px!important}
+ body.z-commerce-checkout footer{padding:22px 16px!important}
+}
+@media(max-width:390px){
+ body.z-commerce-checkout>header{padding-left:18px!important;padding-right:18px!important}
+ body.z-commerce-checkout>header .brand{font-size:27px!important}
+ body.z-commerce-checkout .z-checkout-mobile-tools{gap:9px!important}
+ body.z-commerce-checkout main{padding-left:14px!important;padding-right:14px!important}
+ body.z-commerce-checkout #guestCheckout>.form-section{padding:24px 18px 26px!important}
+ body.z-commerce-checkout .delivery-choice{padding:18px!important;min-height:90px!important}
+ body.z-commerce-checkout .payment-option{padding:17px!important;min-height:88px!important}
+}
