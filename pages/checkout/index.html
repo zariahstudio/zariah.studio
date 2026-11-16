@@ -344,12 +344,13 @@ root.innerHTML=`
 </form>
 <aside class="summary">
   <h2>Order Summary</h2><p class="summary-subtitle desktop-checkout-only">Review your selected pieces before placing your order.</p>
-  <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))} × ${Number(item.qty)||1}</div><div class="product-meta">${String(item.id||"").toUpperCase()}</div></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
+  <div>${cart.map(item=>`<div class="product"><img src="${String(item.image||'').replace(/"/g,'&quot;')}" alt="" decoding="async"><div><div class="product-name">${String(item.name||'ZARIAH Bag').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))} × ${Number(item.qty)||1}</div><div class="product-meta">\${String(item.id||"").toUpperCase()}</div><div class="product-meta checkout-product-controls"><span>Quantity</span><div class="checkout-qty"><button type="button" data-qty-change="-1" data-item-id="\${encodeURIComponent(String(item.id||''))}" aria-label="Decrease quantity" \${Number(item.qty)<=1?'disabled':''}>−</button><span>\${Number(item.qty)||1}</span><button type="button" data-qty-change="1" data-item-id="\${encodeURIComponent(String(item.id||''))}" aria-label="Increase quantity" \${Number(item.qty)>=10?'disabled':''}>+</button></div></div><button class="checkout-remove-item" type="button" data-remove-item="\${encodeURIComponent(String(item.id||''))}" aria-label="Remove \${String(item.name||'item').replace(/["&<>]/g,'')} from your order">Remove</button></div><div class="product-price">${money((Number(item.price)||0)*(Number(item.qty)||1))}</div></div>`).join('')}</div>
   <div class="row"><span>Product Subtotal</span><strong>${money(subtotal)}</strong></div>
 <div class="row first-order-discount-row desktop-checkout-only"><span>First Order Discount</span><strong id="firstOrderDiscountDisplay">Check with phone number</strong></div>
     <div class="row"><span>Delivery Charge</span><strong id="deliveryFeeDisplay">Select location</strong></div>
   <div class="row total"><strong>Total Payable</strong><strong id="checkoutTotalDisplay">${money(subtotal)}</strong></div>
   <p class="summary-note" id="deliverySummaryNote">Your piece is prepared with protective dustbag and inspected before courier dispatch.</p>
+  <a class="back desktop-checkout-only" href="/pages/cart/">← Return to Your Bag</a>
 </aside>
 </div>`;
 root.querySelectorAll('[data-qty-change]').forEach(button=>button.addEventListener('click',()=>{
