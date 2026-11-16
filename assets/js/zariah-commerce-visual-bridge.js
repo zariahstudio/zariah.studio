@@ -44,6 +44,9 @@ function decorate(root=document){
   root.querySelectorAll('.submit').forEach(e=>add(e,'z-btn-primary','z-btn-full'));
  }
  if(page==='track'){
+  root.querySelectorAll('.intro').forEach(e=>add(e,'z-content-hero'));
+  root.querySelectorAll('.intro p').forEach(e=>add(e,'z-coll-desc'));
+  root.querySelectorAll('.lookup').forEach(e=>add(e,'z-content-body','z-track-card'));
   root.querySelectorAll('.track-card').forEach(e=>add(e,'z-track-card'));
   root.querySelectorAll('.field').forEach(e=>add(e,'z-form-field'));
   root.querySelectorAll('.field label').forEach(e=>add(e,'z-form-label'));
