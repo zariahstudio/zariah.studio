@@ -5,7 +5,7 @@ const body=document.body;
 const page=body.classList.contains('z-commerce-cart')?'cart':body.classList.contains('z-commerce-checkout')?'checkout':body.classList.contains('z-commerce-track')?'track':'';
 if(!page)return;
 const add=(el,...names)=>{if(el)el.classList.add(...names)};
-const all=(root,selector)=>{const found=[...all(root,selector)];if(root.nodeType===1&&root.matches(selector))found.unshift(root);return found};
+const all=(root,selector)=>{const found=[...root.querySelectorAll(selector)];if(root.nodeType===1&&root.matches(selector))found.unshift(root);return found};
 function decorate(root=document){
  if(page==='cart'){
   all(root,'.cart-layout').forEach(e=>add(e,'z-cart-layout'));
