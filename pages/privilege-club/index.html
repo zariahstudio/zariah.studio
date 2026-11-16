@@ -31,7 +31,7 @@ footer{border-top:1px solid var(--line);padding:25px;text-align:center;font-size
 @media(max-width:700px){header{height:auto;min-height:72px;display:block;padding:12px;text-align:center}nav{justify-content:center;gap:14px;margin-top:10px;flex-wrap:wrap}.tiers{grid-template-columns:repeat(2,1fr)}.member-stats{grid-template-columns:1fr 1fr}.member-stats .stat:last-child{grid-column:1/-1}.member-head{align-items:center}.history{overflow-x:auto}.history table{min-width:420px}}
 </style>
 <link rel="stylesheet" href="/assets/css/compact-global-footer.css?v=20261113-footer1">
-<link rel="stylesheet" href="/assets/css/zariah-mobile-drawer.css?v=20261116-v2">
+<link rel="stylesheet" href="/assets/css/zariah-mobile-drawer.css?v=20261116-v3">
 </head>
 <body>
 <div class="announcement">A MORE PERSONAL WAY TO SHOP · ZARIAH PRIVILEGE CLUB</div>
@@ -94,5 +94,5 @@ $('verifyOtp').addEventListener('click',async function(){clearMessage();var emai
 $('signOut').addEventListener('click',async function(){if(client)await client.auth.signOut();$('memberPanel').classList.remove('show');$('loginPanel').style.display='block';$('otpWrap').hidden=true;$('otp').value='';clearMessage()});
 })();
 </script>
-<script src="/assets/js/zariah-mobile-drawer.js?v=20261116-v2" defer></script>
+<script src="/assets/js/zariah-mobile-drawer.js?v=20261116-v3" defer></script>
 </body></html>
