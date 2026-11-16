@@ -8,7 +8,69 @@
 </style><link rel="stylesheet" href="/assets/css/brand-typography.css?v=20261109"><link rel="stylesheet" href="/assets/css/mobile-navigation-refinement.css?v=20261110-mobile-ux2"><link rel="stylesheet" href="/assets/css/mobile-form-accessibility.css?v=20261110-mobile-form1"><link rel="stylesheet" href="/assets/css/desktop-readability-refinement.css?v=20261110-desktop-type2"><link rel="stylesheet" href="/assets/css/desktop-editorial-redesign.css?v=20261110-editorial-v2">  <link rel="stylesheet" href="/assets/css/unified-premium-header.css?v=20261113-v1">
 <link rel="stylesheet" href="/assets/css/compact-global-footer.css?v=20261113-footer1">
 <link rel="stylesheet" href="/assets/css/zariah-mobile-drawer.css?v=20261116-v3">
-</head><body><div class="ann">ZARIAH STUDIO · LOCAL & INTERNATIONAL HANDBAG BRANDS</div><header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/our-story/">Our Story</a><a href="/pages/faq/">FAQ</a><a href="/pages/contact/">Contact</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a><a href="/pages/search/" aria-label="Search">Search</a></nav><button class="z-mobile-menu-toggle" id="zMobileMenuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-haspopup="dialog" aria-controls="zMobileDrawer"><span aria-hidden="true">☰</span></button></header>
+<style id="z-commerce-mobile-refinement">
+/* Source ZIP visual migration — mobile-only refinements.
+   Commerce logic, cart storage, Supabase requests and desktop layout remain unchanged. */
+@media(max-width:760px){
+  .ann,.announcement{padding:10px 12px!important;font-size:9px!important;line-height:1.5!important;letter-spacing:.12em!important}
+  header{min-height:68px!important;height:auto!important;padding:11px 15px!important;gap:10px!important}
+  header .brand{font-size:25px!important;line-height:1!important;text-align:left!important}
+  header .brand small{font-size:8px!important;letter-spacing:.3em!important;text-align:left!important;margin-top:4px!important}
+  main{padding:30px 16px 56px!important}
+  .intro{font-size:13px!important;line-height:1.7!important}
+  .crumb{font-size:10px!important;letter-spacing:.12em!important}
+  .z-floating-bag{right:12px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important}
+}
+@media(max-width:600px){
+  .cart-layout{grid-template-columns:minmax(0,1fr)!important;gap:22px!important}
+  .cart-head{font-size:9px!important;letter-spacing:.1em!important}
+  .item{grid-template-columns:76px minmax(0,1fr) auto!important;gap:10px!important;padding:16px 0!important}
+  .item img{width:76px!important}
+  .name{font-size:20px!important;line-height:1.12!important}
+  .meta{font-size:10px!important}
+  .qty{margin-top:10px!important}
+  .qty button{width:34px!important;height:34px!important;min-width:34px!important}
+  .qty span{font-size:12px!important}
+  .summary{padding:21px 17px!important}
+  .summary h2{font-size:26px!important}
+  .checkout,.shop{min-height:48px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+  .delivery-note{font-size:10px!important;line-height:1.7!important}
+  .empty{padding:42px 17px!important}
+}
+@media(max-width:760px){
+  .checkout-heading{display:block!important;margin:16px 0 20px!important}
+  .checkout-heading h1{font-size:clamp(36px,10vw,48px)!important;line-height:1.02!important}
+  .checkout-assurance{display:block!important;margin-top:12px!important;white-space:normal!important}
+  .checkout-steps{gap:5px!important;margin-bottom:18px!important}
+  .checkout-step{justify-content:center!important;padding:9px 5px!important;font-size:8px!important;letter-spacing:.04em!important}
+  .checkout-step span{width:21px!important;height:21px!important;flex-basis:21px!important}
+  .layout{grid-template-columns:minmax(0,1fr)!important;gap:18px!important}
+  .summary{position:static!important;grid-row:1!important}
+  .form-section{padding:19px 16px 20px!important;margin-bottom:12px!important}
+  .section-title{font-size:24px!important}
+  .fields{grid-template-columns:minmax(0,1fr)!important;gap:13px!important}
+  .field.full{grid-column:auto!important}
+  input,textarea,select{font-size:16px!important;min-height:48px!important}
+  .payment-options{grid-template-columns:minmax(0,1fr)!important}
+  .submit{min-height:50px!important;font-size:10px!important}
+}
+@media(max-width:650px){
+  .intro{text-align:center!important;padding:38px 16px 22px!important}
+  .lookup{margin:8px 14px 34px!important;padding:21px 16px!important}
+  .lookup h2{font-size:26px!important}
+  .lookup .field input{font-size:16px!important;min-height:49px!important}
+  .lookup .submit{min-height:49px!important}
+  .result{padding:0 14px 36px!important}
+  .result-card,.track-card{padding:18px 14px!important}
+  .track-info-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .track-help{align-items:stretch!important;flex-direction:column!important}
+  .track-help>a{text-align:center!important;min-height:46px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .z-floating-bag,.checkout,.submit{transition:none!important}
+}
+</style>
+</head><body><div class="ann">Complimentary Delivery Across Bangladesh · Doorstep Inspection &amp; Cash on Delivery</div><header><a class="brand" href="/">ZARIAH<small>STUDIO</small></a><nav><a href="/">Home</a><a href="/collections/all-bags/">All Bags</a><a href="/pages/our-story/">Our Story</a><a href="/pages/faq/">FAQ</a><a href="/pages/contact/">Contact</a><a href="/pages/cart/" class="z-cart-nav" aria-label="Shopping bag">Bag <span class="z-cart-count" data-cart-count>0</span></a><a href="/pages/search/" aria-label="Search">Search</a></nav><button class="z-mobile-menu-toggle" id="zMobileMenuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-haspopup="dialog" aria-controls="zMobileDrawer"><span aria-hidden="true">☰</span></button></header>
 <div class="z-mobile-drawer" id="zMobileDrawer" role="dialog" aria-modal="true" aria-label="ZARIAH Studio navigation" aria-hidden="true">
   <div class="z-mobile-drawer-backdrop" data-close-drawer></div>
   <nav class="z-mobile-drawer-panel" aria-label="Mobile navigation">
