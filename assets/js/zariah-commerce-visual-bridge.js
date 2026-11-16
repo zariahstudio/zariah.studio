@@ -8,7 +8,11 @@ const add=(el,...names)=>{if(el)el.classList.add(...names)};
 const all=(root,selector)=>{const found=[...root.querySelectorAll(selector)];if(root.nodeType===1&&root.matches(selector))found.unshift(root);return found};
 function decorate(root=document){
  if(page==='cart'){
-  all(root,'.cart-layout').forEach(e=>add(e,'z-cart-layout'));
+  all(root,'.cart-layout').forEach(e=>{add(e,'z-cart-layout');add(e.querySelector(':scope > section'),'z-cart-items-wrap');});
+  all(root,'.empty').forEach(e=>add(e,'z-coll-empty'));
+  all(root,'.shop').forEach(e=>add(e,'z-btn','z-btn-primary'));
+  all(root,'.checkout').forEach(e=>add(e,'z-btn','z-btn-primary','z-btn-full'));
+  all(root,'.continue').forEach(e=>add(e,'z-btn','z-btn-secondary','z-btn-full'));
   all(root,'.item').forEach(e=>{
    add(e,'z-cart-item');
    add(e.querySelector(':scope > a:first-child'),'z-cart-item-img');
@@ -27,7 +31,14 @@ function decorate(root=document){
   all(root,'.summary .delivery-note').forEach(e=>add(e,'z-summary-note'));
  }
  if(page==='checkout'){
-  all(root,'.layout').forEach(e=>add(e,'z-checkout-layout'));
+  all(root,'.layout').forEach(e=>add(e,'z-checkout-layout','z-cart-layout'));
+  all(root,'#guestCheckout').forEach(e=>add(e,'z-checkout-form'));
+  all(root,'.field.full').forEach(e=>add(e,'z-form-grid-full'));
+  all(root,'.field textarea').forEach(e=>add(e,'z-form-textarea'));
+  all(root,'.field select').forEach(e=>add(e,'z-form-select'));
+  all(root,'.delivery-choice-grid').forEach(e=>add(e,'z-radio-cards'));
+  all(root,'.delivery-choice').forEach(e=>add(e,'z-radio-card'));
+  all(root,'.order-success-panel').forEach(e=>add(e,'z-order-success-card'));
   all(root,'.form-section').forEach(e=>add(e,'z-form-section'));
   all(root,'.section-heading').forEach(e=>add(e,'z-form-section-head'));
   all(root,'.section-number').forEach(e=>add(e,'z-form-section-num'));
