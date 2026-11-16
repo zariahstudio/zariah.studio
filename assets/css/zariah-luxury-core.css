@@ -11,6 +11,8 @@
  --z-font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
  --z-ease-quick:180ms ease;--z-header-height:84px;
 }
+/* Keep the existing desktop commerce presentation untouched. */
+@media(max-width:760px){
 .z-commerce-page .z-container{width:min(1200px,calc(100% - 56px));margin-inline:auto}
 .z-commerce-page .z-cart-hero{padding:clamp(30px,4vw,54px) 0 25px;border-bottom:1px solid var(--z-border-subtle)}
 .z-commerce-page .z-eyebrow{display:block;margin:0 0 10px;color:var(--z-accent-brass);font:600 9px/1.4 var(--z-font-sans);letter-spacing:.2em;text-transform:uppercase}
@@ -20,3 +22,5 @@
 .z-commerce-page .z-btn-primary:hover{background:#39332d;border-color:#39332d}
 .z-commerce-page .z-btn-full{width:100%}
 @media(max-width:760px){.z-commerce-page .z-container{width:calc(100% - 32px)}.z-commerce-page .z-cart-hero{padding:28px 0 20px}.z-commerce-page .z-coll-title{font-size:clamp(34px,9vw,46px)}.z-commerce-page .z-coll-desc{font-size:12px;line-height:1.7}}
+
+}
